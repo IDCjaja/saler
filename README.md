@@ -4,7 +4,7 @@
 
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 npm install
 
@@ -17,6 +17,7 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
+
 # GitHub flow
 
 > 基于 [git-flow](https://github.com/nvie/gitflow)
@@ -35,20 +36,20 @@ npm run build --report
 - 经过 CodeClimate 和 单元测试（CircleCI）
   - CodeClimate 的 issues 原则上不能自己点通过，一定是和团队协商通过，或者修改 rules
 
-### Master Branch
-
-master 分支作为线上运行的版本，初步定在让运维来发 release。
-
 ### Commit 格式
+
 can
 提交信息首行简要描述该提交涉及的改动，建议以动词开头。如需添加相关 `issue` 或 `jet` 任务的链接，须与首行之间保留一个空行，从第三行开始。可参考以下格式：
+
 ```log
 第一行 [<type>:] 简要描述该提交涉及的改动，建议以开头动词 [(<scope>)]
 第二行 空行
 第三行 相关的链接（issue 或 jira 等）
 第四行 更多必要信息
 ```
+
 type（可选）:
+
 ```log
 feat: 新功能
 fix: 修复问题
@@ -58,10 +59,12 @@ refactor: 重构（既不涉及新功能，也不是修复问题）
 chore: 构建工具或者辅助工具的变动
 style: 调整格式
 ```
+
 scope（可选）:
- 比如fix涉及的范围 组件名、文件名等等逗号分隔
+比如 fix 涉及的范围 组件名、文件名等等逗号分隔
 
 例子：
+
 ```log
 Integrate immutable.js (A,B,C)
 
@@ -143,6 +146,7 @@ alias gclc='git commit -v --reset-author -c `git log --pretty=%H -n1`'
 | :label:                     | `:label:`                     | Adding or updating types (Flow, TypeScript) |
 
 例子：
+
 ```log
 🐛: fix ...
 
@@ -150,9 +154,11 @@ card / issue url
 ```
 
 工具:
+
 - [alfred-emoji-workflow](https://github.com/carlosgaldino/alfred-emoji-workflow)
 
 ### Pull Request 格式
+
 1. 以 `jira` 对应的 card 的 title 作为标题
 1. 描述里面附加本次 PR 的说明
 1. 描述里面附加 `jira` 对应 card 的 link
@@ -160,9 +166,10 @@ card / issue url
 1. 尽量使用 [squash merge](https://github.com/conventional-changelog/standard-version#should-i-always-squash-commits-when-merging-prs)
 
 #### 参考：
+
 - [Understanding the GitHub flow](https://guides.github.com/introduction/flow/)
 - [Using git-flow to automate your git branching workflow](https://jeffkreeftmeijer.com/git-flow/)
-- [Git工作流指南](https://github.com/xirong/my-git/blob/master/git-workflow-tutorial.md)
+- [Git 工作流指南](https://github.com/xirong/my-git/blob/master/git-workflow-tutorial.md)
 - [Conventional Commits](https://www.conventionalcommits.org)
 - [gitmoji - An emoji guide for your commit messages](https://gitmoji.carloscuesta.me/)
 - [Developing AngularJS](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits)
