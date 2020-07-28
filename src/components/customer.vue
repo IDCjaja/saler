@@ -9,6 +9,10 @@
       <img alt src="@/assets/img/Card-phone.png" />
       <span>预约客户</span>
     </router-link>
+    <router-link class="customer-visit" to="/real_estate/saler/reserve/reserved">
+      <img alt src="@/assets/img/Card-Visit.png" />
+      <span>预约客户查看</span>
+    </router-link>
   </div>
 </template>
 
