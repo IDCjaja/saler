@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import api from "@/api/api";
 export default {
   data() {
     return {
@@ -24,7 +25,6 @@ export default {
       method: "get",
       url: "/magnate/oauth",
     }).then((res) => {
-      console.log(res);
       this.$axios({
         method: "POST",
         url: "/oauth/token",
@@ -42,12 +42,8 @@ export default {
           // redirect_uri: 'http://shandenabian.skylarkly.com/real_estate/saler/code'
         },
       }).then((res) => {
-        this.token = res.data.access_token;
-        alert(this.token);
-        this.$axios({
-          method: "GET",
-          url: "/api/v1/user?access_token=" + this.token,
-        }).then((res) => {
+        let token = res.data.access_token;
+        api.getUserAPI(token).then((res) => {
           this.show = true;
           this.id = res.data.id;
           this.name = res.data.name;

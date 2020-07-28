@@ -15,6 +15,13 @@ let headerSQL = {
 };
 // admin
 export default {
+  // 登录oauth
+  getMagnateOauthAPI() {
+    return http.get("/magnate/oauth");
+  },
+  getUserAPI(token) {
+    return http.get(`/v1/user?access_token=` + token);
+  },
   // 翻版
   // 渲染表单
   getFormAPI(formID) {
