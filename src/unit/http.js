@@ -15,7 +15,7 @@ const http = {
       method: "get",
       url: url,
       params: params,
-      headers: headers // 权限
+      headers // 权限
     };
     // if (params) config.params = params
     return request(config);

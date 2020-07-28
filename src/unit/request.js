@@ -15,10 +15,8 @@ const service = axios.create({
     "X-Requested-With": "XMLHttpRequest",
     "Content-Type":
       "application/json; application/x-www-form-urlencoded; charset=UTF-8",
-    "cache-control": "max-age=0, private, must-revalidate",
-    Authorization:
-      // "7e9559776d2e4aac37509df2bec2c40b49013cb9b0a22ca1ee08f7986b243b73:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lc3BhY2VfaWQiOjF9.u5GQ2tNmjF6hc_um_VLdPU2GPzPLB0_LBK9rayQw5Bk"
-      "b01110629541b3eb51697db5a05dd2388aed11a58c81a75e9c08347bc30a09e6:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lc3BhY2VfaWQiOjF9.wj9V0ZVOOzSPuRYztizJL_5w0u8aJKb05Z73tEV_HuY"
+    "cache-control": "max-age=0, private, must-revalidate"
+    // "7e9559776d2e4aac37509df2bec2c40b49013cb9b0a22ca1ee08f7986b243b73:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lc3BhY2VfaWQiOjF9.u5GQ2tNmjF6hc_um_VLdPU2GPzPLB0_LBK9rayQw5Bk"
   }
 });
 
