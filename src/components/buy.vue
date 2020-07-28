@@ -20,7 +20,7 @@
         <div class="content" v-show="!isLoading">
           <router-link
             :to="{
-              name: 'buy_message',
+              name: '',
               query: {
                 customer_phone: item.customer_phone,
                 response_id: item.response_id
@@ -35,7 +35,7 @@
               <div class="information-left-matter">
                 <h2>{{ item.customer_name }}</h2>
                 <!-- <p>电话：{{ item.customer_phone }}</p> -->
-                <p>客户描摹：{{ item.remark }}</p>
+                <p>客户描摹：{{ item.depict }}</p>
                 <p>客户来源：{{ item.source }}</p>
                 <p>录入时间：{{ creatData(item.created_at) }}</p>
               </div>
@@ -93,6 +93,7 @@ export default {
       list: [],
       loading: false,
       finished: false,
+      sql: "select * from beta_form_1_662",
     };
   },
   watch: {
@@ -148,13 +149,15 @@ export default {
   },
   mounted() {
     // 读取cookie
+    // 拉取搜索列表
+
     this.id = this.$cookies.get("CURRENT-USER-ID");
     this.phone = this.$cookies.get("CURRENT-USER-PHONE");
-    // 拉取搜索列表
-    // api.getSalerSearchAPI().then((res) => {
-    //   this.isLoading = false;
-    //   this.list = res.data;
-    // });
+    api.getTableJsonAPI(this.sql).then((res) => {
+      this.isLoading = false;
+      this.list = res.data;
+      this.finished = true;
+    });
   },
   methods: {
     creatData(res) {
@@ -246,20 +249,21 @@ export default {
         });
       } else {
         this.loadNum++;
-        let params = { page: this.loadNum, per_page: "10" };
-        api.getSalerSearchAPI(params).then((res) => {
-          this.loading = false;
-          let oldList = this.list;
-          let newList = res.data;
-          this.list = [...oldList, ...newList];
-          // 加载状态结束
-          // 数据全部加载完成
+        // let params = { page: this.loadNum, per_page: "10" };
 
-          if (!res.data.length) {
-            this.loading = false;
-            this.finished = true;
-          }
-        });
+        // api.getTableJsonAPI(this.sql, params).then((res) => {
+        //   this.isLoading = false;
+        //   let oldList = this.list;
+        //   let newList = res.data;
+        //   this.list = [...oldList, ...newList];
+        //   // 加载状态结束
+        //   // 数据全部加载完成
+
+        //   if (!res.data.length) {
+        //     this.loading = false;
+        //     this.finished = true;
+        //   }
+        // });
       }
     },
   },
@@ -311,7 +315,7 @@ export default {
       margin-bottom: 5px;
     }
     p {
-      font-size: 11px;
+      font-size: 13px;
       color: #b2b2b2;
       margin-top: 5px;
     }
