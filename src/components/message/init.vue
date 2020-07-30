@@ -216,30 +216,26 @@ export default {
       isLoading: true,
       fields: [],
       orderFieldList: [
-        "customer_name",
-        "customer_phone",
-        "customer_gender",
-        "remark",
-        "source",
+        "name",
+        "phone",
+        "gender",
+        "depict",
         "age",
+        "source",
+        "intention",
+        "pathway",
+        "motivation",
+        "price",
+        "payment",
+        "living_area",
         "entitlement",
         "reason",
-        "birthday",
-        "email",
-        "intention",
-        "channel",
-        "motivation",
-        "focus",
-        "preferred_apartment",
-        "price_range",
-        "working_area",
-        "living_area",
-        "living_area2",
-        "payment_method",
         "lottery",
         "lottery_results",
-        "unicon_test",
-        "customer_resistance",
+        "house_type",
+        "resistance",
+        "working_area",
+        "estimated_time",
       ],
       formData: [],
       showPicker: false,
@@ -254,6 +250,8 @@ export default {
       ebtries: [],
       reason: true,
       lottery_results: true,
+      fromID: 662,
+      list: "",
     };
   },
   components: {
@@ -265,12 +263,18 @@ export default {
     // 读取cookie
     this.id = this.$cookies.get("CURRENT-USER-ID");
     this.phone = this.$cookies.get("CURRENT-USER-PHONE");
+    let sql = `select * from beta_form_1_662 WHERE response_id ='${this.response_id}'`;
+    api.getSqlJsonAPI(sql).then((res) => {
+      this.list = res.data[0];
+      console.log(this.listz);
+      this.isLoading = false;
+    });
     // 拉取表项
     api
-      .getSaleraArriveVisitorsNewAPI()
+      .getFormAPI(this.fromID)
       .then((res) => {
+        console.log(res);
         this.fields = res.data.fields;
-        // this.formData = total.tableListData(this.fields, this.orderFieldList);
 
         this.orderFieldList.forEach((element) => {
           let field = this.fields.find(
@@ -327,55 +331,50 @@ export default {
       })
       .then(() => {
         // 渲染表项
-        api
-          .getSalerArriveVisitorsResponseIdAPI(this.response_id)
-          .then((res) => {
-            this.entries = res.data.entries;
-            this.isLoading = false;
+        let sql = `select * from beta_form_1_662 WHERE response_id ='${this.response_id}'`;
+        api.getSqlJsonAPI(sql).then((res) => {
+          this.list = res.data[0];
+          this.isLoading = false;
+        });
+        // api
+        //   .getSalerArriveVisitorsResponseIdAPI(this.response_id)
+        //   .then((res) => {
+        //     this.entries = res.data.entries;
 
-            Object.keys(res.data.mapped_values).forEach((element) => {
-              console.log(element);
-              if (res.data.mapped_values[element]["text_value"]) {
-                let field = this.formData.find(
-                  (field) => field.identity_key === element
-                );
-                if (field) {
-                  switch (field.type) {
-                    case "Field::RadioButton": {
-                      let optionValue =
-                        res.data.mapped_values[element]["text_value"][0];
-                      let options = this.fields.find(
-                        (field) => field.identity_key === element
-                      ).options;
-                      field.option_id = options.find(
-                        (option) => option.value === optionValue
-                      ).id;
-                      break;
-                    }
-                    // case "Field::CheckBox": {
-                    //   let optionValue =
-                    //     res.data.mapped_values[element]["text_value"];
-                    //   let option_id = this.fields.find(
-                    //     (field) => field.identity_key === element
-                    //   ).id;
-                    //   field.option_id = optionValue;
-                    //   break;
-                    // }
-                    case "Field::DateTime": {
-                      field.value =
-                        res.data.mapped_values[element]["text_value"][0];
-                      this.newTime = field.value;
-                      break;
-                    }
-                    default: {
-                      field.value =
-                        res.data.mapped_values[element]["text_value"][0];
-                    }
-                  }
-                }
-              }
-            });
-          });
+        //     Object.keys(res.data.mapped_values).forEach((element) => {
+        //       console.log(element);
+        //       if (res.data.mapped_values[element]["text_value"]) {
+        //         let field = this.formData.find(
+        //           (field) => field.identity_key === element
+        //         );
+        //         if (field) {
+        //           switch (field.type) {
+        //             case "Field::RadioButton": {
+        //               let optionValue =
+        //                 res.data.mapped_values[element]["text_value"][0];
+        //               let options = this.fields.find(
+        //                 (field) => field.identity_key === element
+        //               ).options;
+        //               field.option_id = options.find(
+        //                 (option) => option.value === optionValue
+        //               ).id;
+        //               break;
+        //             }
+        //             case "Field::DateTime": {
+        //               field.value =
+        //                 res.data.mapped_values[element]["text_value"][0];
+        //               this.newTime = field.value;
+        //               break;
+        //             }
+        //             default: {
+        //               field.value =
+        //                 res.data.mapped_values[element]["text_value"][0];
+        //             }
+        //           }
+        //         }
+        //       }
+        //     });
+        //   });
       });
   },
   methods: {

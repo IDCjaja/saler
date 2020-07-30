@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import Tabbar from "./pages/tabbar";
-import HomeNav from "./pages/nav";
+import Tabbar from "@/components/pages/tabbar";
+import HomeNav from "@/components/pages/nav";
 import api from "@/api/api";
 
 export default {
