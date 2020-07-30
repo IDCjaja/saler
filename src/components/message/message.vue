@@ -10,14 +10,14 @@
               <img class="information-left-img" src="@/assets/img/Avator-Man.png" />
             </div>
             <div class="information-left-matter">
-              <h2>{{customer_name}}</h2>
+              <h2>{{list.name}}</h2>
               <p>
                 客户意向：
-                <span>{{intention}}</span>
+                <span>{{list.intention}}</span>
               </p>
             </div>
           </div>
-          <a :href="'tel:'+ customer_phone" class="information-right">
+          <a :href="'tel:'+ list.phone" class="information-right">
             <i class="icon-Info-Icon-Phone"></i>
           </a>
         </div>
@@ -42,13 +42,13 @@
           <i class="icon-Info-Icon-Foot message-style-blue"></i>
           <span class="message-project-title">置业跟踪</span>
         </router-link>
-        <a
-          href="http://shandenabian.skylarkly.com/namespaces/1/categories/70"
+        <router-link
+          :to="{ name:'reserve',query:{customer_phone:customer_phone,response_id:response_id}}"
           class="message-project"
         >
           <i class="icon-Info-Icon-Star message-style-blue"></i>
           <span class="message-project-title">客户预约</span>
-        </a>
+        </router-link>
       </div>
     </div>
     <message-nav></message-nav>
@@ -70,8 +70,7 @@ export default {
       customer_phone: "",
       isLoading: true,
       id: "",
-      phone: "",
-      url: "http://shandenabian.skylarkly.com/namespaces/1/categories/70",
+      list: "",
     };
   },
   components: {
@@ -81,25 +80,10 @@ export default {
   mounted() {
     this.response_id = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
-    // 读取cookie
-    this.id = this.$cookies.get("CURRENT-USER-ID");
-    this.phone = this.$cookies.get("CURRENT-USER-PHONE");
-    api.getSalerArriveVisitorsResponseIdAPI(this.response_id).then((res) => {
-      if (res.status === 200) {
-        this.isLoading = false;
-
-        let mappedValues = res.data.mapped_values;
-        this.customer_phone = mappedValues.customer_phone.text_value[0];
-        if (mappedValues.customer_name) {
-          this.customer_name = mappedValues.customer_name.text_value[0];
-        }
-        if (mappedValues.intention) {
-          this.intention = mappedValues.intention.text_value[0];
-        }
-        if (mappedValues.planed_visit_time) {
-          this.planed_visit_time = mappedValues.planed_visit_time.text_value[0];
-        }
-      }
+    let sql = `select * from beta_form_1_662 WHERE response_id ='${this.response_id}'`;
+    api.getSqlJsonAPI(sql).then((res) => {
+      this.list = res.data[0];
+      this.isLoading = false;
     });
   },
   methods: {

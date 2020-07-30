@@ -7,7 +7,7 @@
         <div class="content">
           <div class="information-left">
             <div class="information-left-head">
-              <img class="information-left-img" src="@/assets/img/Avator-Woman.png" />
+              <img class="information-left-img" src="@/assets/img/Avator-Man.png" />
             </div>
             <div class="information-left-matter">
               <h2>{{list.name}}</h2>
@@ -159,14 +159,10 @@ export default {
   mounted() {
     this.response_id = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
-    // 读取cookie
-    this.id = this.$cookies.get("CURRENT-USER-ID");
-    this.phone = this.$cookies.get("CURRENT-USER-PHONE");
 
-    // 来访
+    // 详细信息
     let sql = `select * from beta_form_1_662 WHERE response_id ='${this.response_id}'`;
     api.getSqlJsonAPI(sql).then((res) => {
-      console.log(res);
       this.list = res.data[0];
       this.isLoading = false;
     });

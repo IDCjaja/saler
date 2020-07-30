@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import Tabbar from "./pages/tabbar";
+import Tabbar from "@/components/pages/tabbar";
 import api from "@/api/api";
 import total from "@/api/total";
 

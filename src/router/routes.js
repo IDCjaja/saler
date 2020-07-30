@@ -78,8 +78,15 @@ export default [
     path: "/real_estate/saler/reserve",
     name: "reserve",
     component: () =>
-      import(/* webpackChunkName:'visit' */ "@/components/reserve")
+      import(/* webpackChunkName:'visit' */ "@/components/reserve/reserve")
   },
+  {
+    path: "/real_estate/saler/reserved",
+    name: "reserved",
+    component: () =>
+      import(/* webpackChunkName:'reserved' */ "@/components/reserve/reserved")
+  },
+
   // 来电客户录入表
   {
     path: "/real_estate/saler/caller",

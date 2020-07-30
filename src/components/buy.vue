@@ -22,7 +22,7 @@
             :to="{
               name: 'buy_message',
               query: {
-                customer_phone: item.customer_phone,
+                customer_phone: item.phone,
                 response_id: item.response_id
               }
             }"
@@ -33,14 +33,14 @@
                 <img class="information-left-img" src="@/assets/img/Avator-Man.png" />
               </div>
               <div class="information-left-matter">
-                <h2>{{ item.customer_name }}</h2>
+                <h2>{{ item.name }}</h2>
                 <p>客户描摹：{{ item.depict }}</p>
                 <p>客户来源：{{ item.source }}</p>
                 <p>录入时间：{{ creatData(item.created_at) }}</p>
               </div>
             </div>
           </router-link>
-          <a :href="'tel:' + item.customer_phone" class="information-right">
+          <a :href="'tel:' + item.phone" class="information-right">
             <i class="icon-Info-Icon-Phone"></i>
           </a>
         </div>
