@@ -20,7 +20,7 @@
         <div class="content" v-show="!isLoading">
           <router-link
             :to="{
-              name: '',
+              name: 'buy_message',
               query: {
                 customer_phone: item.customer_phone,
                 response_id: item.response_id
@@ -34,7 +34,6 @@
               </div>
               <div class="information-left-matter">
                 <h2>{{ item.customer_name }}</h2>
-                <!-- <p>电话：{{ item.customer_phone }}</p> -->
                 <p>客户描摹：{{ item.depict }}</p>
                 <p>客户来源：{{ item.source }}</p>
                 <p>录入时间：{{ creatData(item.created_at) }}</p>
@@ -93,7 +92,7 @@ export default {
       list: [],
       loading: false,
       finished: false,
-      sql: "select * from beta_form_1_662",
+      sql: "select * from beta_form_1_662 ORDER BY created_at DESC;",
     };
   },
   watch: {
@@ -153,7 +152,7 @@ export default {
 
     this.id = this.$cookies.get("CURRENT-USER-ID");
     this.phone = this.$cookies.get("CURRENT-USER-PHONE");
-    api.getTableJsonAPI(this.sql).then((res) => {
+    api.getSqlJsonAPI(this.sql).then((res) => {
       this.isLoading = false;
       this.list = res.data;
       this.finished = true;
@@ -250,8 +249,7 @@ export default {
       } else {
         this.loadNum++;
         // let params = { page: this.loadNum, per_page: "10" };
-
-        // api.getTableJsonAPI(this.sql, params).then((res) => {
+        // api.getSqlJsonAPI(this.sql, params).then((res) => {
         //   this.isLoading = false;
         //   let oldList = this.list;
         //   let newList = res.data;

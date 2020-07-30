@@ -459,12 +459,15 @@ export default {
         this.$toast("手机号位数错误🙅");
         field.value = "";
       }
-      api.getPhoneRepeatAPI(field.value).then((res) => {
-        if (res.data.phone) {
+
+      let sql = `select * from beta_form_1_662 WHERE phone ='${field.value}'`;
+      api.getSqlJsonAPI(sql).then((res) => {
+        let data = res.data[0];
+        if (data) {
           field.value = "";
-          this.created_at = res.data.created_at.slice(0, 10);
-          this.name = res.data.name;
-          this.user_name = res.data.user_name;
+          this.created_at = data.created_at.slice(0, 10);
+          this.name = data.name;
+          this.user_name = data.user_name;
           this.show = true;
         }
       });

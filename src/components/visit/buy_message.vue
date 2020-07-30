@@ -10,19 +10,19 @@
               <img class="information-left-img" src="@/assets/img/Avator-Woman.png" />
             </div>
             <div class="information-left-matter">
-              <h2>{{customer_name}}</h2>
+              <h2>{{list.name}}</h2>
               <p>
-                <span>{{intention}}</span>
+                <span>{{list.intention}}</span>
               </p>
             </div>
           </div>
           <router-link
-            :to="{ name:'message',query:{customer_phone:customer_phone,response_id:response_id}}"
+            :to="{ name:'message',query:{customer_phone:list.phone,response_id:response_id}}"
             class="information-right information-right-modify"
           >
             <i class="icon-Info-Icon-Edit"></i>
           </router-link>
-          <a :href="'tel:'+ customer_phone" class="information-right">
+          <a :href="'tel:'+ list.phone" class="information-right">
             <i class="icon-Info-Icon-Phone"></i>
           </a>
         </div>
@@ -33,7 +33,7 @@
             <span>客户描摹</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{remark}}</span>
+            <span>{{list.depict}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -41,7 +41,7 @@
             <span>知晓途径</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{channel}}</span>
+            <span>{{list.pathway}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -49,7 +49,7 @@
             <span>置业目的</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{motivation}}</span>
+            <span>{{list.motivation}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -57,7 +57,7 @@
             <span>价格区间</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{price_range}}</span>
+            <span>{{list.price}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -65,7 +65,7 @@
             <span>付款方式</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{payment_method}}</span>
+            <span>{{list.payment}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -73,15 +73,15 @@
             <span>有无购房资格</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{entitlement}}</span>
+            <span>{{list.entitlement}}</span>
           </div>
         </div>
-        <div class="buy_message_content_body" v-show="this.reason">
+        <div class="buy_message_content_body" v-show="list.reason">
           <div class="buy_message_content_body_left">
             <span>购房资格备注</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{reason}}</span>
+            <span>{{list.reason}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -89,7 +89,7 @@
             <span>生活区域</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{living_area2}}</span>
+            <span>{{list.living_area}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -97,7 +97,7 @@
             <span>工作区域</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{working_area}}</span>
+            <span>{{list.working_area}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -105,7 +105,7 @@
             <span>摇号批次</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{lottery}}</span>
+            <span>{{list.lottery}}</span>
           </div>
         </div>
         <div class="buy_message_content_body">
@@ -113,7 +113,7 @@
             <span>摇号结果</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{lottery_results}}</span>
+            <span>{{list.lottery_results}}</span>
           </div>
         </div>
 
@@ -122,7 +122,7 @@
             <span>客户主要抗性</span>
           </div>
           <div class="buy_message_content_body_right">
-            <span>{{customer_resistance}}</span>
+            <span>{{list.resistance}}</span>
           </div>
         </div>
 
@@ -148,21 +148,8 @@ export default {
       customer_name: " ",
       customer_phone: "",
       isLoading: true,
-      id: " ",
-      phone: " ",
+      list: {},
       response_id: "",
-      channel: " ",
-      motivation: " ",
-      price_range: "",
-      payment_method: "",
-      entitlement: "",
-      reason: "",
-      living_area2: "",
-      working_area: "",
-      lottery: "",
-      lottery_results: "",
-      remark: "",
-      customer_resistance: " ",
     };
   },
   components: {
@@ -177,54 +164,11 @@ export default {
     this.phone = this.$cookies.get("CURRENT-USER-PHONE");
 
     // 来访
-    api.putSalerArriveVisitorsAPI(this.response_id).then((res) => {
+    let sql = `select * from beta_form_1_662 WHERE response_id ='${this.response_id}'`;
+    api.getSqlJsonAPI(sql).then((res) => {
       console.log(res);
+      this.list = res.data[0];
       this.isLoading = false;
-      let mappedValues = res.data.mapped_values;
-      if (mappedValues.customer_name) {
-        this.customer_name = mappedValues.customer_name.text_value[0];
-      }
-      if (mappedValues.intention) {
-        this.intention = mappedValues.intention.text_value[0];
-      }
-      if (mappedValues.channel) {
-        this.channel = mappedValues.channel.text_value[0];
-      }
-      if (mappedValues.motivation) {
-        this.motivation = mappedValues.motivation.text_value[0];
-      }
-
-      if (mappedValues.price_range) {
-        this.price_range = mappedValues.price_range.text_value[0];
-      }
-      if (mappedValues.payment_method) {
-        this.payment_method = mappedValues.payment_method.text_value[0];
-      }
-      if (mappedValues.entitlement) {
-        this.entitlement = mappedValues.entitlement.text_value[0];
-      }
-      if (mappedValues.reason) {
-        this.reason = mappedValues.reason.text_value[0];
-      }
-      if (mappedValues.living_area2) {
-        this.living_area2 = mappedValues.living_area2.text_value[0];
-      }
-      if (mappedValues.working_area) {
-        this.working_area = mappedValues.working_area.text_value[0];
-      }
-      if (mappedValues.lottery) {
-        this.lottery = mappedValues.lottery.text_value[0];
-      }
-      if (mappedValues.lottery_results) {
-        this.lottery_results = mappedValues.lottery_results.text_value[0];
-      }
-      if (mappedValues.remark) {
-        this.remark = mappedValues.remark.text_value[0];
-      }
-      if (mappedValues.customer_resistance) {
-        this.customer_resistance =
-          mappedValues.customer_resistance.text_value[0];
-      }
     });
   },
   methods: {
