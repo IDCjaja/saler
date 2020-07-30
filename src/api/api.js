@@ -35,7 +35,12 @@ export default {
   postFormAPI(formID, data) {
     return http.post(`/v4/forms/${formID}/responses`, data, headerV4);
   },
-  getTableJsonAPI(sql) {
+  // 修改表单数据
+  putFormsAmendAPI(tableID, dataID, data) {
+    return http.put(`/v4/forms/${tableID}/responses/${dataID}`, data, headerV4);
+  },
+  // sql查询
+  getSqlJsonAPI(sql) {
     return http.get(
       `/api/table_mapper/json_api/execute_select_sql?sql=` + sql,
       "",

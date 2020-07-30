@@ -32,7 +32,7 @@ export default {
     CustomerTabbar,
   },
   mounted() {
-    api.getTableJsonAPI(this.sql).then((res) => {
+    api.getSqlJsonAPI(this.sql).then((res) => {
       this.isLoading = false;
       this.list = res.data;
       this.list.forEach((el) => {
