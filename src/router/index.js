@@ -11,11 +11,12 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   let name = to.name;
-  let phone = document.cookie.indexOf("CURRENT-USER-PHONE");
+
+  let phone = localStorage.getItem("user_phone");
   let path = sessionStorage.getItem("return");
 
   if (!path) {
-    if (phone === -1) {
+    if (!phone) {
       sessionStorage.setItem("return", name);
       router.push({ name: "login" });
     }

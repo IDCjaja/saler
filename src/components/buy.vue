@@ -92,7 +92,6 @@ export default {
       list: [],
       loading: false,
       finished: false,
-      sql: "select * from beta_form_1_662 ORDER BY created_at DESC;",
     };
   },
   watch: {
@@ -148,11 +147,11 @@ export default {
   },
   mounted() {
     // 读取cookie
+    this.id = localStorage.getItem("user_id");
+    this.phone = localStorage.getItem("user_phone");
     // 拉取搜索列表
-
-    this.id = this.$cookies.get("CURRENT-USER-ID");
-    this.phone = this.$cookies.get("CURRENT-USER-PHONE");
-    api.getSqlJsonAPI(this.sql).then((res) => {
+    let sql = `select * from beta_form_1_662 WHERE saler_phone ='${this.phone}'  ORDER BY created_at DESC`;
+    api.getSqlJsonAPI(sql).then((res) => {
       this.isLoading = false;
       this.list = res.data;
       this.finished = true;
@@ -165,15 +164,13 @@ export default {
       return firstDataTime + "  " + lastDataTime;
     },
     search() {
-      let params = {
-        customer_key: this.namePhone,
-        customer_name: this.customer_name,
-      };
+      let sql = `select * from beta_form_1_662 WHERE (name ='${this.namePhone}' OR  phone ='${this.namePhone}') AND saler_phone ='${this.phone}' ORDER BY created_at DESC`;
       api
-        .getSalerSearchAPI(params)
+        .getSqlJsonAPI(sql)
         .then((res) => {
           this.isLoading = false;
           this.list = res.data;
+          this.finished = true;
         })
         .catch(() => {
           this.$toast("搜索失败");

@@ -12,9 +12,6 @@ export default {
       show: "",
       code: "",
       token: "",
-      id: "",
-      phone: "",
-      name: "",
     };
   },
   mounted() {
@@ -45,12 +42,12 @@ export default {
         let token = res.data.access_token;
         api.getUserAPI(token).then((res) => {
           this.show = true;
-          this.id = res.data.id;
-          this.name = res.data.name;
-          this.phone = res.data.phone;
           this.$cookies.set("CURRENT-USER-ID", res.data.id);
           this.$cookies.set("CURRENT-USER-PHONE", res.data.phone);
           this.$cookies.set("CURRENT-NAME", res.data.name);
+          localStorage.setItem("user_id", res.data.id);
+          localStorage.setItem("user_phone", res.data.phone);
+          localStorage.setItem("user_name", res.data.name);
 
           let tag = res.data.tags;
           let tags = [];
