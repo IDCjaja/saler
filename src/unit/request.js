@@ -16,7 +16,6 @@ const service = axios.create({
     "Content-Type":
       "application/json; application/x-www-form-urlencoded; charset=UTF-8",
     "cache-control": "max-age=0, private, must-revalidate"
-    // "7e9559776d2e4aac37509df2bec2c40b49013cb9b0a22ca1ee08f7986b243b73:eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lc3BhY2VfaWQiOjF9.u5GQ2tNmjF6hc_um_VLdPU2GPzPLB0_LBK9rayQw5Bk"
   }
 });
 

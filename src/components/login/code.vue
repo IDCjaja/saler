@@ -27,12 +27,12 @@ export default {
         url: "/oauth/token",
         headers: { "Content-Type": "application/json" },
         params: {
-          // client_id: res.data.client_id,
           client_id:
-            "e84c788580a5bdc0353b680f6c4d6ef4b10894b220f544d3dd97f27366a02b8c",
-          // client_secret: res.data.client_secret,
+            "7b5453ca4e172f6a31bf290376a0c483651d4775a8af1bd840bc9b83aad7af09",
+          // "e84c788580a5bdc0353b680f6c4d6ef4b10894b220f544d3dd97f27366a02b8c",
           client_secret:
-            "4920df80ee57d9c160bd8c017a014cccf539625434d775fc81410c891768ef9a",
+            "2e47adc25c9584deabd3866923ad5784236149a5a087442e8b3320ba6eaa35d2",
+          // "4920df80ee57d9c160bd8c017a014cccf539625434d775fc81410c891768ef9a",
           code: this.code,
           grant_type: "authorization_code",
           redirect_uri: "http://localhost:8080/real_estate/saler/code",

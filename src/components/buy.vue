@@ -150,7 +150,7 @@ export default {
     this.id = localStorage.getItem("user_id");
     this.phone = localStorage.getItem("user_phone");
     // 拉取搜索列表
-    let sql = `select * from beta_form_1_662 WHERE saler_phone ='${this.phone}'  ORDER BY created_at DESC`;
+    let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}'  ORDER BY created_at DESC`;
     api.getSqlJsonAPI(sql).then((res) => {
       this.isLoading = false;
       this.list = res.data;
@@ -164,7 +164,7 @@ export default {
       return firstDataTime + "  " + lastDataTime;
     },
     search() {
-      let sql = `select * from beta_form_1_662 WHERE (name ='${this.namePhone}' OR  phone ='${this.namePhone}') AND saler_phone ='${this.phone}' ORDER BY created_at DESC`;
+      let sql = `select * from fdc_form_1_13 WHERE (name ='${this.namePhone}' OR  phone ='${this.namePhone}') AND saler_phone ='${this.phone}' ORDER BY created_at DESC`;
       api
         .getSqlJsonAPI(sql)
         .then((res) => {
