@@ -297,7 +297,7 @@ export default {
       isLoading: true,
       reason: false,
       lottery_results: false,
-      formID: 662,
+      formID: 13,
     };
   },
   components: {
@@ -460,7 +460,7 @@ export default {
         field.value = "";
       }
 
-      let sql = `select * from beta_form_1_662 WHERE phone ='${field.value}'`;
+      let sql = `select * from fdc_form_1_662 WHERE phone ='${field.value}'`;
       api.getSqlJsonAPI(sql).then((res) => {
         let data = res.data[0];
         if (data) {

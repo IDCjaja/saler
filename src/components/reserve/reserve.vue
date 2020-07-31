@@ -166,7 +166,7 @@ export default {
       // 表单数据处理
       this.formData = total.tableListData(this.fields, this.orderFieldList);
     });
-    let sql = `select * from beta_form_1_662 WHERE phone ='${this.customer_phone}'`;
+    let sql = `select * from fdc_form_1_662 WHERE phone ='${this.customer_phone}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       let data = res.data[0];
 

@@ -80,7 +80,7 @@ export default {
   mounted() {
     this.response_id = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
-    let sql = `select * from beta_form_1_662 WHERE response_id ='${this.response_id}'`;
+    let sql = `select * from fdc_form_1_662 WHERE response_id ='${this.response_id}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       this.list = res.data[0];
       this.isLoading = false;

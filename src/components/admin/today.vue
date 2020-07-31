@@ -15,10 +15,10 @@
     </header>
     <div class="today_main">
       <van-collapse accordion v-model="activeName">
-        <van-collapse-item value="10 人" icon=" icon-Index-Icon-Foot" name="1" title="到访人数">
+        <van-collapse-item :value="newArrive" icon=" icon-Index-Icon-Foot" name="1" title="到访人数">
           <p class="today_content_body">
             <span>成交人数</span>
-            <span>10 人</span>
+            <span>2 人</span>
           </p>
           <p class="today_content_body">
             <span>成交率</span>
@@ -28,7 +28,7 @@
       </van-collapse>
 
       <van-collapse accordion v-model="activeName">
-        <van-collapse-item value="10 人" icon=" icon-Index-Icon-Warning" name="2" title="来电人数">
+        <van-collapse-item :value="newCaller" icon=" icon-Index-Icon-Warning" name="2" title="来电人数">
           <p class="today_content_body">
             <span>到访人数</span>
             <span>10 人</span>
@@ -41,10 +41,10 @@
       </van-collapse>
 
       <van-collapse accordion v-model="activeName">
-        <van-collapse-item value="10 人" icon=" icon-Index-Icon-File" name="3" title="预约人数">
+        <van-collapse-item :value="reverse" icon=" icon-Index-Icon-File" name="3" title="预约人数">
           <p class="today_content_body">
             <span>预约已到访数</span>
-            <span>10 人</span>
+            <span>2 人</span>
           </p>
           <p class="today_content_body">
             <span>预约到访率</span>
@@ -89,6 +89,7 @@ export default {
       newCaller: 0,
       totalCaller: 1,
       activeName: "",
+      reverse: "",
     };
   },
   computed: {
@@ -104,13 +105,11 @@ export default {
     let date = new Date();
     this.dateFormat(date);
     // 请求结果
-    let params = { search_day: this.nowDate };
-    api.getAdminOneDayAPI(params).then((res) => {
-      let data = res.data;
-      this.newArrive = data.search_date_arrive_visitor_count;
-      this.totalArrive = data.arrive_visitor_count;
-      this.newCaller = data.search_date_caller_count;
-      this.totalCaller = data.caller_count;
+    // let params = { search_day: this.nowDate };
+
+    let sql = `select * from fdc_form_1_662 ORDER BY created_at DESC`;
+    api.getSqlJsonAPI(sql).then((res) => {
+      console.log(res);
     });
   },
   methods: {
@@ -135,14 +134,18 @@ export default {
         d = "0" + d;
       }
       this.nowDate = y + "-" + m + "-" + d;
-      let params = { search_day: this.nowDate };
-      api.getAdminOneDayAPI(params).then((res) => {
-        let data = res.data;
-        this.arrive_visitor_count = data.arrive_visitor_count;
-        this.caller_count = data.caller_count;
-        this.search_date_arrive_visitor_count =
-          data.search_date_arrive_visitor_count;
-        this.search_date_caller_count = data.search_date_caller_count;
+      let sql = `select * from fdc_form_1_662 WHERE source LIKE '到访客户'`;
+      api.getSqlJsonAPI(sql).then((res) => {
+        this.newArrive = res.data.length + "人";
+      });
+      let sqlCall = `select * from fdc_form_1_662 WHERE source LIKE '来电客户'`;
+      api.getSqlJsonAPI(sqlCall).then((res) => {
+        this.newCaller = res.data.length + "人";
+      });
+      let reverse = `select * from fdc_form_1_665`;
+      api.getSqlJsonAPI(reverse).then((res) => {
+        console.log(res);
+        this.reverse = res.data.length + "人";
       });
     },
   },

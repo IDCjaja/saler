@@ -161,7 +161,7 @@ export default {
     Tabbar,
   },
   mounted() {
-    let sql = `select * from beta_form_1_668`;
+    let sql = `select * from fdc_form_1_668`;
     api.getSqlJsonAPI(sql).then((res) => {});
     api.getFormAPI(this.formID).then((res) => {
       this.fields = res.data.fields;
@@ -171,14 +171,14 @@ export default {
   },
   methods: {
     onSearch() {
-      let sql = `select * from beta_form_1_662 WHERE phone ='${this.saler}'`;
+      let sql = `select * from fdc_form_1_662 WHERE phone ='${this.saler}'`;
       api.getSqlJsonAPI(sql).then((res) => {
         this.userData = res.data[0];
         this.userDataShow = true;
       });
     },
     search() {
-      let sql = `select * from beta_form_1_668 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
+      let sql = `select * from fdc_form_1_668 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
       api.getSqlJsonAPI(sql).then((res) => {
         this.house = res.data;
         this.house.forEach((el) => {
