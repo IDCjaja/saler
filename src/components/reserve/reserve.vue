@@ -10,17 +10,7 @@
       <aside class="table_aside">
         <div :key="field.identity_key" v-for="field in formData">
           <!-- text -->
-          <div class="input_text" v-if="field.type === 'Field::TextArea'">
-            <van-field
-              :id="field.identity_key"
-              :label="field.title"
-              autocomplete="off"
-              placeholder="请输入"
-              type="textarea"
-              autosize
-              v-model="field.value"
-            />
-          </div>
+
           <div class="input_text" v-if="field.type === 'Field::TextField'">
             <p v-if="field.identity_key == 'name'">
               <van-field
@@ -45,8 +35,6 @@
                 v-model="field.value"
               />
             </p>
-            <p v-else-if="field.identity_key == 'reason'" />
-            <p v-else-if="field.identity_key == 'lottery_results'" />
             <p v-else>
               <van-field
                 :id="field.identity_key"
@@ -58,9 +46,7 @@
               />
             </p>
           </div>
-
           <!-- butoon -->
-
           <div v-else-if="field.type === 'Field::RadioButton'">
             <div v-if="field.identity_key === 'entitlement'" />
             <div v-else-if="field.identity_key === 'lottery'" />
@@ -130,7 +116,6 @@
         <div class="footer"></div>
       </aside>
     </div>
-
     <footer class="table_footer">
       <div @click="newTable(formData)">预约客户</div>
     </footer>
@@ -164,18 +149,42 @@ export default {
       user_name: "",
       isLoading: true,
       formID: 665,
+      response_id: "",
+      customer_phone: "",
     };
   },
   components: {
     CustomerTabbar,
   },
   mounted() {
+    this.response_id = this.$route.query.response_id;
+    this.customer_phone = this.$route.query.customer_phone;
     // 渲染表
     api.getFormAPI(this.formID).then((res) => {
       this.isLoading = false;
       this.fields = res.data.fields;
       // 表单数据处理
       this.formData = total.tableListData(this.fields, this.orderFieldList);
+    });
+    let sql = `select * from beta_form_1_662 WHERE phone ='${this.customer_phone}'`;
+    api.getSqlJsonAPI(sql).then((res) => {
+      let data = res.data[0];
+
+      // 自动缓存客户信息
+      this.formData.forEach((el) => {
+        switch (el.identity_key) {
+          case "name":
+            el.value = data.name;
+            break;
+
+          case "phone":
+            el.value = data.phone;
+            break;
+
+          default:
+            break;
+        }
+      });
     });
   },
 
