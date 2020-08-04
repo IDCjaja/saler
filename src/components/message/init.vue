@@ -8,7 +8,7 @@
       </header>
       <aside class="table_aside">
         <div :key="field.identity_key" v-for="field in formData">
-          <!-- <div v-if="field.type === 'Field::CheckBox'">
+          <div v-if="field.type === 'Field::CheckBox'">
             <van-field name="checkboxGroup" :label="field.title">
               <template #input>
                 <van-checkbox-group v-model="field.option_id">
@@ -29,7 +29,7 @@
                 </van-checkbox-group>
               </template>
             </van-field>
-          </div>-->
+          </div>
           <!-- text -->
           <div class="input_text" v-if="field.type === 'Field::TextArea'">
             <van-field
@@ -199,7 +199,7 @@
     </div>
 
     <footer class="table_footer">
-      <div @click.once="newTable">保存</div>
+      <div @click="newTable">保存</div>
     </footer>
   </div>
 </template>
@@ -223,6 +223,7 @@ export default {
         "age",
         "source",
         "intention",
+        "send_card",
         "pathway",
         "motivation",
         "price",
@@ -247,11 +248,12 @@ export default {
       phone: "",
       id: "",
       newTime: "",
-      ebtries: [],
       reason: true,
       lottery_results: true,
       fromID: 13,
       list: "",
+      dataID: "",
+      entries: [],
     };
   },
   components: {
@@ -266,16 +268,14 @@ export default {
     let sql = `select * from fdc_form_1_13 WHERE response_id ='${this.response_id}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       this.list = res.data[0];
-      console.log(this.list);
+      this.dataID = this.list.response_id;
       this.isLoading = false;
     });
-    // 拉取表项
+    // 渲染表项
     api
       .getFormAPI(this.fromID)
       .then((res) => {
-        console.log(res);
         this.fields = res.data.fields;
-
         this.orderFieldList.forEach((element) => {
           let field = this.fields.find(
             (field) => field.identity_key === element
@@ -330,51 +330,51 @@ export default {
         });
       })
       .then(() => {
-        // 渲染表项
-        let sql = `select * from fdc_form_1_13 WHERE response_id ='${this.response_id}'`;
-        api.getSqlJsonAPI(sql).then((res) => {
-          this.list = res.data[0];
-          this.isLoading = false;
+        // 渲染已填写值
+        api.getResFormAPI(this.dataID).then((res) => {
+          this.entries = res.data.entries;
+          Object.keys(res.data.mapped_values).forEach((element) => {
+            if (res.data.mapped_values[element]["text_value"]) {
+              let field = this.formData.find(
+                (field) => field.identity_key === element
+              );
+              if (field) {
+                switch (field.type) {
+                  case "Field::RadioButton": {
+                    let optionValue =
+                      res.data.mapped_values[element]["text_value"][0];
+                    let options = this.fields.find(
+                      (field) => field.identity_key === element
+                    ).options;
+                    field.option_id = options.find(
+                      (option) => option.value === optionValue
+                    ).id;
+                    break;
+                  }
+                  case "Field::CheckBox": {
+                    field.option_id = [];
+                    res.data.mapped_values[element]["value"].forEach(
+                      (element) => {
+                        field.option_id.push(element.id);
+                      }
+                    );
+                    break;
+                  }
+                  case "Field::DateTime": {
+                    field.value =
+                      res.data.mapped_values[element]["text_value"][0];
+                    this.newTime = field.value;
+                    break;
+                  }
+                  default: {
+                    field.value =
+                      res.data.mapped_values[element]["text_value"][0];
+                  }
+                }
+              }
+            }
+          });
         });
-        // api
-        //   .getSalerArriveVisitorsResponseIdAPI(this.response_id)
-        //   .then((res) => {
-        //     this.entries = res.data.entries;
-
-        //     Object.keys(res.data.mapped_values).forEach((element) => {
-        //       console.log(element);
-        //       if (res.data.mapped_values[element]["text_value"]) {
-        //         let field = this.formData.find(
-        //           (field) => field.identity_key === element
-        //         );
-        //         if (field) {
-        //           switch (field.type) {
-        //             case "Field::RadioButton": {
-        //               let optionValue =
-        //                 res.data.mapped_values[element]["text_value"][0];
-        //               let options = this.fields.find(
-        //                 (field) => field.identity_key === element
-        //               ).options;
-        //               field.option_id = options.find(
-        //                 (option) => option.value === optionValue
-        //               ).id;
-        //               break;
-        //             }
-        //             case "Field::DateTime": {
-        //               field.value =
-        //                 res.data.mapped_values[element]["text_value"][0];
-        //               this.newTime = field.value;
-        //               break;
-        //             }
-        //             default: {
-        //               field.value =
-        //                 res.data.mapped_values[element]["text_value"][0];
-        //             }
-        //           }
-        //         }
-        //       }
-        //     });
-        //   });
       });
   },
   methods: {
@@ -432,6 +432,27 @@ export default {
             }
             break;
           }
+          case "Field::CheckBox": {
+            if (field.option_id) {
+              console.log(field.option_id);
+              if (field.option_id) {
+                for (let i = 0; i < field.option_id.length; i++) {
+                  payload.response.entries_attributes.push({
+                    id: entry.id,
+                    option_id: field.option_id[i],
+                  });
+                }
+              } else {
+                for (let i = 0; i < field.option_id.length; i++) {
+                  payload.response.entries_attributes.push({
+                    field_id: field.field_id,
+                    option_id: field.option_id[i],
+                  });
+                }
+              }
+            }
+            break;
+          }
           case "Field::DateTime": {
             if (this.newTime) {
               if (entry && entry.value !== this.newTime) {
@@ -470,15 +491,9 @@ export default {
 
       payload.user_id = localStorage.getItem("user_id");
       api.putSalerArriveVisitorsAPI(this.response_id, payload).then((res) => {
+
         if (res.status === 200) {
           this.$toast("更新成功 ✨");
-          this.$router.push({
-            name: "message",
-            query: {
-              customer_phone: this.customer_phone,
-              response_id: res.data.id,
-            },
-          });
         } else {
           this.$toast("更新失败 >_<");
         }
