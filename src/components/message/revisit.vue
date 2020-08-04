@@ -4,17 +4,6 @@
     <van-loading class="loading" size="27px" type="spinner" v-show="isLoading">加载中...</van-loading>
     <div v-show="!isLoading">
       <aside class="revisit_aside">
-        <van-field class="revist_aside_visit_header" label="意向等级" name="intention">
-          <template #input>
-            <van-radio-group direction="horizontal" v-model="intention">
-              <van-radio checked-color="#00A862" name="A很有意向">A很有意向</van-radio>
-              <van-radio checked-color="#00A862" name="B较有意向">B较有意向</van-radio>
-              <van-radio checked-color="#00A862" name="C可跟踪">C可跟踪</van-radio>
-              <van-radio checked-color="#00A862" name="D无意向">D无意向</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-
         <div class="revist_aside_visit">
           <div class="revist_aside_visit_left">
             <h2 class="revist_aside_visit_h2">回访记录</h2>
@@ -83,8 +72,8 @@ export default {
     this.response_id = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
     // 读取cookie
-    this.id = this.$cookies.get("CURRENT-USER-ID");
-    this.phone = this.$cookies.get("CURRENT-USER-PHONE");
+    this.id = localStorage.getItem("user_id");
+    this.phone = localStorage.getItem("user_phone");
 
     // 回访
     let sql = `select * from fdc_form_1_18 WHERE customer_phone ='${this.customer_phone}'`;

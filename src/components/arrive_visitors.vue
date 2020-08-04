@@ -425,19 +425,19 @@ export default {
         }
       });
       // 自动填充值
-      payload.user_id = this.$cookies.get("CURRENT-USER-ID");
+      payload.user_id = localStorage.getItem("user_id");
       let salerField = this.fields.find(
         (element) => element.identity_key === "saler"
       );
       payload.response.entries_attributes.push({
-        value: this.$cookies.get("CURRENT-NAME"),
+        value: localStorage.getItem("user_name"),
         field_id: salerField.id,
       });
       let salerPhoneField = this.fields.find(
         (element) => element.identity_key === "saler_phone"
       );
       payload.response.entries_attributes.push({
-        value: this.$cookies.get("CURRENT-USER-PHONE"),
+        value: localStorage.getItem("user_phone"),
         field_id: salerPhoneField.id,
       });
       api.postFormAPI(this.formID, payload).then((res) => {

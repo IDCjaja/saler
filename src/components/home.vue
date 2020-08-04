@@ -81,8 +81,8 @@ export default {
   },
   mounted() {
     // 读取cookie
-    this.name = this.$cookies.get("CURRENT-NAME");
-    this.id = this.$cookies.get("CURRENT-USER-ID");
+    this.name = localStorage.getItem("user_name");
+    this.id = localStorage.getItem("user_id");
 
     // api.getSalerWelcomeAPI().then((res) => {
     //   if (res.status === 200) {

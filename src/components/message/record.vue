@@ -74,8 +74,8 @@ export default {
     this.response_id = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
     // 读取cookie
-    this.id = this.$cookies.get("CURRENT-USER-ID");
-    this.phone = this.$cookies.get("CURRENT-USER-PHONE");
+    this.id = localStorage.getItem("user_id");
+    this.phone = localStorage.getItem("user_phone");
     // 新增数据
     api.getFormAPI(this.formID).then((res) => {
       if (res.status === 200) {
@@ -132,20 +132,20 @@ export default {
       });
 
       // 默认写入的值
-      payload.user_id = this.$cookies.get("CURRENT-USER-ID");
+      payload.user_id = localStorage.getItem("user_id");
       let salerField = this.fields.find(
         (element) => element.identity_key === "saler"
       );
       payload.response.entries_attributes.push({
         field_id: salerField.id,
-        value: this.$cookies.get("CURRENT-NAME"),
+        value: localStorage.getItem("user_name"),
       });
       let salerPhoneField = this.fields.find(
         (element) => element.identity_key === "saler_phone"
       );
       payload.response.entries_attributes.push({
         field_id: salerPhoneField.id,
-        value: this.$cookies.get("CURRENT-USER-PHONE"),
+        value: localStorage.getItem("user_phone"),
       });
       let customerName = this.fields.find(
         (element) => element.identity_key === "customer_name"

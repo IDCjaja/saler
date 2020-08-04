@@ -164,17 +164,16 @@ export default {
       return firstDataTime + "  " + lastDataTime;
     },
     search() {
-      let sql = `select * from fdc_form_1_13 WHERE (name ='${this.namePhone}' OR  phone ='${this.namePhone}') AND saler_phone ='${this.phone}' ORDER BY created_at DESC`;
-      api
-        .getSqlJsonAPI(sql)
-        .then((res) => {
-          this.isLoading = false;
-          this.list = res.data;
-          this.finished = true;
-        })
-        .catch(() => {
-          this.$toast("搜索失败");
-        });
+      console.log("res");
+      let sql = `select * from fdc_form_1_13 WHERE name Like '%${this.namePhone}%'  AND saler_phone ='${this.phone}' ORDER BY created_at DESC`;
+      api.getSqlJsonAPI(sql).then((res) => {
+        this.isLoading = false;
+        this.list = res.data;
+        this.finished = true;
+      });
+      // .catch(() => {
+      //   this.$toast("搜索失败");
+      // });
     },
 
     // 分页加载
