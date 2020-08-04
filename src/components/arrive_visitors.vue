@@ -460,7 +460,7 @@ export default {
         field.value = "";
       }
 
-      let sql = `select * from fdc_form_1_662 WHERE phone ='${field.value}'`;
+      let sql = `select * from fdc_form_1_13 WHERE phone ='${field.value}'`;
       api.getSqlJsonAPI(sql).then((res) => {
         let data = res.data[0];
         if (data) {
