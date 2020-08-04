@@ -271,6 +271,7 @@ export default {
         "intention",
         "pathway",
         "motivation",
+        "send_card",
         "price",
         "payment",
         "living_area",

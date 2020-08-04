@@ -31,6 +31,10 @@ export default {
   getFormResponsesAPI(formID) {
     return http.get(`/api/v4/forms/${formID}/responses`, "", headerV4);
   },
+  // 获取单条数据
+  getResFormAPI(dataID) {
+    return http.get(`/api/v4/responses/${dataID}`, "", headerV4);
+  },
   // 发送数据
   postFormAPI(formID, data) {
     return http.post(`/api/v4/forms/${formID}/responses`, data, headerV4);
