@@ -1,11 +1,10 @@
 <template>
   <div>
     <buy-tabbar :title="title" />
-    <van-search @blur="search" placeholder="输入姓名/手机号" v-model="namePhone" />
+    <van-search @blur="search" placeholder="输入完整姓名/手机号" v-model="namePhone" />
     <van-dropdown-menu active-color="#00a862">
       <van-dropdown-item :options="search_time" v-model="created_at" />
       <van-dropdown-item :options="search_intention" v-model="intention" />
-      <van-dropdown-item :options="search_model" v-model="preferred_apartment" />
     </van-dropdown-menu>
     <van-loading class="loading" size="27px" type="spinner" v-show="isLoading">加载中...</van-loading>
     <van-list
@@ -68,7 +67,6 @@ export default {
       loadNum: 1,
       created_at: "时间",
       intention: "意向",
-      preferred_apartment: "喜好户型",
       search_time: [
         { text: "时间", value: "时间" },
         { text: "一周内", value: "within_week" },
@@ -81,13 +79,6 @@ export default {
         { text: "B较有意向", value: "B较有意向" },
         { text: "C可跟踪", value: "C可跟踪" },
         { text: "D无意向", value: "D无意向" },
-      ],
-      search_model: [
-        { text: "喜好户型", value: "喜好户型" },
-        { text: "平层户型", value: "平层户型" },
-        { text: "跃层户型", value: "跃层户型" },
-        { text: "错层户型", value: "错层户型" },
-        { text: "复式户型", value: "复式户型" },
       ],
       list: [],
       loading: false,
@@ -118,23 +109,8 @@ export default {
           this.list = res.data;
         });
       } else {
-        let params = { search_type: "intention", search_key: newQuestion };
-        api.getSalerSearchAPI(params).then((res) => {
-          this.list = res.data;
-        });
-      }
-    },
-    preferred_apartment: function (newQuestion, oldQuestion) {
-      if (newQuestion === "喜好户型") {
-        api.getSalerSearchAPI().then((res) => {
-          this.list = res.data;
-        });
-      } else {
-        let params = {
-          search_type: "preferred_apartment",
-          search_key: newQuestion,
-        };
-        api.getSalerSearchAPI(params).then((res) => {
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND intention  like '${this.intention}'  ORDER BY created_at DESC`;
+        api.getSqlJsonAPI(sql).then((res) => {
           this.list = res.data;
         });
       }
@@ -164,17 +140,24 @@ export default {
       return firstDataTime + "  " + lastDataTime;
     },
     search() {
-      let sql = `select * from fdc_form_1_13 WHERE (name ='${this.namePhone}' OR  phone ='${this.namePhone}') AND saler_phone ='${this.phone}' ORDER BY created_at DESC`;
-      api
-        .getSqlJsonAPI(sql)
-        .then((res) => {
+      if (this.namePhone) {
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND name  like '${this.namePhone}' OR phone like '${this.namePhone}' ORDER BY created_at DESC`;
+        api.getSqlJsonAPI(sql).then((res) => {
           this.isLoading = false;
           this.list = res.data;
           this.finished = true;
-        })
-        .catch(() => {
-          this.$toast("搜索失败");
         });
+        // .catch(() => {
+        //   this.$toast("搜索失败");
+        // });
+      } else {
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}'  ORDER BY created_at DESC`;
+        api.getSqlJsonAPI(sql).then((res) => {
+          this.isLoading = false;
+          this.list = res.data;
+          this.finished = true;
+        });
+      }
     },
 
     // 分页加载
@@ -203,34 +186,9 @@ export default {
         });
       } else if (this.intention !== "意向") {
         this.loadNum++;
-        let params = {
-          search_type: "intention",
-          search_key: this.intention,
-          page: this.loadNum,
-          per_page: "10",
-        };
-        api.getSalerSearchAPI(params).then((res) => {
-          this.loading = false;
-          let oldList = this.list;
-          let newList = res.data;
-          this.list = [...oldList, ...newList];
-
-          // 加载状态结束
-          // 数据全部加载完成
-          if (!res.data.length) {
-            this.loading = false;
-            this.finished = true;
-          }
-        });
-      } else if (this.preferred_apartment !== "喜好户型") {
-        this.loadNum++;
-        let params = {
-          search_type: "preferred_apartment",
-          search_key: this.preferred_apartment,
-          page: this.loadNum,
-          per_page: "10",
-        };
-        api.getSalerSearchAPI(params).then((res) => {
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND intention  like '${this.intention}'  ORDER BY created_at DESC`;
+        api.getSqlJsonAPI(sql).then((res) => {
+          this.finished = true;
           this.loading = false;
           let oldList = this.list;
           let newList = res.data;
@@ -244,7 +202,7 @@ export default {
           }
         });
       } else {
-        this.loadNum++;
+        // this.loadNum++;
         // let params = { page: this.loadNum, per_page: "10" };
         // api.getSqlJsonAPI(this.sql, params).then((res) => {
         //   this.isLoading = false;
@@ -253,7 +211,6 @@ export default {
         //   this.list = [...oldList, ...newList];
         //   // 加载状态结束
         //   // 数据全部加载完成
-
         //   if (!res.data.length) {
         //     this.loading = false;
         //     this.finished = true;

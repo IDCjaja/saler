@@ -289,7 +289,7 @@ export default {
         }
       });
       // 自动填充值
-      payload.user_id = this.$cookies.get("CURRENT-USER-ID");
+      payload.user_id = localStorage.getItem("user_id");
 
       api.postFormAPI(this.formID, payload).then((res) => {
         if (res.status === 201) {
