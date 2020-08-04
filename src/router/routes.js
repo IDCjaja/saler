@@ -81,7 +81,7 @@ export default [
       import(/* webpackChunkName:'visit' */ "@/components/reserve/reserve")
   },
   {
-    path: "/real_estate/saler/reserved",
+    path: "/real_estate/saler/reserve/reserved",
     name: "reserved",
     component: () =>
       import(/* webpackChunkName:'reserved' */ "@/components/reserve/reserved")
