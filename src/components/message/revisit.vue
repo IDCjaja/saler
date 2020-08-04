@@ -73,6 +73,7 @@ export default {
       response_id: "",
       call_count: "0",
       visit_count: "0",
+      list: "",
     };
   },
   components: {
@@ -84,19 +85,12 @@ export default {
     // 读取cookie
     this.id = this.$cookies.get("CURRENT-USER-ID");
     this.phone = this.$cookies.get("CURRENT-USER-PHONE");
-    // 来访
-    api.getSalerArriveVisitorsResponseIdAPI(this.response_id).then((res) => {
-      let mappedValues = res.data.mapped_values;
-      if (mappedValues.intention) {
-        this.intention = mappedValues.intention.text_value[0];
-      }
-    });
-    // 回访
-    api.getSalerCurrentUserReturnRecordsAPI(this.customer_phone).then((res) => {
-      this.isLoading = false;
-      // 格式化时间
-      this.revisit = total.createData(res.data);
 
+    // 回访
+    let sql = `select * from fdc_form_1_18 WHERE customer_phone ='${this.customer_phone}'`;
+    api.getSqlJsonAPI(sql).then((res) => {
+      this.isLoading = false;
+      this.revisit = total.createData(res.data);
       // 回访次数
       let data = res.data;
       for (let i = 0; i < data.length; i++) {
