@@ -10,6 +10,7 @@
       <div class="main_item">
         <van-collapse v-model="activeNames" v-for="item in house" :key="item.id">
           <van-collapse-item
+            disabled
             title="房源编号"
             :value="item.room_number"
             :name="item.id"
@@ -66,8 +67,10 @@ export default {
   mounted() {},
   methods: {
     search() {
-      let sql = `select * from beta_form_1_668 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
+      let sql = `select * from fdc_form_1_16 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
+
       api.getSqlJsonAPI(sql).then((res) => {
+        console.log(res);
         this.house = res.data;
         this.house.forEach((el) => {
           switch (el.room_status) {

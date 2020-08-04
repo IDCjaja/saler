@@ -153,7 +153,7 @@ export default {
         "mortgage_money",
         "signing_time",
       ],
-      formID: "670",
+      formID: 17,
       dataID: "",
     };
   },
@@ -161,8 +161,7 @@ export default {
     Tabbar,
   },
   mounted() {
-    let sql = `select * from beta_form_1_668`;
-    api.getSqlJsonAPI(sql).then((res) => {});
+    // 渲染房源销控表
     api.getFormAPI(this.formID).then((res) => {
       this.fields = res.data.fields;
       // 表单数据处理
@@ -171,14 +170,14 @@ export default {
   },
   methods: {
     onSearch() {
-      let sql = `select * from beta_form_1_662 WHERE phone ='${this.saler}'`;
+      let sql = `select * from fdc_form_1_13 WHERE phone ='${this.saler}'`;
       api.getSqlJsonAPI(sql).then((res) => {
         this.userData = res.data[0];
         this.userDataShow = true;
       });
     },
     search() {
-      let sql = `select * from beta_form_1_668 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
+      let sql = `select * from fdc_form_1_16 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
       api.getSqlJsonAPI(sql).then((res) => {
         this.house = res.data;
         this.house.forEach((el) => {
@@ -302,11 +301,11 @@ export default {
 
       let data = {
         response: {
-          entries_attributes: [{ field_id: 6327, value: "认购" }],
+          entries_attributes: [{ field_id: 388, value: "认购" }],
         },
         user_id: this.$cookies.get("CURRENT-USER-ID"),
       };
-      api.putFormsAmendAPI(668, this.dataID, data).then((res) => {
+      api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {
         if (res.status === 201) {
           console.log("状态修改成功");
         } else {

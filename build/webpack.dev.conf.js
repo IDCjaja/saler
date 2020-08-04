@@ -57,20 +57,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         changeOrigin: true
       },
       "/oauth": {
-        // target: "http://shandenabian.skylarkly.com",
-        target: "https://beta.skylarkly.com",
+        target: "http://shandenabian.skylarkly.com",
         changeOrigin: true
       },
       "/api": {
-        target: "http://skylark-local.natappvip.cc",
-        changeOrigin: true
-      },
-      "/v4": {
-        target: "https://beta.skylarkly.com/api",
+        target: "http://shandenabian.skylarkly.com",
         changeOrigin: true
       },
       "/v1": {
-        target: "https://beta.skylarkly.com/api",
+        target: "http://shandenabian.skylarkly.com/api",
         changeOrigin: true
       }
     }

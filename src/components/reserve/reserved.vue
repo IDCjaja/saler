@@ -25,7 +25,7 @@ export default {
     return {
       title: "预约客户查看",
       list: [],
-      sql: "select * from beta_form_1_665",
+      sql: "select * from fdc_form_1_15",
     };
   },
   components: {

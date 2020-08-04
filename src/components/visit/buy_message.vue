@@ -161,7 +161,7 @@ export default {
     this.customer_phone = this.$route.query.customer_phone;
 
     // 详细信息
-    let sql = `select * from beta_form_1_662 WHERE response_id ='${this.response_id}'`;
+    let sql = `select * from fdc_form_1_13 WHERE response_id ='${this.response_id}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       this.list = res.data[0];
       this.isLoading = false;

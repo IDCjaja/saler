@@ -148,7 +148,7 @@ export default {
       name: "",
       user_name: "",
       isLoading: true,
-      formID: 665,
+      formID: 15,
       response_id: "",
       customer_phone: "",
     };
@@ -166,7 +166,7 @@ export default {
       // 表单数据处理
       this.formData = total.tableListData(this.fields, this.orderFieldList);
     });
-    let sql = `select * from beta_form_1_662 WHERE phone ='${this.customer_phone}'`;
+    let sql = `select * from fdc_form_1_13 WHERE phone ='${this.customer_phone}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       let data = res.data[0];
 
@@ -280,15 +280,15 @@ export default {
         this.$toast("手机号位数错误🙅");
         field.value = "";
       }
-      api.getPhoneRepeatAPI(field.value).then((res) => {
-        if (res.data.phone) {
-          field.value = "";
-          this.created_at = res.data.created_at.slice(0, 10);
-          this.name = res.data.name;
-          this.user_name = res.data.user_name;
-          this.show = true;
-        }
-      });
+      // api.getPhoneRepeatAPI(field.value).then((res) => {
+      //   if (res.data.phone) {
+      //     field.value = "";
+      //     this.created_at = res.data.created_at.slice(0, 10);
+      //     this.name = res.data.name;
+      //     this.user_name = res.data.user_name;
+      //     this.show = true;
+      //   }
+      // });
     },
   },
 };
