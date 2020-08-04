@@ -15,40 +15,55 @@
     </header>
     <div class="today_main">
       <van-collapse accordion v-model="activeName">
-        <van-collapse-item :value="newArrive" icon=" icon-Index-Icon-Foot" name="1" title="到访人数">
+        <van-collapse-item
+          :value="newArrive +' 人'"
+          icon=" icon-Index-Icon-Foot"
+          name="1"
+          title="到访人数"
+        >
           <p class="today_content_body">
             <span>成交人数</span>
-            <span>2 人</span>
+            <span>0 人</span>
           </p>
           <p class="today_content_body">
             <span>成交率</span>
-            <span>100%</span>
+            <span>0%</span>
           </p>
         </van-collapse-item>
       </van-collapse>
 
       <van-collapse accordion v-model="activeName">
-        <van-collapse-item :value="newCaller" icon=" icon-Index-Icon-Warning" name="2" title="来电人数">
+        <van-collapse-item
+          :value="newCaller+' 人'"
+          icon=" icon-Index-Icon-Warning"
+          name="2"
+          title="来电人数"
+        >
           <p class="today_content_body">
             <span>到访人数</span>
-            <span>10 人</span>
+            <span>{{newArrive}} 人</span>
           </p>
           <p class="today_content_body">
             <span>电转访率</span>
-            <span>100%</span>
+            <span>{{callVisits}}</span>
           </p>
         </van-collapse-item>
       </van-collapse>
 
       <van-collapse accordion v-model="activeName">
-        <van-collapse-item :value="reverse" icon=" icon-Index-Icon-File" name="3" title="预约人数">
+        <van-collapse-item
+          :value="reserve +' 人'"
+          icon=" icon-Index-Icon-File"
+          name="3"
+          title="预约人数"
+        >
           <p class="today_content_body">
-            <span>预约已到访数</span>
-            <span>2 人</span>
+            <span>预约已到访</span>
+            <span>{{newArrive}} 人</span>
           </p>
           <p class="today_content_body">
             <span>预约到访率</span>
-            <span>100%</span>
+            <span>{{reserved}}</span>
           </p>
         </van-collapse-item>
       </van-collapse>
@@ -83,34 +98,29 @@ import api from "@/api/api";
 export default {
   data() {
     return {
+      activeName: "",
       nowDate: "xxxx-xx-xx",
       newArrive: 0,
-      totalArrive: 1,
       newCaller: 0,
-      totalCaller: 1,
-      activeName: "",
-      reverse: "",
+      reserve: 0,
+      callVisit: 0,
     };
   },
   computed: {
-    percentageArrive() {
-      return Math.round((this.newArrive / this.totalArrive) * 100) + "%";
+    reserved: function () {
+      return Math.round((this.newArrive / this.reserve) * 100) + "%";
     },
-    percentageCaller() {
-      return Math.round((this.newCaller / this.totalCaller) * 100) + "%";
+    callVisits: function () {
+      return (
+        Math.round((this.callVisit / (this.newCaller + this.callVisit)) * 100) +
+        "%"
+      );
     },
   },
   mounted() {
     // 获取今天时间
     let date = new Date();
     this.dateFormat(date);
-    // 请求结果
-    // let params = { search_day: this.nowDate };
-
-    let sql = `select * from fdc_form_1_662 ORDER BY created_at DESC`;
-    api.getSqlJsonAPI(sql).then((res) => {
-      console.log(res);
-    });
   },
   methods: {
     getTime(type, date) {
@@ -134,18 +144,21 @@ export default {
         d = "0" + d;
       }
       this.nowDate = y + "-" + m + "-" + d;
-      let sql = `select * from fdc_form_1_662 WHERE source LIKE '到访客户'`;
+      let sql = `select * from fdc_form_1_15 WHERE arrive_visit='已到访' and to_char(created_at,'YYYY-MM-DD')='${this.nowDate}' `;
       api.getSqlJsonAPI(sql).then((res) => {
-        this.newArrive = res.data.length + "人";
+        this.newArrive = res.data.length;
       });
-      let sqlCall = `select * from fdc_form_1_662 WHERE source LIKE '来电客户'`;
+      let sqlCall = `select * from fdc_form_1_13 WHERE source LIKE '来电客户' and to_char(created_at,'YYYY-MM-DD')='${this.nowDate}'`;
       api.getSqlJsonAPI(sqlCall).then((res) => {
-        this.newCaller = res.data.length + "人";
+        this.newCaller = res.data.length;
       });
-      let reverse = `select * from fdc_form_1_665`;
-      api.getSqlJsonAPI(reverse).then((res) => {
-        console.log(res);
-        this.reverse = res.data.length + "人";
+      let sqlCallVisit = `select * from fdc_form_1_13 WHERE source LIKE '电转访客户' and to_char(created_at,'YYYY-MM-DD')='${this.nowDate}'`;
+      api.getSqlJsonAPI(sqlCallVisit).then((res) => {
+        this.callVisit = res.data.length;
+      });
+      let reserve = `select * from fdc_form_1_15 WHERE to_char(created_at,'YYYY-MM-DD')='${this.nowDate}'`;
+      api.getSqlJsonAPI(reserve).then((res) => {
+        this.reserve = res.data.length;
       });
     },
   },
