@@ -16,7 +16,7 @@
         </div>
       </div>
     </div>
-    <van-popup v-model="show" closeable round :style="{ height: '80%',width:'50%' }">
+    <van-popup v-model="show" closeable round :style="{ height: '80%',width:'60%' }">
       <header class="popup">
         <van-search
           v-model="saler"
@@ -102,7 +102,8 @@
         </div>
 
         <footer class="table_footer">
-          <div @click="newTable(formData)">确认认购</div>
+          <div v-if="this.buyData.buyer_name">去认领</div>
+          <div @click="newTable(formData)" v-else>确认认购</div>
         </footer>
       </div>
     </van-popup>
@@ -130,8 +131,9 @@ export default {
       saler: "",
       roomData: "",
       userData: "",
-      userDataShow: "",
       formData: "",
+      buyData: "",
+      userDataShow: "",
       orderFieldList: [
         "room_number",
         "inside_area",
@@ -174,41 +176,91 @@ export default {
       api.getSqlJsonAPI(sql).then((res) => {
         this.userData = res.data[0];
         this.userDataShow = true;
+        this.formData.forEach((res) => {
+          switch (res.identity_key) {
+            case "buyer_name":
+              res.value = this.userData.name;
+              break;
+            case "buyer_phone":
+              res.value = this.userData.phone;
+              break;
+            case "saler":
+              res.value = this.userData.saler;
+              break;
+            default:
+              break;
+          }
+        });
       });
     },
     search() {
       let sql = `select * from fdc_form_1_16 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
       api.getSqlJsonAPI(sql).then((res) => {
-        this.house = res.data;
-        this.house.forEach((el) => {
-          switch (el.room_status) {
-            case "签约": {
-              el.class = "signing";
-              break;
-            }
-            case "认购": {
-              el.class = "buy";
-              break;
-            }
-            case "退房": {
-              el.class = "change";
-              break;
-            }
-            case "空闲": {
-              break;
-            }
-            default: {
-            }
-          }
-        });
+        this.house = total.houseStatus(res.data);
       });
     },
     // 选择房源
     signing(el) {
       this.roomData = el;
       console.log(el);
+      let sql = `select * from fdc_form_1_17 WHERE room_number ='${el.room_number}' ORDER BY room_number ASC;`;
+      api.getSqlJsonAPI(sql).then((res) => {
+        console.log(res.data[0]);
+        this.buyData = res.data[0];
+        // 签约状态自动填入
+        this.formData.forEach((res) => {
+          switch (res.identity_key) {
+            case "buyer_name":
+              res.value = this.buyData.buyer_name;
+              break;
+            case "buyer_phone":
+              res.value = this.buyData.buyer_phone;
+              break;
+            case "saler":
+              res.value = this.buyData.saler;
+              break;
+            case "buyer_card":
+              res.value = this.buyData.buyer_card;
+              break;
+            case "address":
+              res.value = this.buyData.address;
+              break;
+            case "owner":
+              res.value = this.buyData.owner;
+              break;
+            case "discount":
+              res.value = this.buyData.discount;
+              break;
+            case "trading_price":
+              res.value = this.buyData.trading_price;
+              break;
+            case "trading_total":
+              res.value = this.buyData.trading_total;
+              break;
+            case "stages":
+              res.value = this.buyData.stages;
+              break;
+            case "stages_money":
+              res.value = this.buyData.stages_money;
+              break;
+            case "bank":
+              res.value = this.buyData.bank;
+              break;
+            case "mortgage_money":
+              res.value = this.buyData.mortgage_money;
+              break;
+            case "signing_time":
+              this.newTime = this.buyData.signing_time;
+              break;
+
+            default:
+              break;
+          }
+        });
+      });
       this.dataID = el.response_id;
       this.show = true;
+      // 房源状态自动写入
       this.formData.forEach((res) => {
         switch (res.identity_key) {
           case "room_number":
@@ -232,12 +284,10 @@ export default {
             } else {
               res.value = "空闲";
             }
-
             break;
           case "total":
             res.value = this.roomData.total;
             break;
-
           default:
             break;
         }
@@ -294,6 +344,7 @@ export default {
       api.postFormAPI(this.formID, payload).then((res) => {
         if (res.status === 201) {
           this.$toast("认购成功 ✨");
+          this.show = false;
         } else {
           this.$toast("认购失败 >_<");
         }
@@ -305,12 +356,7 @@ export default {
         },
         user_id: this.$cookies.get("CURRENT-USER-ID"),
       };
-      api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {
-        if (res.status === 201) {
-          console.log("状态修改成功");
-        } else {
-        }
-      });
+      api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {});
     },
   },
 };

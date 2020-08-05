@@ -1,5 +1,31 @@
 // 公用方法
 export default {
+  // 房屋状态
+  houseStatus(array) {
+    array.forEach(el => {
+      switch (el.room_status) {
+        case "签约": {
+          el.class = "signing";
+          break;
+        }
+        case "认购": {
+          el.class = "buy";
+          break;
+        }
+        case "退房": {
+          el.class = "change";
+          break;
+        }
+        case "空闲": {
+          break;
+        }
+        default: {
+        }
+      }
+    });
+    return array;
+  },
+
   // 时间格式化
   createData(data) {
     for (let i = 0; i < data.length; i++) {
