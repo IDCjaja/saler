@@ -35,8 +35,8 @@ export default {
           // "4920df80ee57d9c160bd8c017a014cccf539625434d775fc81410c891768ef9a",
           code: this.code,
           grant_type: "authorization_code",
-          redirect_uri: "http://localhost:8080/real_estate/saler/code",
-          // redirect_uri: 'http://shandenabian.skylarkly.com/real_estate/saler/code'
+          redirect_uri: "http://localhost:8080/real_estates/saler/code",
+          // redirect_uri: 'http://shandenabian.skylarkly.com/real_estates/saler/code'
         },
       }).then((res) => {
         let token = res.data.access_token;
