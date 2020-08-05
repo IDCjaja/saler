@@ -1,38 +1,59 @@
 <template>
   <div class="housing">
     <tabbar :title="title" />
-    <header class="house_header">
-      <van-field v-model="building" label="楼栋号" placeholder="请输入楼栋号" />
-      <button class="house_buttom" @click="search()">查看房源</button>
+    <van-search v-model="building" label="楼栋号" @search="onSearch" placeholder="请输入楼栋号" />
+    <header class="house_header" v-show="show">
+      <div
+        class="house_buttom"
+        @click="search(item.room_building)"
+        v-for="item in  list"
+        :key="item.id"
+      >
+        <p>{{item.room_building}} 栋</p>
+        <p>5 个单元</p>
+        <p>{{item.count}} 个房间</p>
+        <p>已售：0 间</p>
+        <p>未售：{{item.count}} 间</p>
+      </div>
     </header>
 
     <div class="main">
       <div class="main_item">
         <van-collapse v-model="activeNames" v-for="item in house" :key="item.id">
-          <van-collapse-item
-            disabled
-            title="房源编号"
-            :value="item.room_number"
-            :name="item.id"
-            :class="item.class"
-          >
-            <p class="main_item_van">
-              <span>建筑面积：</span>
-              <span>{{item.covered_area}}</span>
-            </p>
-            <p class="main_item_van">
-              <span>套内面积：</span>
-              <span>{{item.inside_area}}</span>
-            </p>
-            <p class="main_item_van">
-              <span>挂牌单价：</span>
-              <span>{{item.univalence}}</span>
-            </p>
-            <p class="main_item_van">
-              <span>挂牌总价：</span>
-              <span>{{item.total}}</span>
-            </p>
-          </van-collapse-item>
+          <div v-if="item.room_status == '认购'">
+            <van-cell center title="房屋状态" :value="item.room_status" :class="item.class" />
+          </div>
+          <div v-else-if="item.room_status == '签约'">
+            <van-cell center title="房屋状态" :value="item.room_status" :class="item.class" />
+          </div>
+          <div v-else-if="item.room_status == '退房'">
+            <van-cell center title="房屋状态" :value="item.room_status" :class="item.class" />
+          </div>
+          <div v-else>
+            <van-collapse-item
+              title="房号"
+              :value="item.room_number"
+              :name="item.id"
+              :class="item.class"
+            >
+              <p class="main_item_van">
+                <span>建筑面积：</span>
+                <span>{{item.covered_area}}</span>
+              </p>
+              <p class="main_item_van">
+                <span>套内面积：</span>
+                <span>{{item.inside_area}}</span>
+              </p>
+              <p class="main_item_van">
+                <span>挂牌单价：</span>
+                <span>{{item.univalence}}</span>
+              </p>
+              <p class="main_item_van">
+                <span>挂牌总价：</span>
+                <span>{{item.total}}</span>
+              </p>
+            </van-collapse-item>
+          </div>
         </van-collapse>
       </div>
     </div>
@@ -45,15 +66,17 @@
 import Tabbar from "@/components/pages/tabbar";
 import HomeNav from "@/components/pages/nav";
 import api from "@/api/api";
+import total from "@/api/total";
 
 export default {
   data() {
     return {
       title: "房源展示",
-      building: 9,
       formID: "11",
       list: [],
+      building: "",
       house: [],
+      show: true,
       houseSubscribe: [],
       houseSigning: [],
       houseChange: [],
@@ -64,35 +87,26 @@ export default {
     Tabbar,
     HomeNav,
   },
-  mounted() {},
+  mounted() {
+    let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`;
+    api.getSqlJsonAPI(sql).then((res) => {
+      console.log();
+      this.list = res.data;
+    });
+  },
   methods: {
-    search() {
+    onSearch() {
+      this.show = false;
       let sql = `select * from fdc_form_1_16 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
-
       api.getSqlJsonAPI(sql).then((res) => {
-        console.log(res);
-        this.house = res.data;
-        this.house.forEach((el) => {
-          switch (el.room_status) {
-            case "签约": {
-              el.class = "signing";
-              break;
-            }
-            case "认购": {
-              el.class = "buy";
-              break;
-            }
-            case "退房": {
-              el.class = "change";
-              break;
-            }
-            case "空闲": {
-              break;
-            }
-            default: {
-            }
-          }
-        });
+        this.house = total.houseStatus(res.data);
+      });
+    },
+    search(building) {
+      this.show = false;
+      let sql = `select * from fdc_form_1_16 WHERE room_building ='${building}' ORDER BY room_number ASC;`;
+      api.getSqlJsonAPI(sql).then((res) => {
+        this.house = total.houseStatus(res.data);
       });
     },
   },
@@ -102,20 +116,26 @@ export default {
 <style lang="scss" scoped>
 .house_header {
   padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  flex-flow: wrap;
 
   .house_buttom {
     margin-top: 10px;
     background: #00a862;
     border: none;
-    border-radius: 20px;
-    height: 30px;
-    width: 80%;
+    border-radius: 7px;
+    width: 47%;
     color: #fff;
+    margin: 5px;
+    padding: 15px 0px;
     font-size: 16px;
+    box-shadow: 4px 4px 12px #00a86278;
   }
 }
 
 .main {
+  margin-top: 20px;
   display: flex;
   padding: 0px 30px 50px;
   justify-content: space-between;
@@ -158,14 +178,29 @@ export default {
   }
 }
 
-.buy /deep/ .van-cell--clickable {
+.buy {
   background: yellow;
+  color: #000;
+  .van-cell__value {
+    text-align: right;
+    color: #000;
+  }
 }
 
-.change /deep/ .van-cell--clickable {
+.change {
   background: #7b7f80;
+  color: #fff;
+  .van-cell__value {
+    text-align: right;
+    color: #fff;
+  }
 }
-.signing /deep/ .van-cell--clickable {
+.signing {
   background: red;
+  color: #fff;
+  .van-cell__value {
+    text-align: right;
+    color: #fff;
+  }
 }
 </style>
