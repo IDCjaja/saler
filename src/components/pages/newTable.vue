@@ -51,31 +51,29 @@
       </van-field>
     </aside>
     <footer class="table_footer">
-      <router-link to="/real_estate/saler/customer">新建客户</router-link>
+      <router-link to="/real_estates/saler/customer">新建客户</router-link>
     </footer>
   </div>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      customer_name: '',
-      customer_gender: '1',
-      customer_phone: '',
-      remark: '',
-      motivation: '',
-      channel: '传单',
-      travel_mode: '步行',
-      call_area: '高新区',
-      demand_floor: '',
-      focus: '',
-      planed_visit_time: ''
-
-    }
-  }
-
-}
+      customer_name: "",
+      customer_gender: "1",
+      customer_phone: "",
+      remark: "",
+      motivation: "",
+      channel: "传单",
+      travel_mode: "步行",
+      call_area: "高新区",
+      demand_floor: "",
+      focus: "",
+      planed_visit_time: "",
+    };
+  },
+};
 </script>
 
 <style lang="sass" scoped>
@@ -132,5 +130,4 @@ export default {
 
   a
     color: #fff
-
 </style>

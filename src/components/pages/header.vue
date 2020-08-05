@@ -1,7 +1,7 @@
 <template>
   <div>
     <header class="header">
-      <router-link class="box" to="/real_estate/saler/customer">
+      <router-link class="box" to="/real_estates/saler/customer">
         <p class="title">新客户</p>
         <img class="img" src="@/assets/img/Index-Card-Users.png" />
       </router-link>
@@ -15,18 +15,17 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      show: true
-    }
+      show: true,
+    };
   },
   methods: {
-    prompt () {
-      this.$toast('开发中 ✨')
-    }
-  }
-
-}
+    prompt() {
+      this.$toast("开发中 ✨");
+    },
+  },
+};
 </script>
 
 <style  scoped>
