@@ -6,7 +6,7 @@
       <div
         class="house_buttom"
         @click="search(item.room_building)"
-        v-for="item in  list"
+        v-for="item in list"
         :key="item.id"
       >
         <p>{{item.room_building}} 栋</p>
@@ -21,13 +21,28 @@
       <div class="main_item">
         <van-collapse v-model="activeNames" v-for="item in house" :key="item.id">
           <div v-if="item.room_status == '认购'">
-            <van-cell center title="房屋状态" :value="item.room_status" :class="item.class" />
+            <van-cell
+              center
+              :title="item.room_number"
+              :value="item.room_status"
+              :class="item.class"
+            />
           </div>
           <div v-else-if="item.room_status == '签约'">
-            <van-cell center title="房屋状态" :value="item.room_status" :class="item.class" />
+            <van-cell
+              center
+              :title="item.room_number"
+              :value="item.room_status"
+              :class="item.class"
+            />
           </div>
           <div v-else-if="item.room_status == '退房'">
-            <van-cell center title="房屋状态" :value="item.room_status" :class="item.class" />
+            <van-cell
+              center
+              :title="item.room_number"
+              :value="item.room_status"
+              :class="item.class"
+            />
           </div>
           <div v-else>
             <van-collapse-item
@@ -90,7 +105,6 @@ export default {
   mounted() {
     let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`;
     api.getSqlJsonAPI(sql).then((res) => {
-      console.log();
       this.list = res.data;
     });
   },

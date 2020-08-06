@@ -11,8 +11,8 @@ export default {
     return {
       client_id:
         "7b5453ca4e172f6a31bf290376a0c483651d4775a8af1bd840bc9b83aad7af09",
-      // code: "http://localhost:8080/real_estates/saler/code",
-      code: "http://shandenabian.skylarkly.com/real_estates/saler/code",
+      code: "http://localhost:8080/real_estates/saler/code",
+      // code: "http://shandenabian.skylarkly.com/real_estates/saler/code",
     };
   },
   mounted() {
