@@ -1,9 +1,20 @@
 <template>
   <div class="housing">
     <tabbar :title="title" />
-    <header class="house_header">
-      <van-field v-model="building" label="楼栋" placeholder="请输入楼栋" />
-      <button class="house_buttom" @click="search()">查看房源</button>
+    <van-search v-model="building" label="楼栋号" @search="search" placeholder="请输入楼栋号" />
+    <header class="house_header" v-show="showList">
+      <div
+        class="house_buttom"
+        @click="search(item.room_building)"
+        v-for="item in list"
+        :key="item.id"
+      >
+        <p>{{item.room_building}} 栋</p>
+        <p>5 个单元</p>
+        <p>{{item.count}} 个房间</p>
+        <p>已售：0 间</p>
+        <p>未售：{{item.count}} 间</p>
+      </div>
     </header>
     <div class="main">
       <div class="main_item" v-for="item in house" :key="item.id" @click="signing(item)">
@@ -24,7 +35,6 @@
           label="客户信息"
           placeholder="请输入完整手机号"
           @search="onSearch"
-          v-show="!this.buyData"
         >
           <template #action>
             <div @click="onSearch">搜索</div>
@@ -37,7 +47,9 @@
                 <img class="information-left-img" src="@/assets/img/Avator-Man.png" />
               </div>
               <div class="information-left-matter">
+                <h2>{{userData.name}}</h2>
                 <p>客户姓名：{{userData.name}}</p>
+                <p>客户描摹：{{userData.depict}}</p>
                 <p>客户手机号：{{userData.phone}}</p>
               </div>
             </div>
@@ -101,7 +113,7 @@
         </div>
 
         <footer class="table_footer">
-          <div v-if="this.buyData">去认领</div>
+          <div v-if="this.buyData.buyer_name">去认领</div>
           <div @click="newTable(formData)" v-else>确认认购</div>
         </footer>
       </div>
@@ -119,7 +131,8 @@ export default {
     return {
       title: "房源展示",
       newTime: "",
-      building: "9",
+      building: "",
+      showList: true,
       list: [],
       house: [],
       show: false,
@@ -162,6 +175,11 @@ export default {
     Tabbar,
   },
   mounted() {
+    // 渲染楼栋
+    let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`;
+    api.getSqlJsonAPI(sql).then((res) => {
+      this.list = res.data;
+    });
     // 渲染房源销控表
     api.getFormAPI(this.formID).then((res) => {
       this.fields = res.data.fields;
@@ -192,8 +210,9 @@ export default {
         });
       });
     },
-    search() {
-      let sql = `select * from fdc_form_1_16 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
+    search(building) {
+      this.showList = false;
+      let sql = `select * from fdc_form_1_16 WHERE room_building ='${building}' ORDER BY room_number ASC;`;
       api.getSqlJsonAPI(sql).then((res) => {
         this.house = total.houseStatus(res.data);
       });
@@ -201,56 +220,55 @@ export default {
     // 选择房源
     signing(el) {
       this.roomData = el;
-      console.log(el);
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${el.room_number}' ORDER BY room_number ASC;`;
       api.getSqlJsonAPI(sql).then((res) => {
-        console.log(res.data[0]);
         this.buyData = res.data[0];
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
             case "buyer_name":
-              res.value = this.buyData ? this.buyData.buyer_name : "";
+              res.value = this.buyData.buyer_name;
               break;
             case "buyer_phone":
-              res.value = this.buyData ? this.buyData.buyer_phone : "";
+              res.value = this.buyData.buyer_phone;
               break;
             case "saler":
-              res.value = this.buyData ? this.buyData.saler : "";
+              res.value = this.buyData.saler;
               break;
             case "buyer_card":
-              res.value = this.buyData ? this.buyData.buyer_card : "";
+              res.value = this.buyData.buyer_card;
               break;
             case "address":
-              res.value = this.buyData ? this.buyData.address : "";
+              res.value = this.buyData.address;
               break;
             case "owner":
-              res.value = this.buyData ? this.buyData.owner : "";
+              res.value = this.buyData.owner;
               break;
             case "discount":
-              res.value = this.buyData ? this.buyData.discount : "";
+              res.value = this.buyData.discount;
               break;
             case "trading_price":
-              res.value = this.buyData ? this.buyData.trading_price : "";
+              res.value = this.buyData.trading_price;
               break;
             case "trading_total":
-              res.value = this.buyData ? this.buyData.trading_total : "";
+              res.value = this.buyData.trading_total;
               break;
             case "stages":
-              res.value = this.buyData ? this.buyData.stages : "";
+              res.value = this.buyData.stages;
               break;
             case "stages_money":
-              res.value = this.buyData ? this.buyData.stages_money : "";
+              res.value = this.buyData.stages_money;
               break;
             case "bank":
-              res.value = this.buyData ? this.buyData.bank : "";
+              res.value = this.buyData.bank;
               break;
             case "mortgage_money":
-              res.value = this.buyData ? this.buyData.mortgage_money : "";
+              res.value = this.buyData.mortgage_money;
               break;
             case "signing_time":
-              this.newTime = this.buyData ? this.buyData.signing_time : "";
+              this.newTime = this.buyData.signing_time;
               break;
+
             default:
               break;
           }
@@ -367,19 +385,21 @@ export default {
 }
 .house_header {
   padding: 20px;
-  width: 50%;
-  margin: 0 auto;
+  display: flex;
+  justify-content: flex-start;
+  flex-flow: wrap;
 
   .house_buttom {
     margin-top: 10px;
     background: #00a862;
     border: none;
-    border-radius: 20px;
-    height: 40px;
-    margin-top: 40px;
-    width: 70%;
+    border-radius: 7px;
+    width: 170px;
     color: #fff;
+    margin: 10px;
+    padding: 15px 0px;
     font-size: 16px;
+    box-shadow: 4px 4px 12px #00a86278;
   }
 }
 

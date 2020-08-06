@@ -55,6 +55,12 @@ export default [
       import(/* webpackChunkName:'housing' */ "@/components/house/housing")
   },
   {
+    path: "/real_estates/saler/pcHousing",
+    name: "pcHousing",
+    component: () =>
+      import(/* webpackChunkName:'pcHousing' */ "@/components/house/pcHousing")
+  },
+  {
     path: "/real_estates/saler/house",
     name: "house",
     component: () =>
