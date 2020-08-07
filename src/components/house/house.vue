@@ -19,7 +19,7 @@
     <van-popup v-model="show" closeable round :style="{ height: '80%',width:'60%' }">
       <header class="popup">
         <van-search
-          v-model="saler"
+          v-model="phone"
           show-action
           label="客户信息"
           placeholder="请输入完整手机号"
@@ -30,21 +30,35 @@
             <div @click="onSearch">搜索</div>
           </template>
         </van-search>
-        <div class="content" v-show="this.userDataShow">
-          <div class="content_href">
-            <div class="information-left">
-              <div class="information-left-head">
-                <img class="information-left-img" src="@/assets/img/Avator-Man.png" />
-              </div>
-              <div class="information-left-matter">
-                <p>客户姓名：{{userData.name}}</p>
-                <p>客户手机号：{{userData.phone}}</p>
+        <div class="user_data" v-show="this.userShow">
+          <!-- 有客户信息展示 -->
+          <div class="content" v-if="this.userDataShow">
+            <div class="content_href">
+              <div class="information-left">
+                <div class="information-left-head">
+                  <img class="information-left-img" src="@/assets/img/Avator-Man.png" />
+                </div>
+                <div class="information-left-matter">
+                  <p>客户姓名：{{userData.name}}</p>
+                  <p>客户手机号：{{userData.phone}}</p>
+                </div>
               </div>
             </div>
+            <div class="content_footer">
+              <span @click="buyer()">关联为买受人</span>
+              <span @click="owner()">关联为共同拥有人</span>
+            </div>
           </div>
-          <a :href="'tel:' + 0" class="information-right">
-            <i class="icon-Info-Icon-Phone"></i>
-          </a>
+          <!-- 新建客户组件 -->
+          <div class="content" v-else>
+            <p>未找到客户</p>
+            <van-field label="客户姓名：" autocomplete="off" placeholder="请输入" type="text" />
+            <van-field label="客户电话：" autocomplete="off" placeholder="请输入" type="text" />
+            <van-field label="置业顾问：" autocomplete="off" placeholder="请输入" type="text" />
+            <footer class="message_footer">
+              <div @click="newTable(formData)">新建客户</div>
+            </footer>
+          </div>
         </div>
       </header>
 
@@ -127,12 +141,13 @@ export default {
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
-      saler: "",
+      phone: "",
       roomData: "",
       userData: "",
       formData: "",
       buyData: "",
-      userDataShow: "",
+      userShow: false,
+      userDataShow: false,
       orderFieldList: [
         "room_number",
         "inside_area",
@@ -170,26 +185,47 @@ export default {
     });
   },
   methods: {
+    buyer() {
+      this.formData.forEach((res) => {
+        switch (res.identity_key) {
+          case "buyer_name":
+            res.value = this.userData.name;
+            break;
+          case "buyer_phone":
+            res.value = this.userData.phone;
+            break;
+          case "saler":
+            res.value = this.userData.saler;
+            break;
+          default:
+            break;
+        }
+      });
+    },
+    owner() {
+      this.formData.forEach((res) => {
+        switch (res.identity_key) {
+          case "owner":
+            res.value = `姓名：${this.userData.name}，手机号：${this.userData.phone}`;
+            break;
+          case "saler":
+            res.value = this.userData.saler;
+            break;
+          default:
+            break;
+        }
+      });
+    },
     onSearch() {
-      let sql = `select * from fdc_form_1_13 WHERE phone ='${this.saler}'`;
+      let sql = `select * from fdc_form_1_13 WHERE phone ='${this.phone}'`;
       api.getSqlJsonAPI(sql).then((res) => {
-        this.userData = res.data[0];
-        this.userDataShow = true;
-        this.formData.forEach((res) => {
-          switch (res.identity_key) {
-            case "buyer_name":
-              res.value = this.userData.name;
-              break;
-            case "buyer_phone":
-              res.value = this.userData.phone;
-              break;
-            case "saler":
-              res.value = this.userData.saler;
-              break;
-            default:
-              break;
-          }
-        });
+        this.userShow = true;
+        if (res.data[0]) {
+          this.userData = res.data[0];
+          this.userDataShow = true;
+        } else {
+          this.userDataShow = false;
+        }
       });
     },
     search() {
@@ -398,7 +434,7 @@ export default {
     padding: 10px 5px;
     margin-top: 20px;
     background: #fff;
-    border-radius: 8px;
+    border-radius: 6px;
     color: black;
     border: 1px solid #ddd;
     font-size: 15px;
@@ -428,21 +464,41 @@ export default {
 }
 .popup {
   padding: 40px;
+  width: 70%;
+  margin: 0 auto;
 }
 .content {
-  width: 88%;
+  width: 82%;
   margin: 0 auto;
-  padding: 5px;
-  border-bottom: 1px solid #9e9e9e1c;
+  padding: 20px 10px;
+  border: 1px solid #9e9e9e47;
+  border-radius: 8px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 
   .content_href {
     width: 85%;
     display: flex;
   }
+
+  .content_footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
+
+    span {
+      border: 1px solid #eee;
+      padding: 5px;
+      font-size: 15px;
+      border-radius: 4px;
+    }
+
+    span:active {
+      background-color: #f2f3f5;
+    }
+  }
 }
+
 .popup_table {
   margin: 20px auto 0px;
 }
@@ -465,6 +521,7 @@ export default {
   .information-left-matter {
     margin-left: 10px;
     text-align: left;
+    line-height: 27px;
 
     h2 {
       font-size: 15px;
@@ -473,25 +530,12 @@ export default {
       margin-bottom: 5px;
     }
     p {
-      font-size: 13px;
-      color: #b2b2b2;
+      font-size: 14px;
       margin-top: 5px;
     }
   }
 }
-.information-right {
-  background: #e4f3ec;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  text-align: center;
-  line-height: 38px;
-  .icon-Info-Icon-Phone {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-}
+
 .table_footer {
   margin-top: 30px;
   bottom: 0px;
@@ -500,6 +544,18 @@ export default {
   line-height: 50px;
   font-size: 15px;
   font-weight: 600;
+  background: #00a862;
+  color: #fff;
+}
+
+.message_footer {
+  width: 40%;
+  height: 37px;
+  line-height: 37px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 7px;
+  margin: 30px auto 0px;
   background: #00a862;
   color: #fff;
 }
