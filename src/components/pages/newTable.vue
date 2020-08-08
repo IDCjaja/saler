@@ -51,7 +51,7 @@
       </van-field>
     </aside>
     <footer class="table_footer">
-      <router-link to="/real_estates/saler/customer">新建客户</router-link>
+      <router-link to="/real_estate/saler/customer">新建客户</router-link>
     </footer>
   </div>
 </template>

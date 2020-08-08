@@ -1,7 +1,7 @@
 <template>
   <div>
     <header class="header">
-      <router-link class="box" to="/real_estates/saler/customer">
+      <router-link class="box" to="/real_estate/saler/customer">
         <p class="title">新客户</p>
         <img class="img" src="@/assets/img/Index-Card-Users.png" />
       </router-link>
