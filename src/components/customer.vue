@@ -1,15 +1,15 @@
 <template>
   <div>
     <customer-tabbar :title="title" />
-    <router-link class="customer-phone" to="/real_estates/saler/arrive_visitors">
+    <router-link class="customer-phone" to="/real_estate/saler/arrive_visitors">
       <img alt src="@/assets/img/Card-Visit.png" />
       <span>新建客户</span>
     </router-link>
-    <router-link class="customer-visit" to="/real_estates/saler/reserve">
+    <router-link class="customer-visit" to="/real_estate/saler/reserve">
       <img alt src="@/assets/img/Card-phone.png" />
       <span>预约客户</span>
     </router-link>
-    <router-link class="customer-visit" to="/real_estates/saler/reserve/reserved">
+    <router-link class="customer-visit" to="/real_estate/saler/reserve/reserved">
       <img alt src="@/assets/img/Card-Visit.png" />
       <span>预约客户查看</span>
     </router-link>

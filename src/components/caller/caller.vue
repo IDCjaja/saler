@@ -3,8 +3,8 @@
     <customer-tabbar :title="title" />
     <nav class="call_new_nav">
       <div class="call_new_nav_body">
-        <router-link class="call_new_nav_body_left" to="/real_estates/saler/caller/new">新建客户</router-link>
-        <router-link class="call_new_nav_body_right" to="/real_estates/saler/caller/view">查看客户</router-link>
+        <router-link class="call_new_nav_body_left" to="/real_estate/saler/caller/new">新建客户</router-link>
+        <router-link class="call_new_nav_body_right" to="/real_estate/saler/caller/view">查看客户</router-link>
       </div>
     </nav>
 

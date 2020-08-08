@@ -3,8 +3,8 @@
     <header class="today_header">今日详情</header>
     <nav class="today_nav">
       <div class="today_body">
-        <router-link class="today_body_left" to="/real_estates/saler/admin/today_details">今日详情</router-link>
-        <router-link class="today_body_right" to="/real_estates/saler/admin/custom_time">自定义时间</router-link>
+        <router-link class="today_body_left" to="/real_estate/saler/admin/today_details">今日详情</router-link>
+        <router-link class="today_body_right" to="/real_estate/saler/admin/custom_time">自定义时间</router-link>
       </div>
     </nav>
     <router-view></router-view>
