@@ -25,7 +25,7 @@
       </p>
       <p :key="item.id" class="ranking_list_content_body" v-for="item in list" v-show="showData">
         <span>{{ item.saler }}</span>
-        <span>{{ item.customer_count }}</span>
+        <span>{{ item.count_name }}</span>
         <span>{{ item.top }}</span>
       </p>
     </div>
@@ -49,9 +49,9 @@ export default {
       types: [
         { text: "新建客户", value: "新建客户" },
         { text: "来电客户", value: "来电客户" },
+        { text: "预约客户", value: "预约客户" },
         { text: "认购客户", value: "认购客户" },
         { text: "签约客户", value: "签约客户" },
-        { text: "预约客户", value: "预约客户" },
       ],
       list: [],
       showData: true,
@@ -62,7 +62,7 @@ export default {
   },
   mounted() {
     // 数据初始化
-    let sql = `select saler, count(customer_name) as customer_count from fdc_form_1_1 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by customer_count desc`;
+    let sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
     api.getSqlJsonAPI(sql).then((res) => {
       let list = res.data;
       this.list = total.rank(list);
@@ -98,15 +98,15 @@ export default {
       switch (this.source) {
         case "新建客户":
           this.showData = true;
-          sql = `select saler, count(customer_name) as customer_count from fdc_form_1_1 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by customer_count desc`;
+          sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
           break;
         case "来电客户":
           this.showData = true;
-          sql = `select saler, count(customer_name) as customer_count from fdc_form_1_1 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by customer_count desc`;
+          sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
           break;
         case "预约客户":
           this.showData = true;
-          sql = `select saler, count(name) as customer_count from fdc_form_1_15 where to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by customer_count desc`;
+          sql = `select saler, count(name) as count_name from fdc_form_1_15 where to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
           break;
         case "认购客户":
           this.showData = true;
@@ -133,26 +133,26 @@ export default {
         case "新建客户":
           this.showData = true;
           this.source = "到访客户";
-          sql = `select saler, count(customer_name) as customer_count from fdc_form_1_1 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by customer_count desc`;
+          sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
           break;
         case "来电客户":
           this.showData = true;
           this.source = "来电客户";
-          sql = `select saler, count(customer_name) as customer_count from fdc_form_1_1 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by customer_count desc`;
+          sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
           break;
         case "预约客户":
           this.showData = true;
           this.source = "预约客户";
-          sql = `select saler, count(name) as customer_count from fdc_form_1_15 where to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by customer_count desc`;
+          sql = `select saler, count(name) as count_name from fdc_form_1_15 where to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
           break;
-        case "认购客户":
-          this.showData = true;
-          this.source = "认购客户";
-          break;
-        case "签约客户":
-          this.showData = true;
-          this.source = "签约客户";
-          break;
+        // case "认购客户":
+        //   this.showData = true;
+        //   this.source = "认购客户";
+        //   break;
+        // case "签约客户":
+        //   this.showData = true;
+        //   this.source = "签约客户";
+        //   break;
 
         default:
           this.showData = false;

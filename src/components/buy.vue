@@ -1,7 +1,7 @@
 <template>
   <div>
     <buy-tabbar :title="title" />
-    <van-search @blur="search" placeholder="输入完整姓名/手机号" v-model="namePhone" />
+    <van-search @blur="search" placeholder="输入姓名/手机号" v-model="namePhone" />
     <van-dropdown-menu active-color="#00a862">
       <van-dropdown-item :options="search_time" v-model="created_at" />
       <van-dropdown-item :options="search_intention" v-model="intention" />
@@ -141,7 +141,7 @@ export default {
     },
     search() {
       if (this.namePhone) {
-        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND name  like '${this.namePhone}' OR phone like '${this.namePhone}' ORDER BY created_at DESC`;
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND (name  ~ '${this.namePhone}' or phone ~ '${this.namePhone}') ORDER BY created_at DESC`;
         api.getSqlJsonAPI(sql).then((res) => {
           this.isLoading = false;
           this.list = res.data;
