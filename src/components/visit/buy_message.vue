@@ -100,22 +100,6 @@
             <span>{{list.working_area}}</span>
           </div>
         </div>
-        <div class="buy_message_content_body">
-          <div class="buy_message_content_body_left">
-            <span>摇号批次</span>
-          </div>
-          <div class="buy_message_content_body_right">
-            <span>{{list.lottery}}</span>
-          </div>
-        </div>
-        <div class="buy_message_content_body">
-          <div class="buy_message_content_body_left">
-            <span>摇号结果</span>
-          </div>
-          <div class="buy_message_content_body_right">
-            <span>{{list.lottery_results}}</span>
-          </div>
-        </div>
 
         <div class="buy_message_content_body">
           <div class="buy_message_content_body_left">
