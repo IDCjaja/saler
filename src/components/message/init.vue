@@ -262,14 +262,13 @@ export default {
   mounted() {
     this.response_id = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
-    // 读取cookie
+    // 读取localStorage
     this.id = localStorage.getItem("user_id");
     this.phone = localStorage.getItem("user_phone");
     let sql = `select * from fdc_form_1_13 WHERE response_id ='${this.response_id}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       this.list = res.data[0];
       this.dataID = this.list.response_id;
-      this.isLoading = false;
     });
     // 渲染表项
     api
@@ -332,6 +331,7 @@ export default {
       .then(() => {
         // 渲染已填写值
         api.getResFormAPI(this.dataID).then((res) => {
+          this.isLoading = false;
           this.entries = res.data.entries;
           Object.keys(res.data.mapped_values).forEach((element) => {
             if (res.data.mapped_values[element]["text_value"]) {
