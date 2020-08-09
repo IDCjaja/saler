@@ -20,7 +20,7 @@ export default {
     return http.get("/magnate/oauth");
   },
   getUserAPI(token) {
-    return http.get(`/v1/user?access_token=` + token);
+    return http.get(`/api/v1/user?access_token=` + token);
   },
   // 翻版
   // 渲染表单

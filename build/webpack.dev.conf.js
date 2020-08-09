@@ -65,10 +65,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       "/api": {
         target: "http://shandenabian.skylarkly.com",
         changeOrigin: true
-      },
-      "/v1": {
-        target: "http://shandenabian.skylarkly.com/api",
-        changeOrigin: true
       }
     }
   },
