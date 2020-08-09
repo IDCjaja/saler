@@ -263,8 +263,8 @@ export default {
     this.response_id = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
     // 读取cookie
-    this.id = this.$cookies.get("CURRENT-USER-ID");
-    this.phone = this.$cookies.get("CURRENT-USER-PHONE");
+    this.id = localStorage.getItem("user_id");
+    this.phone = localStorage.getItem("user_phone");
     let sql = `select * from fdc_form_1_13 WHERE response_id ='${this.response_id}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       this.list = res.data[0];
@@ -489,7 +489,7 @@ export default {
         }
       });
 
-      payload.user_id = this.$cookies.get("CURRENT-USER-ID");
+      payload.user_id = localStorage.getItem("user_id");
       api.putFormsAmendAPI(this.fromID, this.dataID, payload).then((res) => {
         if (res.status === 200) {
           this.$toast("更新成功 ✨");

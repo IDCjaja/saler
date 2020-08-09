@@ -100,168 +100,241 @@
 </template>
 
 <script>
-import BuyMessageTabbar from '../pages/tabbar'
-import api from '@/api/api'
+import BuyMessageTabbar from "../pages/tabbar";
+import api from "@/api/api";
 export default {
-  data () {
+  data() {
     return {
-      title: '来电客户',
+      title: "来电客户",
       fields: [],
-      orderFieldList: ['customer_name', 'customer_phone', 'customer_gender', 'channel', 'focus', 'motivation', 'planed_visit_time', 'demand_floor', 'travel_mode', 'call_area', 'remark', 'intention_area', 'intention_product'],
+      orderFieldList: [
+        "customer_name",
+        "customer_phone",
+        "customer_gender",
+        "channel",
+        "focus",
+        "motivation",
+        "planed_visit_time",
+        "demand_floor",
+        "travel_mode",
+        "call_area",
+        "remark",
+        "intention_area",
+        "intention_product",
+      ],
       formData: [],
       showPicker: false,
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
-      response_id: '',
-      customer_phone: '',
-      phone: '',
-      id: '',
-      customer_name: 'xxx',
-      planed_visit_time: '0000/00/00',
-      newTime: '',
+      response_id: "",
+      customer_phone: "",
+      phone: "",
+      id: "",
+      customer_name: "xxx",
+      planed_visit_time: "0000/00/00",
+      newTime: "",
       entries: [],
-      isLoading: true
-    }
+      isLoading: true,
+    };
   },
 
   components: {
-    BuyMessageTabbar
+    BuyMessageTabbar,
   },
-  mounted () {
-    this.response_id = this.$route.query.response_id
-    this.customer_phone = this.$route.query.customer_phone
+  mounted() {
+    this.response_id = this.$route.query.response_id;
+    this.customer_phone = this.$route.query.customer_phone;
     // 读取cookie
-    this.id = this.$cookies.get('CURRENT-USER-ID')
-    this.phone = this.$cookies.get('CURRENT-USER-PHONE')
-    api.getSaleraCallersNewAPI().then(res => {
-      this.fields = res.data.fields
-      this.orderFieldList.forEach(element => {
-        let field = this.fields.find(field => field.identity_key === element)
-        if (field) {
-          switch (field.type) {
-            case 'Field::RadioButton': {
-              this.formData.push({ field_id: field.id, identity_key: field.identity_key, type: field.type, title: field.title, option_id: '', options: field.options })
-              break
-            }
-            case 'Field::DateTime': {
-              this.formData.push({ field_id: field.id, identity_key: field.identity_key, type: field.type, title: field.title, value: '' })
-              break
-            }
-            default: {
-              this.formData.push({ field_id: field.id, identity_key: field.identity_key, type: field.type, title: field.title, value: '' })
-            }
-          }
-        }
-      })
-    }).then(() => {
-      // 新增数据
-      api.getSalerCallersResponseIdAPI(this.response_id).then(res => {
-        // 头部信息
-        this.isLoading = false
-        if (res.data.mapped_values.customer_name) {
-          this.customer_name = res.data.mapped_values.customer_name.text_value[0]
-        }
-        if (res.data.mapped_values.planed_visit_time) {
-          this.planed_visit_time = res.data.mapped_values.planed_visit_time.text_value[0]
-        }
-        this.entries = res.data.entries
-
-        Object.keys(res.data.mapped_values).forEach(element => {
-          if (res.data.mapped_values[element]['text_value']) {
-            let field = this.formData.find(field => field.identity_key === element)
-            if (field) {
-              switch (field.type) {
-                case 'Field::RadioButton': {
-                  let optionValue = res.data.mapped_values[element]['text_value'][0]
-                  let options = this.fields.find(field => field.identity_key === element).options
-                  field.option_id = options.find(option => option.value === optionValue).id
-                  break
-                }
-                case 'Field::DateTime': {
-                  field.value = res.data.mapped_values[element]['text_value'][0]
-                  this.newTime = field.value
-                  break
-                }
-                default: {
-                  field.value = res.data.mapped_values[element]['text_value'][0]
-                }
+    this.id = localStorage.getItem("user_id");
+    this.phone = localStorage.getItem("user_phone");
+    api
+      .getSaleraCallersNewAPI()
+      .then((res) => {
+        this.fields = res.data.fields;
+        this.orderFieldList.forEach((element) => {
+          let field = this.fields.find(
+            (field) => field.identity_key === element
+          );
+          if (field) {
+            switch (field.type) {
+              case "Field::RadioButton": {
+                this.formData.push({
+                  field_id: field.id,
+                  identity_key: field.identity_key,
+                  type: field.type,
+                  title: field.title,
+                  option_id: "",
+                  options: field.options,
+                });
+                break;
+              }
+              case "Field::DateTime": {
+                this.formData.push({
+                  field_id: field.id,
+                  identity_key: field.identity_key,
+                  type: field.type,
+                  title: field.title,
+                  value: "",
+                });
+                break;
+              }
+              default: {
+                this.formData.push({
+                  field_id: field.id,
+                  identity_key: field.identity_key,
+                  type: field.type,
+                  title: field.title,
+                  value: "",
+                });
               }
             }
           }
-        })
+        });
       })
-    })
+      .then(() => {
+        // 新增数据
+        api.getSalerCallersResponseIdAPI(this.response_id).then((res) => {
+          // 头部信息
+          this.isLoading = false;
+          if (res.data.mapped_values.customer_name) {
+            this.customer_name =
+              res.data.mapped_values.customer_name.text_value[0];
+          }
+          if (res.data.mapped_values.planed_visit_time) {
+            this.planed_visit_time =
+              res.data.mapped_values.planed_visit_time.text_value[0];
+          }
+          this.entries = res.data.entries;
+
+          Object.keys(res.data.mapped_values).forEach((element) => {
+            if (res.data.mapped_values[element]["text_value"]) {
+              let field = this.formData.find(
+                (field) => field.identity_key === element
+              );
+              if (field) {
+                switch (field.type) {
+                  case "Field::RadioButton": {
+                    let optionValue =
+                      res.data.mapped_values[element]["text_value"][0];
+                    let options = this.fields.find(
+                      (field) => field.identity_key === element
+                    ).options;
+                    field.option_id = options.find(
+                      (option) => option.value === optionValue
+                    ).id;
+                    break;
+                  }
+                  case "Field::DateTime": {
+                    field.value =
+                      res.data.mapped_values[element]["text_value"][0];
+                    this.newTime = field.value;
+                    break;
+                  }
+                  default: {
+                    field.value =
+                      res.data.mapped_values[element]["text_value"][0];
+                  }
+                }
+              }
+            }
+          });
+        });
+      });
   },
   methods: {
-    onConfirm (currentDate) {
-      this.dataTime = this.formatDate(currentDate)
-      this.newTime = this.dataTime
-      this.showPicker = false
+    onConfirm(currentDate) {
+      this.dataTime = this.formatDate(currentDate);
+      this.newTime = this.dataTime;
+      this.showPicker = false;
     },
     formatDate: function (d) {
-      return d.getFullYear() + '-' + this.p((d.getMonth() + 1)) + '-' + this.p(d.getDate())
+      return (
+        d.getFullYear() +
+        "-" +
+        this.p(d.getMonth() + 1) +
+        "-" +
+        this.p(d.getDate())
+      );
     },
-    p (s) {
-      return s < 10 ? '0' + s : s
+    p(s) {
+      return s < 10 ? "0" + s : s;
     },
 
     // 发送数据
-    newTable () {
-      let payload = { response: { entries_attributes: [] } }
+    newTable() {
+      let payload = { response: { entries_attributes: [] } };
 
-      this.formData.forEach(field => {
-        let entry = this.entries.find(entry => entry.field_id === field.field_id)
+      this.formData.forEach((field) => {
+        let entry = this.entries.find(
+          (entry) => entry.field_id === field.field_id
+        );
 
         switch (field.type) {
-          case 'Field::RadioButton': {
+          case "Field::RadioButton": {
             if (field.option_id) {
               if (entry && entry.option_id !== field.option_id) {
-                payload.response.entries_attributes.push({ id: entry.id, option_id: field.option_id })
+                payload.response.entries_attributes.push({
+                  id: entry.id,
+                  option_id: field.option_id,
+                });
               } else if (entry) {
-
               } else {
-                payload.response.entries_attributes.push({ field_id: field.field_id, option_id: field.option_id })
+                payload.response.entries_attributes.push({
+                  field_id: field.field_id,
+                  option_id: field.option_id,
+                });
               }
             }
-            break
+            break;
           }
-          case 'Field::DateTime': {
+          case "Field::DateTime": {
             if (this.newTime) {
               if (entry && entry.value !== this.newTime) {
-                payload.response.entries_attributes.push({ id: entry.id, value: this.newTime })
+                payload.response.entries_attributes.push({
+                  id: entry.id,
+                  value: this.newTime,
+                });
               } else if (entry) {
-
               } else {
-                payload.response.entries_attributes.push({ field_id: field.field_id, value: this.newTime })
+                payload.response.entries_attributes.push({
+                  field_id: field.field_id,
+                  value: this.newTime,
+                });
               }
             }
-            break
+            break;
           }
           default: {
             if (field.value) {
               if (entry && entry.value !== field.value) {
-                payload.response.entries_attributes.push({ id: entry.id, value: field.value })
+                payload.response.entries_attributes.push({
+                  id: entry.id,
+                  value: field.value,
+                });
               } else if (entry) {
-
               } else {
-                payload.response.entries_attributes.push({ field_id: field.field_id, value: field.value })
+                payload.response.entries_attributes.push({
+                  field_id: field.field_id,
+                  value: field.value,
+                });
               }
             }
           }
         }
-      })
+      });
 
-      payload.user_id = this.$cookies.get('CURRENT-USER-ID')
-      api.putSalerCallersResponseIdAPI(this.response_id, payload).then(res => {
-        if (res.status === 200) {
-          this.$toast('更新成功✨')
-        }
-      })
-    }
-  }
-
-}
+      payload.user_id = localStorage.getItem("user_id");
+      api
+        .putSalerCallersResponseIdAPI(this.response_id, payload)
+        .then((res) => {
+          if (res.status === 200) {
+            this.$toast("更新成功✨");
+          }
+        });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -350,7 +423,7 @@ a {
 
 .message-main {
   width: 94%;
-  background: url('../../assets/img/info-bg.png');
+  background: url("../../assets/img/info-bg.png");
   margin: 0 auto;
   height: 112px;
   background-size: cover;

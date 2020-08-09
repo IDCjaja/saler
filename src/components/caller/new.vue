@@ -106,138 +106,195 @@
 </template>
 
 <script>
-import CustomerTabbar from '../pages/tabbar'
-import api from '@/api/api'
+import CustomerTabbar from "../pages/tabbar";
+import api from "@/api/api";
 
 export default {
-  data () {
+  data() {
     return {
-      title: '来电客户',
+      title: "来电客户",
       fields: [],
-      orderFieldList: ['customer_name', 'customer_phone', 'customer_gender', 'channel', 'focus', 'motivation', 'planed_visit_time', 'demand_floor', 'travel_mode', 'call_area', 'remark', 'intention_area', 'intention_product'],
+      orderFieldList: [
+        "customer_name",
+        "customer_phone",
+        "customer_gender",
+        "channel",
+        "focus",
+        "motivation",
+        "planed_visit_time",
+        "demand_floor",
+        "travel_mode",
+        "call_area",
+        "remark",
+        "intention_area",
+        "intention_product",
+      ],
       formData: [],
       showPicker: false,
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
-      newTime: '',
+      newTime: "",
       show: false,
-      created_at: '',
-      customer_name: '',
-      id: '',
-      phone: '',
+      created_at: "",
+      customer_name: "",
+      id: "",
+      phone: "",
       isLoading: true,
-      user_name: ''
-    }
+      user_name: "",
+    };
   },
   components: {
-    CustomerTabbar
+    CustomerTabbar,
   },
-  mounted () {
+  mounted() {
     // 读取cookie
-    this.id = this.$cookies.get('CURRENT-USER-ID')
-    this.phone = this.$cookies.get('CURRENT-USER-PHONE')
+    this.id = this.$cookies.get("CURRENT-USER-ID");
+    this.phone = this.$cookies.get("CURRENT-USER-PHONE");
     // 新增数据
-    api.getSaleraCallersNewAPI().then(res => {
-      this.fields = res.data.fields
-      this.isLoading = false
-      this.orderFieldList.forEach(element => {
-        let field = this.fields.find(field => field.identity_key === element)
+    api.getSaleraCallersNewAPI().then((res) => {
+      this.fields = res.data.fields;
+      this.isLoading = false;
+      this.orderFieldList.forEach((element) => {
+        let field = this.fields.find((field) => field.identity_key === element);
         if (field) {
           switch (field.type) {
-            case 'Field::RadioButton': {
-              this.formData.push({ field_id: field.id, identity_key: field.identity_key, type: field.type, title: field.title, option_id: '', options: field.options })
-              break
+            case "Field::RadioButton": {
+              this.formData.push({
+                field_id: field.id,
+                identity_key: field.identity_key,
+                type: field.type,
+                title: field.title,
+                option_id: "",
+                options: field.options,
+              });
+              break;
             }
-            case 'Field::DateTime': {
-              this.formData.push({ field_id: field.id, identity_key: field.identity_key, type: field.type, title: field.title, value: '' })
-              break
+            case "Field::DateTime": {
+              this.formData.push({
+                field_id: field.id,
+                identity_key: field.identity_key,
+                type: field.type,
+                title: field.title,
+                value: "",
+              });
+              break;
             }
             default: {
-              this.formData.push({ field_id: field.id, identity_key: field.identity_key, type: field.type, title: field.title, value: '' })
+              this.formData.push({
+                field_id: field.id,
+                identity_key: field.identity_key,
+                type: field.type,
+                title: field.title,
+                value: "",
+              });
             }
           }
         }
-      })
-    })
+      });
+    });
   },
   methods: {
     // 时间选择器
-    onConfirm (currentDate) {
-      this.dataTime = this.formatDate(currentDate)
+    onConfirm(currentDate) {
+      this.dataTime = this.formatDate(currentDate);
       // let dateField = this.formatDate.find(field => field['identity_key'] === 'planed_visit_time')
       // dateField['value'] = this.dataTime
-      this.newTime = this.dataTime
-      this.showPicker = false
+      this.newTime = this.dataTime;
+      this.showPicker = false;
     },
     formatDate: function (d) {
-      return d.getFullYear() + '-' + this.p((d.getMonth() + 1)) + '-' + this.p(d.getDate())
+      return (
+        d.getFullYear() +
+        "-" +
+        this.p(d.getMonth() + 1) +
+        "-" +
+        this.p(d.getDate())
+      );
     },
-    p (s) {
-      return s < 10 ? '0' + s : s
+    p(s) {
+      return s < 10 ? "0" + s : s;
     },
 
     // 发送数据
-    newTable () {
-      let payload = { response: { entries_attributes: [] } }
-      this.formData.forEach(element => {
+    newTable() {
+      let payload = { response: { entries_attributes: [] } };
+      this.formData.forEach((element) => {
         switch (element.type) {
-          case 'Field::RadioButton': {
-            if (element.option_id !== '' && element) {
-              payload.response.entries_attributes.push({ field_id: element.field_id, option_id: element.option_id })
+          case "Field::RadioButton": {
+            if (element.option_id !== "" && element) {
+              payload.response.entries_attributes.push({
+                field_id: element.field_id,
+                option_id: element.option_id,
+              });
             }
-            break
+            break;
           }
-          case 'Field::DateTime': {
-            if (element.option_id !== '' && element) {
+          case "Field::DateTime": {
+            if (element.option_id !== "" && element) {
               if (this.newTime) {
-                payload.response.entries_attributes.push({ field_id: element.field_id, value: this.newTime })
+                payload.response.entries_attributes.push({
+                  field_id: element.field_id,
+                  value: this.newTime,
+                });
               }
             }
-            break
+            break;
           }
           default: {
-            if (element.value !== '' && element) {
-              payload.response.entries_attributes.push({ field_id: element.field_id, value: element.value })
+            if (element.value !== "" && element) {
+              payload.response.entries_attributes.push({
+                field_id: element.field_id,
+                value: element.value,
+              });
             }
           }
         }
-      })
+      });
 
-      payload.user_id = this.$cookies.get('CURRENT-USER-ID')
-      let salerField = this.fields.find(element => element.identity_key === 'saler')
-      payload.response.entries_attributes.push({ value: this.$cookies.get('CURRENT-NAME'), field_id: salerField.id })
-      let salerPhoneField = this.fields.find(element => element.identity_key === 'saler_phone')
-      payload.response.entries_attributes.push({ value: this.$cookies.get('CURRENT-USER-PHONE'), field_id: salerPhoneField.id })
-      api.postSalerCallersAPI(payload).then(res => {
+      payload.user_id = this.$cookies.get("CURRENT-USER-ID");
+      let salerField = this.fields.find(
+        (element) => element.identity_key === "saler"
+      );
+      payload.response.entries_attributes.push({
+        value: this.$cookies.get("CURRENT-NAME"),
+        field_id: salerField.id,
+      });
+      let salerPhoneField = this.fields.find(
+        (element) => element.identity_key === "saler_phone"
+      );
+      payload.response.entries_attributes.push({
+        value: this.$cookies.get("CURRENT-USER-PHONE"),
+        field_id: salerPhoneField.id,
+      });
+      api.postSalerCallersAPI(payload).then((res) => {
         if (res.status === 201) {
-          this.$toast('新建成功✨')
-          this.$router.push({ name: 'call_view' })
+          this.$toast("新建成功✨");
+          this.$router.push({ name: "call_view" });
         } else {
-          this.$toast('数据不完整，新建失败>_<')
+          this.$toast("数据不完整，新建失败>_<");
         }
-      })
+      });
     },
 
     // 判定手机号
-    telBlur (field) {
+    telBlur(field) {
       if (field.value.length !== 11) {
-        this.$toast('手机号位数错误🙅')
-        field.value = ''
+        this.$toast("手机号位数错误🙅");
+        field.value = "";
       }
-      api.getPhoneRepeatAPI(field.value).then(res => {
+      api.getPhoneRepeatAPI(field.value).then((res) => {
         if (res.data.customer_phone) {
-          field.value = ''
-          this.created_at = res.data.created_at.slice(0, 10)
-          this.customer_name = res.data.customer_name
-          this.user_name = res.data.user_name
-          this.show = true
+          field.value = "";
+          this.created_at = res.data.created_at.slice(0, 10);
+          this.customer_name = res.data.customer_name;
+          this.user_name = res.data.user_name;
+          this.show = true;
         }
-      })
-    }
-  }
-
-}
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

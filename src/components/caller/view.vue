@@ -34,64 +34,64 @@
 </template>
 
 <script>
-import api from '@/api/api'
+import api from "@/api/api";
 export default {
-  data () {
+  data() {
     return {
-      id: '',
-      phone: '',
-      response_id: '',
+      id: "",
+      phone: "",
+      response_id: "",
       list: [],
       loading: false,
       finished: false,
       isLoading: true,
       loadNum: 1,
       immediate_check: false,
-      Loading: true
-    }
+      Loading: true,
+    };
   },
-  mounted () {
-    this.response_id = this.$route.query.response_id
-    this.customer_phone = this.$route.query.customer_phone
+  mounted() {
+    this.response_id = this.$route.query.response_id;
+    this.customer_phone = this.$route.query.customer_phone;
     // 读取cookie
 
     // 读取cookie
-    this.id = this.$cookies.get('CURRENT-USER-ID')
-    this.phone = this.$cookies.get('CURRENT-USER-PHONE')
+    this.id = localStorage.getItem("user_id");
+    this.phone = localStorage.getItem("user_phone");
     // 来电列表view
-    api.getSaleraCallersAPI().then(res => {
-      this.Loading = false
-      this.list = res.data
+    api.getSaleraCallersAPI().then((res) => {
+      this.Loading = false;
+      this.list = res.data;
       for (let i = 0; i < res.data.length; i++) {
-        let dataTime = res.data[i].planed_visit_time
+        let dataTime = res.data[i].planed_visit_time;
         if (dataTime) {
-          dataTime = dataTime.substr(0, 10)
+          dataTime = dataTime.substr(0, 10);
         }
-        this.list[i].dataTime = dataTime
+        this.list[i].dataTime = dataTime;
       }
-    })
+    });
   },
   methods: {
     // 分页加载
-    onLoad () {
-      this.loading = true
-      this.loadNum++
-      let params = { 'page': this.loadNum, 'per_page': '10' }
-      api.getSaleraCallersSearchAPI(params).then(res => {
-        this.loading = false
-        let oldList = this.list
-        let newList = res.data
-        this.list = [...oldList, ...newList]
+    onLoad() {
+      this.loading = true;
+      this.loadNum++;
+      let params = { page: this.loadNum, per_page: "10" };
+      api.getSaleraCallersSearchAPI(params).then((res) => {
+        this.loading = false;
+        let oldList = this.list;
+        let newList = res.data;
+        this.list = [...oldList, ...newList];
         // 加载状态结束
         // 数据全部加载完成
         if (!res.data.length) {
-          this.loading = false
-          this.finished = true
+          this.loading = false;
+          this.finished = true;
         }
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

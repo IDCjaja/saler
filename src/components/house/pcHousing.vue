@@ -370,7 +370,7 @@ export default {
         response: {
           entries_attributes: [{ field_id: 388, value: "认购" }],
         },
-        user_id: this.$cookies.get("CURRENT-USER-ID"),
+        user_id: localStorage.getItem("user_id"),
       };
       api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {});
     },
