@@ -8,7 +8,7 @@
       </header>
       <aside class="table_aside">
         <div :key="field.identity_key" v-for="field in formData">
-          <div v-if="field.type === 'Field::CheckBox'">
+          <!-- <div v-if="field.type === 'Field::CheckBox'">
             <van-field name="checkboxGroup" :label="field.title">
               <template #input>
                 <van-checkbox-group v-model="field.option_id">
@@ -29,7 +29,7 @@
                 </van-checkbox-group>
               </template>
             </van-field>
-          </div>
+          </div>-->
           <!-- text -->
           <div class="input_text" v-if="field.type === 'Field::TextArea'">
             <van-field
@@ -43,7 +43,7 @@
             />
           </div>
           <div class="input_text" v-if="field.type === 'Field::TextField'">
-            <p v-if="field.identity_key == 'customer_name'">
+            <p v-if="field.identity_key == 'name'">
               <van-field
                 :id="field.identity_key"
                 :label="field.title"
@@ -53,7 +53,7 @@
                 v-model="field.value"
               />
             </p>
-            <p v-else-if="field.identity_key == 'customer_phone'">
+            <p v-else-if="field.identity_key == 'phone'">
               <van-field
                 :id="field.identity_key"
                 :label="field.title"
@@ -432,27 +432,27 @@ export default {
             }
             break;
           }
-          case "Field::CheckBox": {
-            if (field.option_id) {
-              console.log(field.option_id);
-              if (field.option_id) {
-                for (let i = 0; i < field.option_id.length; i++) {
-                  payload.response.entries_attributes.push({
-                    id: entry.id,
-                    option_id: field.option_id[i],
-                  });
-                }
-              } else {
-                for (let i = 0; i < field.option_id.length; i++) {
-                  payload.response.entries_attributes.push({
-                    field_id: field.field_id,
-                    option_id: field.option_id[i],
-                  });
-                }
-              }
-            }
-            break;
-          }
+          // case "Field::CheckBox": {
+          //   if (field.option_id) {
+          //     console.log(field.option_id);
+          //     if (!field.option_id) {
+          //       for (let i = 0; i < field.option_id.length; i++) {
+          //         payload.response.entries_attributes.push({
+          //           id: entry.id,
+          //           option_id: field.option_id[i],
+          //         });
+          //       }
+          //     } else {
+          //       for (let i = 0; i < field.option_id.length; i++) {
+          //         payload.response.entries_attributes.push({
+          //           field_id: field.field_id,
+          //           option_id: field.option_id[i],
+          //         });
+          //       }
+          //     }
+          //   }
+          //   break;
+          // }
           case "Field::DateTime": {
             if (this.newTime) {
               if (entry && entry.value !== this.newTime) {

@@ -87,33 +87,32 @@ export default {
       return `${date.getFullYear()}-${month}-${day}`;
     },
     onConfirm(date) {
-      let sql;
-
       const [start, end] = date;
       this.show = false;
       this.date = `${this.formatDate(start)} - ${this.formatDate(end)}`;
       this.startDate = this.formatDate(start);
       this.endDate = this.formatDate(end);
       // 时间change
+      let sql;
       switch (this.source) {
-        case "新建客户":
-          this.showData = true;
+        case "到访客户":
           sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
+          this.showData = true;
           break;
         case "来电客户":
-          this.showData = true;
           sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
+          this.showData = true;
           break;
         case "预约客户":
-          this.showData = true;
           sql = `select saler, count(name) as count_name from fdc_form_1_15 where to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
-          break;
-        case "认购客户":
           this.showData = true;
           break;
-        case "签约客户":
-          this.showData = true;
-          break;
+        // case "认购客户":
+        //   this.showData = true;
+        //   break;
+        // case "签约客户":
+        //   this.showData = true;
+        //   break;
 
         default:
           this.showData = false;
@@ -128,7 +127,6 @@ export default {
     },
     change() {
       let sql;
-
       switch (this.type) {
         case "新建客户":
           this.showData = true;
