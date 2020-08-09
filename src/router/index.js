@@ -11,13 +11,11 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   let name = to.name;
-
-  let phone = localStorage.getItem("user_phone");
-  let path = sessionStorage.getItem("return");
-
+  let tags = localStorage.getItem("user_tags");
+  let path = sessionStorage.getItem("callback");
   if (!path) {
-    if (!phone) {
-      sessionStorage.setItem("return", name);
+    if (!tags) {
+      sessionStorage.setItem("callback", name);
       router.push({ name: "login" });
     }
   }

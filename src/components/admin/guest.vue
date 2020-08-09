@@ -147,6 +147,8 @@
 </template>
 
 <script>
+/* eslint-disable */
+
 import api from "@/api/api";
 import total from "@/api/total";
 
