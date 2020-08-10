@@ -260,12 +260,12 @@ export default {
     CustomerTabbar,
   },
   mounted() {
-    this.response_id = this.$route.query.response_id;
+    let responseId = this.$route.query.response_id;
     this.customer_phone = this.$route.query.customer_phone;
     // 读取localStorage
     this.id = localStorage.getItem("user_id");
     this.phone = localStorage.getItem("user_phone");
-    let sql = `select * from fdc_form_1_13 WHERE response_id ='${this.response_id}'`;
+    let sql = `select * from fdc_form_1_13 WHERE response_id ='${responseId}'`;
     api.getSqlJsonAPI(sql).then((res) => {
       this.list = res.data[0];
       this.dataID = this.list.response_id;
@@ -351,15 +351,15 @@ export default {
                     ).id;
                     break;
                   }
-                  case "Field::CheckBox": {
-                    field.option_id = [];
-                    res.data.mapped_values[element]["value"].forEach(
-                      (element) => {
-                        field.option_id.push(element.id);
-                      }
-                    );
-                    break;
-                  }
+                  // case "Field::CheckBox": {
+                  //   field.option_id = [];
+                  //   res.data.mapped_values[element]["value"].forEach(
+                  //     (element) => {
+                  //       field.option_id.push(element.id);
+                  //     }
+                  //   );
+                  //   break;
+                  // }
                   case "Field::DateTime": {
                     field.value =
                       res.data.mapped_values[element]["text_value"][0];
@@ -494,7 +494,7 @@ export default {
         if (res.status === 200) {
           this.$toast("更新成功 ✨");
         } else {
-          this.$toast("更新失败 >_<");
+          this.$toast("网络波动，刷新再试一次～");
         }
       });
     },
