@@ -16,7 +16,7 @@ export default {
   },
   mounted() {
     this.code = this.$route.query.code;
-    this.path = sessionStorage.getItem("return");
+    this.path = sessionStorage.getItem("callback");
 
     this.$axios({
       method: "get",
@@ -33,9 +33,9 @@ export default {
             "2e47adc25c9584deabd3866923ad5784236149a5a087442e8b3320ba6eaa35d2",
           code: this.code,
           grant_type: "authorization_code",
-          // redirect_uri: "http://localhost:8080/real_estate/saler/code",
-          redirect_uri:
-            "http://shandenabian.skylarkly.com/real_estate/saler/code",
+          redirect_uri: "http://localhost:8080/real_estate/saler/code",
+          // redirect_uri:
+          //   "http://shandenabian.skylarkly.com/real_estate/saler/code",
         },
       }).then((res) => {
         let token = res.data.access_token;
@@ -53,8 +53,12 @@ export default {
           tag.forEach((element) => {
             tags.push(element.name);
           });
-          this.$cookies.set("CURRENT-USER-TAGS", tags);
-          this.$router.push({ name: this.path });
+          if (this.path) {
+            localStorage.setItem("user_tags", tags);
+            this.$router.push({ name: this.path });
+          } else {
+            this.$router.push({ name: "home" });
+          }
         });
       });
     });
