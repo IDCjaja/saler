@@ -38,7 +38,7 @@ import total from "@/api/total";
 export default {
   data() {
     return {
-      type: "新建客户",
+      type: "到访客户",
       source: "到访客户",
       date: "2020/5/15 - 2021/5/15",
       show: false,
@@ -47,7 +47,7 @@ export default {
       minDate: new Date(2010, 0, 1),
       maxDate: new Date(2100, 0, 31),
       types: [
-        { text: "新建客户", value: "新建客户" },
+        { text: "到访客户", value: "到访客户" },
         { text: "来电客户", value: "来电客户" },
         { text: "预约客户", value: "预约客户" },
         { text: "认购客户", value: "认购客户" },
@@ -128,7 +128,7 @@ export default {
     change() {
       let sql;
       switch (this.type) {
-        case "新建客户":
+        case "到访客户":
           this.showData = true;
           this.source = "到访客户";
           sql = `select saler, count(name) as count_name from fdc_form_1_13 where source ='${this.source}' and to_char(created_at,'YYYY-MM-DD')>='${this.startDate}' and to_char(created_at,'YYYY-MM-DD')<='${this.endDate}' group by saler order by count_name desc`;
