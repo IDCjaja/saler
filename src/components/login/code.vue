@@ -33,17 +33,14 @@ export default {
             "2e47adc25c9584deabd3866923ad5784236149a5a087442e8b3320ba6eaa35d2",
           code: this.code,
           grant_type: "authorization_code",
-          redirect_uri: "http://localhost:8080/real_estate/saler/code",
-          // redirect_uri:
-          //   "http://shandenabian.skylarkly.com/real_estate/saler/code",
+          // redirect_uri: "http://localhost:8080/real_estate/saler/code",
+          redirect_uri:
+            "http://shandenabian.skylarkly.com/real_estate/saler/code",
         },
       }).then((res) => {
         let token = res.data.access_token;
         api.getUserAPI(token).then((res) => {
           this.show = true;
-          this.$cookies.set("CURRENT-USER-ID", res.data.id);
-          this.$cookies.set("CURRENT-USER-PHONE", res.data.phone);
-          this.$cookies.set("CURRENT-NAME", res.data.name);
           localStorage.setItem("user_id", res.data.id);
           localStorage.setItem("user_phone", res.data.phone);
           localStorage.setItem("user_name", res.data.name);
