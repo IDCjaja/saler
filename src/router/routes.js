@@ -1,5 +1,10 @@
 export default [
   {
+    path: "/real_estate/saler/detail",
+    name: "detail",
+    component: () => import(/* webpackChunkName:'detail' */ "@/components/detail/detail")
+  },
+  {
     path: "/real_estate/saler/home",
     name: "home",
     component: () => import(/* webpackChunkName:'home' */ "@/components/home")

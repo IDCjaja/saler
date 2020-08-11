@@ -6,6 +6,10 @@ import router from "./router";
 import "./assets/css/reset.css";
 import "./assets/svg/styles.css";
 import "./assets/svg/style.css";
+import axios from "axios";
+import VueCookies from "vue-cookies";
+import 'view-design/dist/styles/iview.css';
+import { Table } from 'view-design';
 import {
   Tab,
   Tabs,
@@ -32,11 +36,9 @@ import {
   Loading,
   Switch
 } from "vant";
-import axios from "axios";
-import VueCookies from "vue-cookies";
 
 Vue.prototype.$axios = axios;
-
+Vue.component('Table', Table);
 Vue.use(VueCookies);
 Vue.use(DropdownMenu);
 Vue.use(Toast);

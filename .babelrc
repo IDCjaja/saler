@@ -26,6 +26,10 @@
         "libraryDirectory": "es",
         "style": true
       }
-    ]
+    ],
+    ["import", {
+      "libraryName": "view-design",
+      "libraryDirectory": "src/components"
+    }]
   ]
 }
