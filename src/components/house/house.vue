@@ -22,6 +22,7 @@
           v-model="phone"
           show-action
           label="客户信息"
+          maxlength="11"
           placeholder="请输入完整手机号"
           @search="onSearch"
           v-show="!this.buyData"
@@ -52,11 +53,48 @@
           <!-- 新建客户组件 -->
           <div class="content" v-else>
             <p>未找到客户</p>
-            <van-field label="客户姓名：" autocomplete="off" placeholder="请输入" type="text" />
-            <van-field label="客户电话：" autocomplete="off" placeholder="请输入" type="text" />
-            <van-field label="置业顾问：" autocomplete="off" placeholder="请输入" type="text" />
+            <div class="popup_table_item" :key="field.identity_key" v-for="field in userFormData">
+              <div class="input_text" v-if="field.identity_key === 'name'">
+                <van-field
+                  :label="field.title"
+                  autocomplete="off"
+                  placeholder="请输入"
+                  v-model="field.value"
+                  type="text"
+                />
+              </div>
+              <div class="input_text" v-else-if="field.identity_key === 'phone'">
+                <van-field
+                  :label="field.title"
+                  autocomplete="off"
+                  placeholder="请输入"
+                  v-model="phone"
+                  type="number"
+                  maxlength="11"
+                />
+              </div>
+              <div class="input_text" v-else-if="field.identity_key === 'saler'">
+                <van-field :label="field.title">
+                  <template #input>
+                    <select
+                      :id="field.identity_key"
+                      class="table_aside_select"
+                      v-model="field.value"
+                    >
+                      <option
+                        :key="option.id"
+                        :value="option.name"
+                        class="table_aside_option"
+                        v-for="option in field.options"
+                      >{{ option.name }}</option>
+                    </select>
+                  </template>
+                </van-field>
+              </div>
+            </div>
+
             <footer class="message_footer">
-              <div @click="newTable(formData)">新建客户</div>
+              <div @click="newUsers(userFormData)">新建客户</div>
             </footer>
           </div>
         </div>
@@ -114,9 +152,13 @@
           </p>
         </div>
 
-        <footer class="table_footer">
-          <div v-if="this.buyData">去认领</div>
-          <div @click="newTable(formData)" v-else>确认认购</div>
+        <footer>
+          <div class="table_status" v-if="this.buyData">
+            <span>签约</span>
+            <span>退房</span>
+            <span>换房</span>
+          </div>
+          <div class="table_footer" @click="newTable(formData)" v-else>确认认购</div>
         </footer>
       </div>
     </van-popup>
@@ -169,7 +211,12 @@ export default {
         "mortgage_money",
         "signing_time",
       ],
+      userFieldList: ["saler", "saler_phone", "name", "phone"],
       formID: 17,
+      userFormID: 13,
+      adminFormID: 14,
+      userFields: "",
+      userFormData: "",
       dataID: "",
     };
   },
@@ -182,6 +229,23 @@ export default {
       this.fields = res.data.fields;
       // 表单数据处理
       this.formData = total.tableListData(this.fields, this.orderFieldList);
+    });
+    api.getFormAPI(this.userFormID).then((res) => {
+      this.userFields = res.data.fields;
+      // 表单数据处理
+      this.userFormData = total.tableListData(
+        this.userFields,
+        this.userFieldList
+      );
+      // 置业顾问单选
+      let sql = `select * from fdc_form_1_14`;
+      api.getSqlJsonAPI(sql).then((res) => {
+        this.userFormData.forEach((el) => {
+          if (el.identity_key === "saler") {
+            el.options = res.data;
+          }
+        });
+      });
     });
   },
   methods: {
@@ -201,6 +265,7 @@ export default {
             break;
         }
       });
+      this.userShow = false;
     },
     owner() {
       this.formData.forEach((res) => {
@@ -215,6 +280,7 @@ export default {
             break;
         }
       });
+      this.userShow = false;
     },
     onSearch() {
       let sql = `select * from fdc_form_1_13 WHERE phone ='${this.phone}'`;
@@ -237,10 +303,8 @@ export default {
     // 选择房源
     signing(el) {
       this.roomData = el;
-      console.log(el);
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${el.room_number}' ORDER BY room_number ASC;`;
       api.getSqlJsonAPI(sql).then((res) => {
-        console.log(res.data[0]);
         this.buyData = res.data[0];
         // 签约状态自动填入
         this.formData.forEach((res) => {
@@ -347,6 +411,55 @@ export default {
       return date < 10 ? "0" + date : date;
     },
     // 构建传输值的json格式
+    newUsers(data) {
+      let payload = { response: { entries_attributes: [] } };
+      data.forEach((element) => {
+        // 置业顾问手机号赋值
+        if (element.identity_key === "saler") {
+          element.options.forEach((el) => {
+            if (element.value === el.name) {
+              this.newPhone = el.phone;
+            }
+          });
+        }
+        switch (element.identity_key) {
+          case "saler_phone": {
+            payload.response.entries_attributes.push({
+              field_id: element.field_id,
+              value: this.newPhone,
+            });
+            break;
+          }
+          case "phone": {
+            payload.response.entries_attributes.push({
+              field_id: element.field_id,
+              value: this.phone,
+            });
+            break;
+          }
+          default: {
+            if (element.value !== "") {
+              payload.response.entries_attributes.push({
+                field_id: element.field_id,
+                value: element.value,
+              });
+            }
+          }
+        }
+      });
+      // 自动填充值
+      payload.user_id = localStorage.getItem("user_id");
+
+      api.postFormAPI(this.userFormID, payload).then((res) => {
+        if (res.status === 201) {
+          this.$toast("新建成功 ✨");
+          this.userDataShow = true;
+          this.onSearch();
+        } else {
+          this.$toast("新建失败 >_<");
+        }
+      });
+    },
     newTable(formData) {
       let payload = { response: { entries_attributes: [] } };
       formData.forEach((element) => {
@@ -384,6 +497,7 @@ export default {
         }
       });
 
+      // 修改房源状态
       let data = {
         response: {
           entries_attributes: [{ field_id: 388, value: "认购" }],
@@ -548,6 +662,25 @@ export default {
   color: #fff;
 }
 
+.table_status {
+  margin: 30px 0px 10px;
+  display: flex;
+  justify-content: space-evenly;
+
+  span {
+    width: 10vw;
+    border-radius: 4px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    font-size: 15px;
+    font-weight: 600;
+    background: #00a862;
+    color: #fff;
+    cursor: pointer;
+  }
+}
+
 .message_footer {
   width: 40%;
   height: 37px;
@@ -558,5 +691,11 @@ export default {
   margin: 30px auto 0px;
   background: #00a862;
   color: #fff;
+}
+
+.table_aside_select {
+  width: 67%;
+  text-align: center;
+  height: 30px;
 }
 </style>

@@ -29,17 +29,6 @@
     </div>
     <van-popup v-model="show" closeable round :style="{ height: '80%',width:'60%' }">
       <header class="popup">
-        <van-search
-          v-model="saler"
-          show-action
-          label="客户信息"
-          placeholder="请输入完整手机号"
-          @search="onSearch"
-        >
-          <template #action>
-            <div @click="onSearch">搜索</div>
-          </template>
-        </van-search>
         <div class="content" v-show="this.userDataShow">
           <div class="content_href">
             <div class="information-left">
@@ -69,7 +58,8 @@
               :id="field.identity_key"
               :label="field.title"
               autocomplete="off"
-              placeholder="请输入"
+              readonly
+              placeholder="未填写"
               type="text"
               v-model="field.value"
             />
@@ -79,7 +69,8 @@
               :id="field.identity_key"
               :label="field.title"
               autocomplete="off"
-              placeholder="请输入"
+              placeholder="未填写"
+              readonly
               type="textarea"
               autosize
               v-model="field.value"
@@ -94,9 +85,9 @@
               @click="showPicker = true"
               autocomplete="off"
               clickable
-              name="datetimePicker"
-              placeholder="点击选择时间"
               readonly
+              name="datetimePicker"
+              placeholder="未填写"
             />
             <van-popup position="bottom" round v-model="showPicker">
               <van-datetime-picker
@@ -111,11 +102,6 @@
             </van-popup>
           </p>
         </div>
-
-        <footer class="table_footer">
-          <div v-if="this.buyData.buyer_name">去认领</div>
-          <div @click="newTable(formData)" v-else>确认认购</div>
-        </footer>
       </div>
     </van-popup>
   </div>
@@ -129,7 +115,7 @@ import total from "@/api/total";
 export default {
   data() {
     return {
-      title: "房源展示",
+      title: "房源详情展示",
       newTime: "",
       building: "",
       showList: true,
@@ -188,28 +174,6 @@ export default {
     });
   },
   methods: {
-    onSearch() {
-      let sql = `select * from fdc_form_1_13 WHERE phone ='${this.saler}'`;
-      api.getSqlJsonAPI(sql).then((res) => {
-        this.userData = res.data[0];
-        this.userDataShow = true;
-        this.formData.forEach((res) => {
-          switch (res.identity_key) {
-            case "buyer_name":
-              res.value = this.userData.name;
-              break;
-            case "buyer_phone":
-              res.value = this.userData.phone;
-              break;
-            case "saler":
-              res.value = this.userData.saler;
-              break;
-            default:
-              break;
-          }
-        });
-      });
-    },
     search(building) {
       this.showList = false;
       let sql = `select * from fdc_form_1_16 WHERE room_building ='${building}' ORDER BY room_number ASC;`;
@@ -328,52 +292,6 @@ export default {
     setDate(date) {
       return date < 10 ? "0" + date : date;
     },
-    // 构建传输值的json格式
-    newTable(formData) {
-      let payload = { response: { entries_attributes: [] } };
-      formData.forEach((element) => {
-        switch (element.type) {
-          case "Field::DateTime": {
-            if (element.option_id !== "") {
-              if (this.newTime) {
-                payload.response.entries_attributes.push({
-                  field_id: element.field_id,
-                  value: this.newTime,
-                });
-              }
-            }
-            break;
-          }
-          default: {
-            if (element.value !== "") {
-              payload.response.entries_attributes.push({
-                field_id: element.field_id,
-                value: element.value,
-              });
-            }
-          }
-        }
-      });
-      // 自动填充值
-      payload.user_id = localStorage.getItem("user_id");
-
-      api.postFormAPI(this.formID, payload).then((res) => {
-        if (res.status === 201) {
-          this.$toast("认购成功 ✨");
-          this.show = false;
-        } else {
-          this.$toast("认购失败 >_<");
-        }
-      });
-
-      let data = {
-        response: {
-          entries_attributes: [{ field_id: 388, value: "认购" }],
-        },
-        user_id: localStorage.getItem("user_id"),
-      };
-      api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {});
-    },
   },
 };
 </script>
@@ -381,7 +299,7 @@ export default {
 <style lang="scss" scoped>
 .housing {
   width: 80%;
-  margin: 0 auto;
+  margin: 0px auto;
 }
 .house_header {
   padding: 20px;
@@ -464,7 +382,7 @@ export default {
   }
 }
 .popup_table {
-  margin: 20px auto 0px;
+  margin: 20px auto 20px;
 }
 
 .popup_table_item {
