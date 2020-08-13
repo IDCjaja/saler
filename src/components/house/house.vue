@@ -218,6 +218,7 @@ export default {
       userFields: "",
       userFormData: "",
       dataID: "",
+      statusID: "",
     };
   },
   components: {
@@ -497,14 +498,23 @@ export default {
         }
       });
 
-      // 修改房源状态
-      let data = {
-        response: {
-          entries_attributes: [{ field_id: 388, value: "认购" }],
-        },
-        user_id: localStorage.getItem("user_id"),
-      };
-      api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {});
+      // 修改房源状态为认购
+      api.getResFormAPI(this.dataID).then((res) => {
+        res.data.entries.forEach((el) => {
+          if (el.field_id === 465) {
+            this.statusID = el.id;
+          }
+        });
+        let data = {
+          response: {
+            entries_attributes: [
+              { id: this.statusID, option_id: 787, field_id: 465 },
+            ],
+          },
+          user_id: localStorage.getItem("user_id"),
+        };
+        api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {});
+      });
     },
   },
 };
