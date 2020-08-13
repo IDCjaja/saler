@@ -26,6 +26,8 @@
           placeholder="请输入完整手机号"
           @search="onSearch"
           v-show="!this.buyData"
+          @clear="onClear"
+          clearable
         >
           <template #action>
             <div @click="onSearch">搜索</div>
@@ -250,6 +252,10 @@ export default {
     });
   },
   methods: {
+    // 清除搜索记录
+    onClear() {
+      this.phone = "";
+    },
     buyer() {
       this.formData.forEach((res) => {
         switch (res.identity_key) {
