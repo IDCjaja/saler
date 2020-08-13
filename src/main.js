@@ -9,7 +9,7 @@ import "./assets/svg/style.css";
 import axios from "axios";
 import VueCookies from "vue-cookies";
 import 'view-design/dist/styles/iview.css';
-import { Table } from 'view-design';
+import {Table, Page} from 'view-design';
 import {
   Tab,
   Tabs,
@@ -39,6 +39,7 @@ import {
 
 Vue.prototype.$axios = axios;
 Vue.component('Table', Table);
+Vue.component('Page', Page);
 Vue.use(VueCookies);
 Vue.use(DropdownMenu);
 Vue.use(Toast);
