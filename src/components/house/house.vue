@@ -26,6 +26,8 @@
           placeholder="请输入完整手机号"
           @search="onSearch"
           v-show="!this.buyData"
+          @clear="onClear"
+          clearable
         >
           <template #action>
             <div @click="onSearch">搜索</div>
@@ -157,6 +159,7 @@
             <span>签约</span>
             <span>退房</span>
             <span>换房</span>
+            <span>更名</span>
           </div>
           <div class="table_footer" @click="newTable(formData)" v-else>确认认购</div>
         </footer>
@@ -218,6 +221,7 @@ export default {
       userFields: "",
       userFormData: "",
       dataID: "",
+      statusID: "",
     };
   },
   components: {
@@ -249,6 +253,10 @@ export default {
     });
   },
   methods: {
+    // 清除搜索记录
+    onClear() {
+      this.phone = "";
+    },
     buyer() {
       this.formData.forEach((res) => {
         switch (res.identity_key) {
@@ -497,14 +505,23 @@ export default {
         }
       });
 
-      // 修改房源状态
-      let data = {
-        response: {
-          entries_attributes: [{ field_id: 388, value: "认购" }],
-        },
-        user_id: localStorage.getItem("user_id"),
-      };
-      api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {});
+      // 修改房源状态为认购
+      api.getResFormAPI(this.dataID).then((res) => {
+        res.data.entries.forEach((el) => {
+          if (el.field_id === 465) {
+            this.statusID = el.id;
+          }
+        });
+        let data = {
+          response: {
+            entries_attributes: [
+              { id: this.statusID, option_id: 787, field_id: 465 },
+            ],
+          },
+          user_id: localStorage.getItem("user_id"),
+        };
+        api.putFormsAmendAPI(this.formID, this.dataID, data).then((res) => {});
+      });
     },
   },
 };

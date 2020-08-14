@@ -9,6 +9,7 @@ import "./assets/svg/style.css";
 import axios from "axios";
 import VueCookies from "vue-cookies";
 import 'view-design/dist/styles/iview.css';
+import '@vant/touch-emulator';
 import {Table, Page} from 'view-design';
 import {
   Tab,

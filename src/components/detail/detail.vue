@@ -1,5 +1,6 @@
 <template>
   <div class="detail_content">
+    <van-icon name="chat-o" />
     <Table border stripe height="900" :columns="columns" :data="data" :loading="loading"></Table>
     <Page
       :total="page.total"
@@ -40,12 +41,6 @@ export default {
               return row.age < 25;
             }
           },
-        },
-        {
-          title: "置业顾问电话",
-          key: "saler_phone",
-          width: "130",
-          resizable: true,
         },
         {
           title: "客户姓名",
@@ -231,6 +226,10 @@ export default {
   }
 
   .ivu-table-row {
+    height: 48px;
+  }
+  .detail_content .ivu-table td,
+  .detail_content .ivu-table th {
     height: 48px;
   }
 
