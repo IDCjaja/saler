@@ -159,6 +159,7 @@
             <span>签约</span>
             <span>退房</span>
             <span>换房</span>
+            <span>更名</span>
           </div>
           <div class="table_footer" @click="newTable(formData)" v-else>确认认购</div>
         </footer>
