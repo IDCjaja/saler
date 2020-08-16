@@ -19,44 +19,33 @@ export default {
     this.path = sessionStorage.getItem("callback");
 
     this.$axios({
-      method: "get",
-      url: "/magnate/oauth",
+      method: "POST",
+      url: "/oauth/token",
+      headers: { "Content-Type": "application/json" },
+      params: {
+        client_id:
+          "7b5453ca4e172f6a31bf290376a0c483651d4775a8af1bd840bc9b83aad7af09",
+        client_secret:
+          "2e47adc25c9584deabd3866923ad5784236149a5a087442e8b3320ba6eaa35d2",
+        code: this.code,
+        grant_type: "authorization_code",
+        // redirect_uri: "http://localhost:8080/real_estate/saler/code",
+        redirect_uri:
+          "http://shandenabian.skylarkly.com/real_estate/saler/code",
+      },
     }).then((res) => {
-      this.$axios({
-        method: "POST",
-        url: "/oauth/token",
-        headers: { "Content-Type": "application/json" },
-        params: {
-          client_id:
-            "7b5453ca4e172f6a31bf290376a0c483651d4775a8af1bd840bc9b83aad7af09",
-          client_secret:
-            "2e47adc25c9584deabd3866923ad5784236149a5a087442e8b3320ba6eaa35d2",
-          code: this.code,
-          grant_type: "authorization_code",
-          // redirect_uri: "http://localhost:8080/real_estate/saler/code",
-          redirect_uri:
-            "http://shandenabian.skylarkly.com/real_estate/saler/code",
-        },
-      }).then((res) => {
-        let token = res.data.access_token;
-        api.getUserAPI(token).then((res) => {
-          this.show = true;
-          localStorage.setItem("user_id", res.data.id);
-          localStorage.setItem("user_phone", res.data.phone);
-          localStorage.setItem("user_name", res.data.name);
+      let token = res.data.access_token;
+      api.getUserAPI(token).then((res) => {
+        this.show = true;
+        localStorage.setItem("user_id", res.data.id);
+        localStorage.setItem("user_phone", res.data.phone);
+        localStorage.setItem("user_name", res.data.name);
 
-          let tag = res.data.tags;
-          let tags = [];
-          tag.forEach((element) => {
-            tags.push(element.name);
-          });
-          if (this.path) {
-            localStorage.setItem("user_tags", tags);
-            this.$router.push({ name: this.path });
-          } else {
-            this.$router.push({ name: "home" });
-          }
-        });
+        if (this.path) {
+          this.$router.push({ name: this.path });
+        } else {
+          this.$router.push({ name: "home" });
+        }
       });
     });
   },
