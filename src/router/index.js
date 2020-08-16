@@ -11,7 +11,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   let name = to.name;
-  let tags = localStorage.getItem("user_tags");
+  let tags = localStorage.getItem("user_phone");
   let path = sessionStorage.getItem("callback");
   if (!path) {
     if (!tags) {
