@@ -173,7 +173,6 @@ export default {
   .main_item_van {
     display: flex;
     justify-content: space-between;
-    padding: 0px 4px;
   }
 
   .main_item_status {
