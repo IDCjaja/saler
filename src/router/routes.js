@@ -4,11 +4,11 @@ export default [
     name: "detail",
     component: () => import(/* webpackChunkName:'detail' */ "@/components/detail/detail")
   },
-  {
-    path: "/real_estate/saler/home",
-    name: "home",
-    component: () => import(/* webpackChunkName:'home' */ "@/components/home")
-  },
+  // {
+  //   path: "/real_estate/saler/home",
+  //   name: "home",
+  //   component: () => import(/* webpackChunkName:'home' */ "@/components/home")
+  // },
   {
     path: "/real_estate/saler/login",
     name: "login",
@@ -185,6 +185,6 @@ export default [
   {
     path: "*",
     name: "404",
-    component: () => import("@/components/home")
+    component: () => import("@/components/buy")
   }
 ];
