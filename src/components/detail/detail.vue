@@ -20,6 +20,7 @@
     </header>
 
     <Table
+      ref="table"
       border
       stripe
       height="900"
@@ -37,13 +38,15 @@
       show-total
       class-name="page"
     />
+    <div class="export" @click="exportData" type="info">导出数据</div>
+
     <!-- 弹框 -->
     <van-popup
       v-model="show"
       round
       closeable
       close-icon="close"
-      :style="{ height: '80%',width:'80%' }"
+      :style="{ height: '80%',width:'90%' }"
     >
       <div class="popup">
         <div v-for="item in showArr" :key="item.id">
@@ -60,6 +63,22 @@
             <van-field readonly :label="item.title" :value="showObj[item.identity_key]" />
           </p>
         </div>
+        <div v-for="item in visitObj" :key="item.id">
+          <div v-for="visit in showVisitArr" :key="visit.id">
+            <p v-if="visit.identity_key === 'return_remark'">
+              <van-field
+                readonly
+                type="textarea"
+                autosize
+                :label="visit.title"
+                :value="item[visit.identity_key]"
+              />
+            </p>
+            <p v-else>
+              <van-field readonly autosize :label="visit.title" :value="item[visit.identity_key]" />
+            </p>
+          </div>
+        </div>
       </div>
     </van-popup>
   </div>
@@ -72,6 +91,8 @@ export default {
       show: false,
       showArr: [],
       showObj: {},
+      visitObj: [],
+      showVisitArr: [],
       columns: [
         {
           title: "置业顾问",
@@ -213,6 +234,7 @@ export default {
         type: "saler",
       },
       tableID: 13,
+      visitID: 18,
     };
   },
   mounted() {
@@ -223,6 +245,13 @@ export default {
     });
     api.getFormAPI(this.tableID).then((res) => {
       this.showArr = res.data.fields;
+      api.getFormAPI(this.visitID).then((res) => {
+        this.showVisitArr = res.data.fields.slice(4);
+        this.showVisitArr.unshift({
+          identity_key: "created_at",
+          title: "回访时间",
+        });
+      });
     });
   },
   methods: {
@@ -270,6 +299,25 @@ export default {
     rowClick(row, column, data, event) {
       this.show = true;
       this.showObj = row;
+      let phone = row.phone;
+      let sqlPhone = `SELECT * FROM fdc_form_1_18 where customer_phone = '${phone}';`;
+      api.getSqlJsonAPI(sqlPhone).then((res) => {
+        let data = res.data;
+        for (let i = 0; i < data.length; i++) {
+          data[i].created_at = data[i].created_at.slice(0, 10);
+        }
+        this.visitObj = data;
+      });
+    },
+    exportData() {
+      let sqlCount = `SELECT * FROM fdc_form_1_13; `;
+      api.getSqlJsonAPI(sqlCount).then((res) => {
+        this.$refs.table.data = res.data;
+        this.$refs.table.exportCsv({
+          filename: "客户明细",
+          quoted: true,
+        });
+      });
     },
   },
 };
@@ -325,6 +373,21 @@ export default {
   .popup {
     margin: 30px auto;
     width: 77%;
+  }
+
+  .van-field__label {
+    width: 7rem;
+  }
+  .export {
+    background: #1989fa;
+    width: 100px;
+    height: 37px;
+    line-height: 37px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 10px auto;
+    border-radius: 7px;
   }
 }
 </style>
