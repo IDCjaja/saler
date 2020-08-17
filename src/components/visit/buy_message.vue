@@ -12,7 +12,8 @@
             <div class="information-left-matter">
               <h2>{{list.name}}</h2>
               <p>
-                <span>{{list.intention}}</span>
+                <span v-if="list.intention">{{list.intention}}</span>
+                <span v-else>未填写</span>
               </p>
             </div>
           </div>
@@ -216,13 +217,13 @@ export default {
   .information-left-matter {
     margin-left: -20px;
     text-align: left;
-    padding: 32px;
+    padding: 20px;
 
     h2 {
       font-size: 15px;
       font-weight: 600;
       color: #222;
-      width: 80px;
+      width: 120px;
       margin-bottom: 5px;
     }
     p {
