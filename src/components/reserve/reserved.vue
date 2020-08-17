@@ -49,23 +49,25 @@ export default {
   height: 40px;
   line-height: 40px;
   color: #00a862;
-  font-size: 16px;
+  font-size: 2.1333vw;
   font-weight: 600;
   border-radius: 3px;
   display: flex;
+  overflow: hidden;
   justify-content: space-between;
   background: rgba(0, 168, 98, 0.08);
 }
 .reserved-header-content {
+  overflow: hidden;
   height: 50px;
   line-height: 50px;
-  font-size: 14px;
+  font-size: 1.8667vw;
   display: flex;
   color: #787878;
   justify-content: space-between;
 }
 .reserved-header span,
 .reserved-header-content span {
-  width: 25%;
+  width: 25vw;
 }
 </style>

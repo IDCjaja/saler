@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import api from "@/api/api";
 export default {
   data() {
     return {
@@ -16,12 +15,7 @@ export default {
     };
   },
   mounted() {
-    api.getMagnateOauthAPI().then((res) => {
-      let clientId = this.client_id;
-      if (clientId) {
-        window.location.href = `http://shandenabian.skylarkly.com/oauth/authorize?client_id=${clientId}&redirect_uri=${this.code}&response_type=code`;
-      }
-    });
+    window.location.href = `http://shandenabian.skylarkly.com/oauth/authorize?client_id=${this.client_id}&redirect_uri=${this.code}&response_type=code`;
   },
 };
 </script>
