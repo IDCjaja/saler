@@ -44,7 +44,7 @@ export default {
         if (this.path) {
           this.$router.push({ name: this.path });
         } else {
-          this.$router.push({ name: "home" });
+          this.$router.push({ name: "buy" });
         }
       });
     });
