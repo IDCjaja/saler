@@ -53,17 +53,14 @@
             <div v-else>
               <van-field :label="field.title">
                 <template #input>
-                  <select
-                    :id="field.identity_key"
-                    class="table_aside_select"
-                    v-model="field.option_id"
-                  >
+                  <select :id="field.identity_key" class="table_aside_select" v-model="field.option_id">
                     <option
                       :key="option.id"
                       :value="option.id"
                       class="table_aside_option"
                       v-for="option in field.options"
-                    >{{ option.value }}</option>
+                      >{{ option.value }}</option
+                    >
                   </select>
                 </template>
               </van-field>
@@ -123,162 +120,151 @@
 </template>
 
 <script>
-import CustomerTabbar from "../pages/tabbar";
-import api from "@/api/api";
-import total from "@/api/total";
+import CustomerTabbar from '../pages/tabbar'
+import api from '@/api/api'
+import total from '@/api/total'
 export default {
   data() {
     return {
       checkboxGroup: [],
-      value: "",
-      title: "预约客户",
+      value: '',
+      title: '预约客户',
       fields: [],
       showPicker: false,
       columns: [],
-      orderFieldList: ["name", "phone", "source", "estimated_time"],
+      orderFieldList: ['name', 'phone', 'source', 'estimated_time'],
       formData: [],
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
-      newTime: "",
-      id: "",
-      phone: "",
+      newTime: '',
+      id: '',
+      phone: '',
       show: false,
-      created_at: "",
-      name: "",
-      user_name: "",
+      created_at: '',
+      name: '',
+      user_name: '',
       isLoading: true,
       formID: 15,
-      response_id: "",
-      customer_phone: "",
-    };
+      response_id: '',
+      customer_phone: '',
+    }
   },
   components: {
     CustomerTabbar,
   },
   mounted() {
-    this.response_id = this.$route.query.response_id;
-    this.customer_phone = this.$route.query.customer_phone;
+    this.response_id = this.$route.query.response_id
+    this.customer_phone = this.$route.query.customer_phone
     // 渲染表
     api.getFormAPI(this.formID).then((res) => {
-      this.isLoading = false;
-      this.fields = res.data.fields;
+      this.isLoading = false
+      this.fields = res.data.fields
       // 表单数据处理
-      this.formData = total.tableListData(this.fields, this.orderFieldList);
-    });
-    let sql = `select * from fdc_form_1_13 WHERE phone ='${this.customer_phone}'`;
-    api.getSqlJsonAPI(sql).then((res) => {
-      let data = res.data[0];
+      this.formData = total.tableListData(this.fields, this.orderFieldList)
+      let sql = `select * from fdc_form_1_13 WHERE phone ='${this.customer_phone}'`
+      api.getSqlJsonAPI(sql).then((res) => {
+        let data = res.data[0]
+        // 自动缓存客户信息
+        this.formData.forEach((el) => {
+          switch (el.identity_key) {
+            case 'name':
+              el.value = data.name
+              break
 
-      // 自动缓存客户信息
-      this.formData.forEach((el) => {
-        switch (el.identity_key) {
-          case "name":
-            el.value = data.name;
-            break;
+            case 'phone':
+              el.value = data.phone
+              break
 
-          case "phone":
-            el.value = data.phone;
-            break;
-
-          default:
-            break;
-        }
-      });
-    });
+            default:
+              break
+          }
+        })
+      })
+    })
   },
 
   methods: {
     // 时间选择器赋值
     onConfirmDate(currentDate) {
-      this.dataTime = this.formatDate(currentDate);
-      this.newTime = this.dataTime;
-      this.showPicker = false;
+      this.dataTime = this.formatDate(currentDate)
+      this.newTime = this.dataTime
+      this.showPicker = false
     },
     // 时间格式处理
-    formatDate: function (date) {
-      return (
-        date.getFullYear() +
-        "-" +
-        this.setDate(date.getMonth() + 1) +
-        "-" +
-        this.setDate(date.getDate())
-      );
+    formatDate: function(date) {
+      return date.getFullYear() + '-' + this.setDate(date.getMonth() + 1) + '-' + this.setDate(date.getDate())
     },
     setDate(date) {
-      return date < 10 ? "0" + date : date;
+      return date < 10 ? '0' + date : date
     },
     // 构建传输值的json格式
     newTable(formData) {
-      let payload = { response: { entries_attributes: [] } };
+      let payload = { response: { entries_attributes: [] } }
       formData.forEach((element) => {
         switch (element.type) {
-          case "Field::RadioButton": {
-            if (element.option_id !== "") {
+          case 'Field::RadioButton': {
+            if (element.option_id !== '') {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
                 option_id: element.option_id,
-              });
+              })
             }
-            break;
+            break
           }
 
-          case "Field::DateTime": {
-            if (element.option_id !== "") {
+          case 'Field::DateTime': {
+            if (element.option_id !== '') {
               if (this.newTime) {
                 payload.response.entries_attributes.push({
                   field_id: element.field_id,
                   value: this.newTime,
-                });
+                })
               }
             }
-            break;
+            break
           }
 
           default: {
-            if (element.value !== "") {
+            if (element.value !== '') {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
                 value: element.value,
-              });
+              })
             }
           }
         }
-      });
+      })
       // 自动填充值
-      payload.user_id = localStorage.getItem("user_id");
-      let salerField = this.fields.find(
-        (element) => element.identity_key === "saler"
-      );
+      payload.user_id = localStorage.getItem('user_id')
+      let salerField = this.fields.find((element) => element.identity_key === 'saler')
       payload.response.entries_attributes.push({
-        value: localStorage.getItem("user_name"),
+        value: localStorage.getItem('user_name'),
         field_id: salerField.id,
-      });
-      let salerPhoneField = this.fields.find(
-        (element) => element.identity_key === "saler_phone"
-      );
+      })
+      let salerPhoneField = this.fields.find((element) => element.identity_key === 'saler_phone')
       payload.response.entries_attributes.push({
-        value: localStorage.getItem("user_phone"),
+        value: localStorage.getItem('user_phone'),
         field_id: salerPhoneField.id,
-      });
+      })
       api.postFormAPI(this.formID, payload).then((res) => {
         if (res.status === 201) {
-          this.$toast("预约成功 ✨");
+          this.$toast('预约成功 ✨')
           this.$router.push({
-            name: "buy",
+            name: 'buy',
             query: { response_id: res.data.id },
-          });
+          })
         } else {
-          this.$toast("预约失败 >_<");
+          this.$toast('预约失败 >_<')
         }
-      });
+      })
     },
 
     // 判定手机号
     telBlur(field) {
       if (field.value.length !== 11) {
-        this.$toast("手机号位数错误🙅");
-        field.value = "";
+        this.$toast('手机号位数错误🙅')
+        field.value = ''
       }
       // api.getPhoneRepeatAPI(field.value).then((res) => {
       //   if (res.data.phone) {
@@ -291,7 +277,7 @@ export default {
       // });
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
