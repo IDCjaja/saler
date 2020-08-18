@@ -217,7 +217,7 @@ export default {
   },
   mounted() {
     const permission = localStorage.getItem('user_permission')
-    if (permission.indexOf('销售总监') === -1) {
+    if (permission.indexOf('销售总监') === -1 && permission.indexOf('权证')) {
       this.columns = [
         {
           title: '置业顾问',
