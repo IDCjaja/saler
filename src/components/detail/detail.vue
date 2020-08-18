@@ -41,6 +41,9 @@
           <p v-else-if="item.identity_key === 'working_area'">
             <van-field readonly type="textarea" autosize :label="item.title" :value="showObj[item.identity_key]" />
           </p>
+          <p v-else-if="item.identity_key === 'phone'" v-show="showPhone">
+            <van-field readonly autosize :label="item.title" :value="showObj[item.identity_key]" />
+          </p>
           <p v-else>
             <van-field readonly :label="item.title" :value="showObj[item.identity_key]" />
           </p>
@@ -212,12 +215,13 @@ export default {
       },
       tableID: 13,
       visitID: 18,
-      permission: '',
+      showPhone: true,
     }
   },
   mounted() {
     const permission = localStorage.getItem('user_permission')
     if (permission.indexOf('销售总监') === -1 && permission.indexOf('权证')) {
+      this.showPhone = false
       this.columns = [
         {
           title: '置业顾问',
