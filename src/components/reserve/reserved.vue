@@ -17,30 +17,30 @@
 </template>
 
 <script>
-import CustomerTabbar from "../pages/tabbar";
-import api from "@/api/api";
+import CustomerTabbar from '../pages/tabbar'
+import api from '@/api/api'
 
 export default {
   data() {
     return {
-      title: "预约客户查看",
+      title: '预约客户查看',
       list: [],
-      sql: "select * from fdc_form_1_15 ORDER BY estimated_time DESC",
-    };
+      sql: 'select * from fdc_form_1_15 ORDER BY estimated_time DESC',
+    }
   },
   components: {
     CustomerTabbar,
   },
   mounted() {
     api.getSqlJsonAPI(this.sql).then((res) => {
-      this.isLoading = false;
-      this.list = res.data;
+      this.isLoading = false
+      this.list = res.data
       this.list.forEach((el) => {
-        el.time = el.estimated_time.slice(0, 10);
-      });
-    });
+        el.time = el.estimated_time.slice(0, 10)
+      })
+    })
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -49,7 +49,7 @@ export default {
   height: 40px;
   line-height: 40px;
   color: #00a862;
-  font-size: 2.1333vw;
+  font-size: 15px;
   font-weight: 600;
   border-radius: 3px;
   display: flex;
@@ -61,7 +61,7 @@ export default {
   overflow: hidden;
   height: 50px;
   line-height: 50px;
-  font-size: 1.8667vw;
+  font-size: 15px;
   display: flex;
   color: #787878;
   justify-content: space-between;

@@ -2,7 +2,7 @@
   <div>
     <header class="tabnar-header">
       <i @click="back" class="icon-Index-Icon-Down"></i>
-      {{title}}
+      {{ title }}
     </header>
   </div>
 </template>
@@ -10,17 +10,14 @@
 <script>
 export default {
   props: ['title'],
-  data () {
-    return {
-
-    }
+  data() {
+    return {}
   },
   methods: {
-    back () {
+    back() {
       this.$router.go(-1)
-    }
-  }
-
+    },
+  },
 }
 </script>
 
@@ -31,7 +28,7 @@ export default {
   font-size: 16px;
   font-weight: 600;
   color: #222;
-  height: 50px;
+  height: 3.125rem;
   line-height: 50px;
 }
 .icon-Index-Icon-Down {

@@ -13,7 +13,8 @@
               <h2>{{list.name}}</h2>
               <p>
                 客户意向：
-                <span>{{list.intention}}</span>
+                <span v-if="list.intention">{{list.intention}}</span>
+                <span v-else>未填写</span>
               </p>
             </div>
           </div>
@@ -31,10 +32,10 @@
           <i class="icon-Info-Icon-File message-style-green"></i>
           <span class="message-project-title">基础信息</span>
         </router-link>
-        <div @click="prompt" class="message-project">
+        <!-- <div @click="prompt" class="message-project">
           <i class="icon-Info-Icon-Price message-style-blue"></i>
           <span class="message-project-title">户型算价</span>
-        </div>
+        </div>-->
         <router-link
           :to="{ name:'revisit',query:{customer_phone:customer_phone,response_id:response_id}}"
           class="message-project"
