@@ -60,6 +60,11 @@ export default [
     component: () => import(/* webpackChunkName:'house' */ '@/components/house/house'),
   },
   {
+    path: '/real_estate/saler/signing',
+    name: 'signing',
+    component: () => import(/* webpackChunkName:'signing' */ '@/components/house/signing'),
+  },
+  {
     path: '/real_estate/saler/customer',
     name: 'customer',
     component: () => import(/* webpackChunkName:'customer' */ '@/components/customer'),
