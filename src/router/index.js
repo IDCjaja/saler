@@ -14,10 +14,12 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   let name = to.name
-  let tags = localStorage.getItem('user_phone')
+  // 没有权限，触发登录
+  const permission = localStorage.getItem('user_permission')
   let path = sessionStorage.getItem('callback')
-  if (!path) {
-    if (!tags) {
+  // 是否有回调地址
+  if (!permission) {
+    if (!path) {
       sessionStorage.setItem('callback', name)
       router.push({ name: 'login' })
     }
