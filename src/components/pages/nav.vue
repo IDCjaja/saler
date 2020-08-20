@@ -9,7 +9,7 @@
       <van-tabbar-item @click.native="prompt" class="icon-Index-Icon-Subscription" to="#">已认购</van-tabbar-item>
       <van-tabbar-item @click.native="prompt" class="icon-Index-Icon-Subscribed" to="#">已签约</van-tabbar-item>
       <van-tabbar-item @click.native="prompt" class="icon-Index-Icon-Subscribed" to="#">房源销控</van-tabbar-item>
-      <!-- <van-tabbar-item class="icon-Index-Icon-Owner" to="/real_estate/saler/housing">房源销控</van-tabbar-item> -->
+      <van-tabbar-item class="icon-Index-Icon-Owner" to="/real_estate/saler/housing">房源销控</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>
@@ -19,14 +19,14 @@ export default {
   data() {
     return {
       replace: true,
-    };
+    }
   },
   methods: {
     prompt() {
-      this.$toast("开发中 ✨");
+      this.$toast('开发中 ✨')
     },
   },
-};
+}
 </script>
 
 <style>
