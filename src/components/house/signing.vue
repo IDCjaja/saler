@@ -17,6 +17,31 @@
               />
             </p>
           </div>
+          <!-- 时间 -->
+          <p v-else-if="field.type === 'Field::DateTime'">
+            <van-field
+              :id="field.identity_key"
+              :label="field.title"
+              :value="field.value"
+              @click="showTime(field)"
+              autocomplete="off"
+              clickable
+              name="datetimePicker"
+              placeholder="点击选择时间"
+              readonly
+            />
+            <van-popup position="bottom" round v-model="showPicker">
+              <van-datetime-picker
+                :max-date="maxDate"
+                :min-date="minDate"
+                @cancel="showPicker = false"
+                @confirm="onConfirmDate(currentDate, field)"
+                :title="field.identity_key"
+                type="date"
+                v-model="currentDate"
+              />
+            </van-popup>
+          </p>
           <!-- butoon -->
           <div v-else-if="field.type === 'Field::RadioButton'">
             <van-field :label="field.title">
@@ -56,6 +81,12 @@ export default {
       fields: [],
       formData: [],
       userID: '',
+      signData: '',
+      showPicker: false,
+      minDate: new Date(1900, 0, 1),
+      maxDate: new Date(2220, 10, 1),
+      currentDate: new Date(),
+      middleField: '',
     }
   },
   components: {
@@ -65,15 +96,77 @@ export default {
     this.userID = localStorage.getItem('user_id')
     api.getflowAPI(this.flowID).then((res) => {
       this.formData = total.flowListData(res.data.fields)
-    })
 
-    const roomID = this.$route.query.roomID
-    let sql = `select * from fdc_form_1_17 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
-    api.getSqlJsonAPI(sql).then((res) => {
-      console.log(res)
+      const roomID = this.$route.query.roomID
+      let sql = `select * from fdc_form_1_17 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
+      api.getSqlJsonAPI(sql).then((res) => {
+        this.signData = res.data[0]
+        // 签约状态自动填入
+        this.formData.forEach((res) => {
+          switch (res.identity_key) {
+            case 'buyer_name':
+              res.value = this.signData ? this.signData.buyer_name : ''
+              break
+            case 'buyer_phone':
+              res.value = this.signData ? this.signData.buyer_phone : ''
+              break
+            case 'room_number':
+              res.value = this.signData ? this.signData.room_number : ''
+              break
+            case 'univalence':
+              res.value = this.signData ? this.signData.univalence : ''
+              break
+            case 'total':
+              res.value = this.signData ? this.signData.total : ''
+              break
+            case 'covered_area':
+              res.value = this.signData ? this.signData.covered_area : ''
+              break
+            case 'inside_area':
+              res.value = this.signData ? this.signData.inside_area : ''
+              break
+            case 'bank':
+              res.value = this.signData ? this.signData.bank : ''
+              break
+            // case 'inside_area':
+            //   res.value = this.signData ? this.signData.mortgage_money : ''
+            //   break
+            case 'loan_term':
+              res.value = this.signData ? this.signData.stages : ''
+              break
+            case 'loan_amount':
+              res.value = this.signData ? this.signData.stages_money : ''
+              break
+
+            default:
+              break
+          }
+        })
+      })
     })
   },
   methods: {
+    showTime(field) {
+      this.middleField = field.identity_key
+      this.showPicker = true
+    },
+    // 时间选择器赋值
+    onConfirmDate(currentDate) {
+      this.dataTime = this.formatDate(currentDate)
+      this.formData.forEach((el) => {
+        if (this.middleField === el.identity_key) {
+          el.value = this.dataTime
+        }
+      })
+      this.showPicker = false
+    },
+    // 时间格式处理
+    formatDate: function(date) {
+      return date.getFullYear() + '-' + this.setDate(date.getMonth() + 1) + '-' + this.setDate(date.getDate())
+    },
+    setDate(date) {
+      return date < 10 ? '0' + date : date
+    },
     // 构建传输值的json格式
     newTable(formData) {
       let payload = {
@@ -103,12 +196,10 @@ export default {
           }
           case 'Field::DateTime': {
             if (element.option_id !== '') {
-              if (this.newTime) {
-                entries.push({
-                  field_id: element.field_id,
-                  value: this.newTime,
-                })
-              }
+              entries.push({
+                field_id: element.field_id,
+                value: element.value,
+              })
             }
             break
           }
@@ -124,7 +215,7 @@ export default {
         }
       })
       api.postflowAPI(this.flowID, payload).then((res) => {
-        this.$toast('新建成功 ✨')
+        this.$toast('发起成功 ✨')
         const id = res.data.next_vertices[0].id
         let payload = {
           assignment: {
