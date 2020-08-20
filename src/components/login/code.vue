@@ -15,14 +15,14 @@ export default {
     }
   },
   mounted() {
-    const permission = localStorage.getItem('user_permission')
-    if (permission) {
-      if (this.path) {
-        this.$router.push({ name: this.path })
-      } else {
-        this.$router.push({ name: 'buy' })
-      }
-    }
+    // const permission = localStorage.getItem('user_permission')
+    // if (permission) {
+    //   if (this.path) {
+    //     this.$router.push({ name: this.path })
+    //   } else {
+    //     this.$router.push({ name: 'buy' })
+    //   }
+    // }
 
     this.code = this.$route.query.code
     this.path = sessionStorage.getItem('callback')
