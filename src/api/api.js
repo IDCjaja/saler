@@ -27,6 +27,7 @@ export default {
   getFormAPI(formID) {
     return http.get(`/api/v4/forms/${formID}`, '', headerV4)
   },
+
   // 渲染表项
   getFormResponsesAPI(formID) {
     return http.get(`/api/v4/forms/${formID}/responses`, '', headerV4)
@@ -46,5 +47,13 @@ export default {
   // sql查询
   getSqlJsonAPI(sql) {
     return http.get(`/api/table_mappers/json_api/execute_select_sql?sql=` + sql, '', headerSQL)
+  },
+  // 渲染流程
+  getflowAPI(flowID) {
+    return http.get(`/api/v4/yaw/flows/${flowID}`, '', headerV4)
+  },
+  // 流程填写
+  postflowAPI(flowID, data) {
+    return http.post(`/api/v4/yaw/flows/${flowID}/journeys`, data, headerV4)
   },
 }

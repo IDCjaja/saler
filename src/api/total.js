@@ -1,5 +1,56 @@
 // 公用方法
 export default {
+  // 表单数据处理
+  flowListData(fields) {
+    let tableList = []
+    fields.forEach((field) => {
+      let objData = {}
+
+      switch (field.type) {
+        case 'Field::RadioButton': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.option_id = ''
+          objData.options = field.options
+          break
+        }
+        case 'Field::CheckBox': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.option_id = []
+          objData.value = ''
+          objData.other_option = field.other_option
+          objData.options = field.options
+          break
+        }
+        case 'Field::DateTime': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = ''
+          break
+        }
+
+        default: {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = ''
+        }
+      }
+
+      tableList.push(objData)
+    })
+
+    return tableList
+  },
+
   // 获取今天时间
   formatDateTime() {
     let date = new Date()

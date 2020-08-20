@@ -68,10 +68,10 @@
           </h1>
           <h2>客户已存在</h2>
           <div class="guest_main_hint_message">
-            <p>客户姓名：{{name}}</p>
-            <p>置业顾问：{{user_name}}</p>
-            <p>首次到访时间：{{created_at}}</p>
-            <p>最近到访时间：{{planed_visit_time}}</p>
+            <p>客户姓名：{{ name }}</p>
+            <p>置业顾问：{{ user_name }}</p>
+            <p>首次到访时间：{{ created_at }}</p>
+            <p>最近到访时间：{{ planed_visit_time }}</p>
           </div>
         </div>
         <div class="guest_main_hint_fail fail_bg" v-show="!show">
@@ -92,16 +92,15 @@
           </h1>
           <h2>客户已预约</h2>
           <div class="guest_main_hint_message">
-            <p>客户姓名：{{customer_name}}</p>
-            <p>客户电话：{{encryption}}</p>
-            <p>渠道来源：{{customer_source}}</p>
-            <p>预约人：{{order_name}}</p>
+            <p>客户姓名：{{ customer_name }}</p>
+            <p>客户电话：{{ encryption }}</p>
+            <p>渠道来源：{{ customer_source }}</p>
+            <p>预约人：{{ order_name }}</p>
 
             <p class="guest_main_hint_button">
-              <button
-                :class="[this.visitStatus==='已到访'?'visited':'']"
-                @click.once="ToggleState"
-              >{{this.visitStatus==='已到访'?'已到访':'确认到访'}}</button>
+              <button :class="[this.visitStatus === '已到访' ? 'visited' : '']" @click.once="ToggleState">
+                {{ this.visitStatus === '已到访' ? '已到访' : '确认到访' }}
+              </button>
             </p>
           </div>
         </div>
@@ -121,7 +120,8 @@
     <a
       class="guest_footer_a"
       href="http://shandenabian.skylarkly.com/namespaces/1/yet_another_workflow/flows/5/journeys/new"
-    >派单</a>
+      >派单</a
+    >
     <footer class="guest_footer">
       <p class="content-header">
         <span>置业顾问</span>
@@ -130,8 +130,8 @@
       </p>
 
       <p :key="item.id" class="content-header-content" v-for="item in visit">
-        <span>{{item.name}}</span>
-        <span>{{item.phone}}</span>
+        <span>{{ item.name }}</span>
+        <span>{{ item.phone }}</span>
         <span>
           <van-switch
             @change="change(item)"
@@ -149,236 +149,226 @@
 <script>
 /* eslint-disable */
 
-import api from "@/api/api";
-import total from "@/api/total";
+import api from '@/api/api'
+import total from '@/api/total'
 
 export default {
   data() {
     return {
       visit: [
         {
-          name: "任海涛",
+          name: '任海涛',
           phone: 0,
           checked: false,
         },
         {
-          name: "贺亚菲",
+          name: '贺亚菲',
           phone: 0,
           checked: false,
         },
         {
-          name: "李罡皓",
+          name: '李罡皓',
           phone: 0,
           checked: false,
         },
         {
-          name: "雷洛",
+          name: '雷洛',
           phone: 0,
           checked: false,
         },
         {
-          name: "鲜原",
+          name: '鲜原',
           phone: 0,
           checked: false,
         },
         {
-          name: "徐爱玲",
+          name: '徐爱玲',
           phone: 0,
           checked: false,
         },
         {
-          name: "刘鑫",
+          name: '刘鑫',
           phone: 0,
           checked: false,
         },
       ],
-      number: "",
-      name: "",
-      user_name: "",
-      created_at: "",
-      planed_visit_time: "",
-      customer_name: "",
-      customer_phone: "",
-      order_name: "",
-      visitStatus: "",
-      customer_source: "",
-      responseId: "",
+      number: '',
+      name: '',
+      user_name: '',
+      created_at: '',
+      planed_visit_time: '',
+      customer_name: '',
+      customer_phone: '',
+      order_name: '',
+      visitStatus: '',
+      customer_source: '',
+      responseId: '',
       showResult: false,
       showResultOrder: false,
       showOrder: false,
       show: true,
       formData: [],
       statusData: [],
-      orderFieldList: ["customer_phone", "is_new"],
-      statusFieldList: ["arrive_visit"],
+      orderFieldList: ['customer_phone', 'is_new'],
+      statusFieldList: ['arrive_visit'],
       tableID: 19,
       tableVisitID: 15,
-      Data: "",
-    };
+      Data: '',
+    }
   },
   created() {
-    document.title = "判客岗";
+    document.title = '判客岗'
   },
   computed: {
     encryption() {
-      let phone = this.customer_phone.replace(
-        /(\d{3})\d{4}(\d{4})/,
-        "$1****$2"
-      );
+      let phone = this.customer_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      this.customer_phone = phone;
-      return this.customer_phone;
+      this.customer_phone = phone
+      return this.customer_phone
     },
   },
   mounted() {
     // 是否有权限
-    this.Data = total.formatDateTime();
-    this.phone = localStorage.getItem("user_phone");
+    this.Data = total.formatDateTime()
+    this.phone = localStorage.getItem('user_phone')
     if (!this.phone) {
-      sessionStorage.setItem("return", this.$route.name);
-      this.$router.push({ name: "login" });
+      sessionStorage.setItem('return', this.$route.name)
+      this.$router.push({ name: 'login' })
     } else {
       api.getFormAPI(this.tableID).then((res) => {
-        this.fields = res.data.fields;
+        this.fields = res.data.fields
         // 表单数据处理
-        this.formData = total.tableListData(this.fields, this.orderFieldList);
-      });
+        this.formData = total.tableListData(this.fields, this.orderFieldList)
+      })
       api.getFormAPI(this.tableVisitID).then((res) => {
-        this.fields = res.data.fields;
+        this.fields = res.data.fields
         // 表单数据处理
-        this.statusData = total.tableListData(
-          this.fields,
-          this.statusFieldList
-        );
-      });
+        this.statusData = total.tableListData(this.fields, this.statusFieldList)
+      })
     }
   },
   methods: {
     change(res) {
       if (res.checked) {
-        res.phone++;
+        res.phone++
       }
     },
     // 切换状态
     ToggleState() {
-      if (this.visitStatus !== "已到访") {
-        let payload = { response: { entries_attributes: [] } };
+      if (this.visitStatus !== '已到访') {
+        let payload = { response: { entries_attributes: [] } }
         this.statusData.forEach((element) => {
           switch (element.identity_key) {
-            case "arrive_visit": {
+            case 'arrive_visit': {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
-                value: "已到访",
-              });
-              break;
+                value: '已到访',
+              })
+              break
             }
           }
-        });
+        })
         // 自动填充值user_id
-        payload.user_id = localStorage.getItem("user_id");
-        api
-          .putFormsAmendAPI(this.tableVisitID, this.responseId, payload)
-          .then((res) => {
-            if (res.status === 200) {
-              // 修改状态
-              this.visitStatus = "已到访";
-            }
-          });
+        payload.user_id = localStorage.getItem('user_id')
+        api.putFormsAmendAPI(this.tableVisitID, this.responseId, payload).then((res) => {
+          if (res.status === 200) {
+            // 修改状态
+            this.visitStatus = '已到访'
+          }
+        })
       }
     },
     // 清除提示
     cross() {
-      this.showResult = false;
+      this.showResult = false
     },
     orderCross() {
-      this.showResultOrder = false;
+      this.showResultOrder = false
     },
     onSearch() {
       // 用户是否存在
       if (this.number.length === 4) {
-        let sql = `select * from fdc_form_1_13 where phone ~ '${this.number}$'`;
+        let sql = `select * from fdc_form_1_13 where phone ~ '${this.number}$'`
         api.getSqlJsonAPI(sql).then((res) => {
-          res.status === 200
-            ? (this.showResult = true)
-            : (this.showResult = false);
+          res.status === 200 ? (this.showResult = true) : (this.showResult = false)
           if (!res.data[0]) {
-            this.show = false;
+            this.show = false
           } else {
-            this.show = true;
-            this.user_name = res.data[0].saler;
-            this.name = res.data[0].name;
-            this.created_at = res.data[0].created_at.slice(0, 10);
+            this.show = true
+            this.user_name = res.data[0].saler
+            this.name = res.data[0].name
+            this.created_at = res.data[0].created_at.slice(0, 10)
           }
-          this.newTable();
-        });
+          this.newTable()
+        })
         // 预约查询
-        let sqlVisit = `select * from fdc_form_1_15 where phone ~ '${this.number}$' and to_char(estimated_time,'YYYY-MM-DD')='${this.Data}'`;
+        let sqlVisit = `select * from fdc_form_1_15 where phone ~ '${this.number}$' and to_char(estimated_time,'YYYY-MM-DD')='${this.Data}'`
         api.getSqlJsonAPI(sqlVisit).then((res) => {
-          this.planed_visit_time = "未到访";
-          this.showResultOrder = true;
+          this.planed_visit_time = '未到访'
+          this.showResultOrder = true
           if (res.data[0]) {
-            this.showOrder = true;
-            let data = res.data[0];
-            this.order_name = data.user_name;
-            this.customer_name = data.name;
-            this.customer_phone = data.phone;
-            this.customer_source = data.source;
-            this.visitStatus = data.arrive_visit;
-            this.responseId = data.response_id;
-            this.planed_visit_time = data.estimated_time.slice(0, 10);
+            this.showOrder = true
+            let data = res.data[0]
+            this.order_name = data.user_name
+            this.customer_name = data.name
+            this.customer_phone = data.phone
+            this.customer_source = data.source
+            this.visitStatus = data.arrive_visit
+            this.responseId = data.response_id
+            this.planed_visit_time = data.estimated_time.slice(0, 10)
           } else {
-            this.showOrder = false;
+            this.showOrder = false
           }
-        });
+        })
       } else {
-        this.$toast("手机号位数错误");
-        this.showResult = false;
-        this.showResultOrder = false;
+        this.$toast('手机号位数错误')
+        this.showResult = false
+        this.showResultOrder = false
       }
     },
     // 传值
     newTable() {
-      let payload = { response: { entries_attributes: [] } };
+      let payload = { response: { entries_attributes: [] } }
       this.formData.forEach((element) => {
         switch (element.identity_key) {
-          case "customer_phone": {
+          case 'customer_phone': {
             if (this.number) {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
                 value: this.number,
-              });
+              })
             }
-            break;
+            break
           }
-          case "is_new": {
+          case 'is_new': {
             this.show
               ? payload.response.entries_attributes.push({
                   field_id: element.field_id,
-                  value: "老客户",
+                  value: '老客户',
                 })
               : payload.response.entries_attributes.push({
                   field_id: element.field_id,
-                  value: "新客户",
-                });
-            break;
+                  value: '新客户',
+                })
+            break
           }
           default: {
-            if (element.value !== "" && element) {
+            if (element.value !== '' && element) {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
                 value: element.value,
-              });
+              })
             }
           }
         }
-      });
+      })
 
       // 自动填充值user_id
-      payload.user_id = localStorage.getItem("user_id");
-      api.postFormAPI(this.tableID, payload).then((res) => {});
+      payload.user_id = localStorage.getItem('user_id')
+      api.postFormAPI(this.tableID, payload).then((res) => {})
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
