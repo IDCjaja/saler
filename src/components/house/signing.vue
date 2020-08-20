@@ -55,46 +55,48 @@ export default {
       flowID: 27,
       fields: [],
       formData: [],
+      userID: '',
     }
   },
   components: {
     CustomerTabbar,
   },
   mounted() {
+    this.userID = localStorage.getItem('user_id')
     api.getflowAPI(this.flowID).then((res) => {
-      console.log(res)
       this.formData = total.flowListData(res.data.fields)
+    })
+
+    const roomID = this.$route.query.roomID
+    let sql = `select * from fdc_form_1_17 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
+    api.getSqlJsonAPI(sql).then((res) => {
+      console.log(res)
     })
   },
   methods: {
     // 构建传输值的json格式
     newTable(formData) {
-      let payload = { response: { entries_attributes: [] } }
+      let payload = {
+        assignment: {
+          response_attributes: {
+            entries_attributes: [],
+          },
+          operation: 'route',
+        },
+        user_id: this.userID,
+        webhook: {
+          payload_url: '',
+          subscribed_events: ['JourneyStatusEvent'],
+        },
+      }
+      let entries = payload.assignment.response_attributes.entries_attributes
       formData.forEach((element) => {
         switch (element.type) {
           case 'Field::RadioButton': {
             if (element.option_id !== '') {
-              payload.response.entries_attributes.push({
+              entries.push({
                 field_id: element.field_id,
                 option_id: element.option_id,
-              })
-            }
-            break
-          }
-          case 'Field::CheckBox': {
-            if (element.option_id !== '') {
-              for (let i = 0; i < element.option_id.length; i++) {
-                payload.response.entries_attributes.push({
-                  field_id: element.field_id,
-                  option_id: element.option_id[i],
-                })
-              }
-            }
-            if (element.value) {
-              payload.response.entries_attributes.push({
-                field_id: element.field_id,
-                option_id: 0,
-                value: element.value,
               })
             }
             break
@@ -102,7 +104,7 @@ export default {
           case 'Field::DateTime': {
             if (element.option_id !== '') {
               if (this.newTime) {
-                payload.response.entries_attributes.push({
+                entries.push({
                   field_id: element.field_id,
                   value: this.newTime,
                 })
@@ -110,21 +112,10 @@ export default {
             }
             break
           }
-          case 'Field::CascadedSelect': {
-            if (element.option_id !== ' ') {
-              if (this.cascadeWorkingValue) {
-                payload.response.entries_attributes.push({
-                  field_id: element.field_id,
-                  choice_id: element.choice_id,
-                  value: element.value,
-                })
-              }
-            }
-            break
-          }
+          // 文本
           default: {
             if (element.value !== '') {
-              payload.response.entries_attributes.push({
+              entries.push({
                 field_id: element.field_id,
                 value: element.value,
               })
@@ -132,17 +123,20 @@ export default {
           }
         }
       })
-
       api.postflowAPI(this.flowID, payload).then((res) => {
-        if (res.status === 201) {
-          this.$toast('新建成功 ✨')
-          this.$router.push({
-            name: 'buy',
-            query: { response_id: res.data.id },
-          })
-        } else {
-          this.$toast('新建失败 >_<')
+        this.$toast('新建成功 ✨')
+        const id = res.data.next_vertices[0].id
+        let payload = {
+          assignment: {
+            response_attributes: {
+              entries_attributes: [],
+            },
+            operation: 'propose',
+            next_vertex_id: id,
+          },
+          user_id: this.userID,
         }
+        api.postflowAPI(this.flowID, payload).then((res) => {})
       })
     },
   },
@@ -161,6 +155,9 @@ export default {
   background-color: #fff;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
 
+  .table_aside_select {
+    width: 60%;
+  }
   /deep/ .van-field__label {
     width: 14.5rem;
   }
