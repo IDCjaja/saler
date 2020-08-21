@@ -59,10 +59,27 @@ export default [
     name: 'house',
     component: () => import(/* webpackChunkName:'house' */ '@/components/house/house'),
   },
+
+  // 流程
   {
     path: '/real_estate/saler/signing',
     name: 'signing',
-    component: () => import(/* webpackChunkName:'signing' */ '@/components/house/signing'),
+    component: () => import(/* webpackChunkName:'signing' */ '@/components/flows/signing'),
+  },
+  {
+    path: '/real_estate/saler/checkout',
+    name: 'checkout',
+    component: () => import(/* webpackChunkName:'checkout' */ '@/components/flows/checkout'),
+  },
+  {
+    path: '/real_estate/saler/changeRoom',
+    name: 'changeRoom',
+    component: () => import(/* webpackChunkName:'changeRoom' */ '@/components/flows/changeRoom'),
+  },
+  {
+    path: '/real_estate/saler/rename',
+    name: 'rename',
+    component: () => import(/* webpackChunkName:'rename' */ '@/components/flows/rename'),
   },
   {
     path: '/real_estate/saler/customer',
