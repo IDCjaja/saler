@@ -58,6 +58,17 @@
               </template>
             </van-field>
           </div>
+          <div v-else-if="field.type === 'Field::TextArea'">
+            <van-field
+              :id="field.identity_key"
+              :label="field.title"
+              autocomplete="off"
+              placeholder="请输入"
+              type="textarea"
+              autosize
+              v-model="field.value"
+            />
+          </div>
         </div>
       </aside>
 
