@@ -58,6 +58,17 @@
               </template>
             </van-field>
           </div>
+          <div v-else-if="field.type === 'Field::TextArea'">
+            <van-field
+              :id="field.identity_key"
+              :label="field.title"
+              autocomplete="off"
+              placeholder="请输入"
+              type="textarea"
+              autosize
+              v-model="field.value"
+            />
+          </div>
         </div>
       </aside>
 
@@ -213,7 +224,6 @@ export default {
         }
       })
       api.postflowAPI(this.flowID, payload).then((res) => {
-        this.$toast('发起成功 ✨')
         const id = res.data.next_vertices[0].id
         let payload = {
           assignment: {
@@ -225,7 +235,11 @@ export default {
           },
           user_id: this.userID,
         }
-        api.postflowAPI(this.flowID, payload).then((res) => {})
+        api.postflowAPI(this.flowID, payload).then((res) => {
+          if (res.status === 200) {
+            this.$toast('发起成功 ✨')
+          }
+        })
       })
     },
   },
