@@ -111,7 +111,6 @@ export default {
       const roomID = this.$route.query.roomID
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
-        console.log(res)
         this.signData = res.data[0]
         this.signData.created_at = this.signData.created_at.slice(0, 10)
         // 签约状态自动填入
