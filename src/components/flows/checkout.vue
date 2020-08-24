@@ -111,40 +111,35 @@ export default {
       const roomID = this.$route.query.roomID
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
+        console.log(res)
         this.signData = res.data[0]
+        this.signData.created_at = this.signData.created_at.slice(0, 10)
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
             case 'buyer_name':
               res.value = this.signData ? this.signData.buyer_name : ''
               break
-            case 'buyer_phone':
-              res.value = this.signData ? this.signData.buyer_phone : ''
-              break
             case 'room_number':
               res.value = this.signData ? this.signData.room_number : ''
               break
-            case 'univalence':
+            case 'subscription_time':
+              res.value = this.signData ? this.signData.created_at : ''
+              break
+            case 'transaction_price':
               res.value = this.signData ? this.signData.univalence : ''
               break
-            case 'total':
+            case 'trading_total':
               res.value = this.signData ? this.signData.total : ''
-              break
-            case 'covered_area':
-              res.value = this.signData ? this.signData.covered_area : ''
               break
             case 'inside_area':
               res.value = this.signData ? this.signData.inside_area : ''
               break
-            case 'bank':
-              res.value = this.signData ? this.signData.bank : ''
+            case 'covered_area':
+              res.value = this.signData ? this.signData.covered_area : ''
               break
-
-            case 'loan_term':
-              res.value = this.signData ? this.signData.stages : ''
-              break
-            case 'loan_amount':
-              res.value = this.signData ? this.signData.stages_money : ''
+            case 'payment_method':
+              res.value = this.signData ? this.signData.payment : ''
               break
 
             default:
