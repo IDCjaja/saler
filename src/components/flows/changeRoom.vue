@@ -112,13 +112,50 @@ export default {
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
         this.signData = res.data[0]
+        this.signData.created_at = this.signData.created_at.slice(0, 10)
+
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
             case 'buyer_name':
               res.value = this.signData ? this.signData.buyer_name : ''
               break
+            case 'room_number':
+              res.value = this.signData ? this.signData.room_number : ''
+              break
+            case 'subscription_time':
+              res.value = this.signData ? this.signData.created_at : ''
+              break
+            case 'transaction_price':
+              res.value = this.signData ? this.signData.univalence : ''
+              break
+            case 'trading_total':
+              res.value = this.signData ? this.signData.total : ''
+              break
+            case 'inside_area':
+              res.value = this.signData ? this.signData.inside_area : ''
+              break
+            case 'covered_area':
+              res.value = this.signData ? this.signData.covered_area : ''
+              break
+            case 'payment_method':
+              res.value = this.signData ? this.signData.payment : ''
+              break
 
+            default:
+              break
+          }
+        })
+      })
+      let roomSql = `select * from fdc_form_1_16 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
+      api.getSqlJsonAPI(roomSql).then((res) => {
+        const roomData = res.data[0]
+        // 房源状态自动填入
+        this.formData.forEach((res) => {
+          switch (res.identity_key) {
+            case 'room_status':
+              res.value = roomData ? roomData.room_status : ''
+              break
             default:
               break
           }
