@@ -124,6 +124,22 @@
               v-model="field.value"
             />
           </div>
+          <!-- butoon -->
+          <div v-else-if="field.type === 'Field::RadioButton'">
+            <van-field :label="field.title">
+              <template #input>
+                <select :id="field.identity_key" class="table_aside_select" v-model="field.option_id">
+                  <option
+                    :key="option.id"
+                    :value="option.id"
+                    class="table_aside_option"
+                    v-for="option in field.options"
+                    >{{ option.value }}</option
+                  >
+                </select>
+              </template>
+            </van-field>
+          </div>
           <!-- 时间 -->
           <p v-else-if="field.type === 'Field::DateTime'">
             <van-field
@@ -133,6 +149,7 @@
               @click="showPicker = true"
               autocomplete="off"
               clickable
+              position="top"
               name="datetimePicker"
               placeholder="点击选择时间"
               readonly
@@ -161,9 +178,30 @@
             >
               <span>签约</span>
             </router-link>
-            <span>退房</span>
-            <span>换房</span>
-            <span>更名</span>
+            <router-link
+              :to="{
+                name: 'checkout',
+                query: { roomID: this.buyData.room_number },
+              }"
+            >
+              <span>退房</span>
+            </router-link>
+            <router-link
+              :to="{
+                name: 'changeRoom',
+                query: { roomID: this.buyData.room_number },
+              }"
+            >
+              <span>换房</span>
+            </router-link>
+            <router-link
+              :to="{
+                name: 'rename',
+                query: { roomID: this.buyData.room_number },
+              }"
+            >
+              <span>更名</span>
+            </router-link>
           </div>
           <div class="table_footer" @click="newTable(formData)" v-else>确认认购</div>
         </footer>
@@ -182,7 +220,7 @@ export default {
     return {
       title: '房源展示',
       newTime: '',
-      building: '9',
+      building: '7',
       list: [],
       house: [],
       show: false,
@@ -198,6 +236,7 @@ export default {
       userShow: false,
       userDataShow: false,
       orderFieldList: [
+        'signing_time',
         'room_number',
         'inside_area',
         'covered_area',
@@ -208,6 +247,7 @@ export default {
         'buyer_card',
         'saler',
         'address',
+        'payment',
         'owner',
         'discount',
         'trading_price',
@@ -216,7 +256,6 @@ export default {
         'stages_money',
         'bank',
         'mortgage_money',
-        'signing_time',
       ],
       userFieldList: ['saler', 'saler_phone', 'name', 'phone'],
       formID: 17,
@@ -441,7 +480,7 @@ export default {
             break
           }
           default: {
-            if (element.value !== '') {
+            if (element.value) {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
                 value: element.value,
@@ -467,6 +506,15 @@ export default {
       let payload = { response: { entries_attributes: [] } }
       formData.forEach((element) => {
         switch (element.type) {
+          case 'Field::RadioButton': {
+            if (element.option_id) {
+              payload.response.entries_attributes.push({
+                field_id: element.field_id,
+                option_id: element.option_id,
+              })
+            }
+            break
+          }
           case 'Field::DateTime': {
             if (element.option_id !== '') {
               if (this.newTime) {

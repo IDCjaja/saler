@@ -36,7 +36,7 @@
                 :min-date="minDate"
                 @cancel="showPicker = false"
                 @confirm="onConfirmDate(currentDate, field)"
-                :title="field.identity_key"
+                title="请选择年月日"
                 type="date"
                 v-model="currentDate"
               />
@@ -58,11 +58,22 @@
               </template>
             </van-field>
           </div>
+          <div v-else-if="field.type === 'Field::TextArea'">
+            <van-field
+              :id="field.identity_key"
+              :label="field.title"
+              autocomplete="off"
+              placeholder="请输入"
+              type="textarea"
+              autosize
+              v-model="field.value"
+            />
+          </div>
         </div>
       </aside>
 
       <footer @click="newTable(formData)" class="footer">
-        发起签约流程
+        发起更名流程
       </footer>
     </div>
   </div>
@@ -76,8 +87,8 @@ import total from '@/api/total'
 export default {
   data() {
     return {
-      title: '签约单',
-      flowID: 27,
+      title: '更名单',
+      flowID: 17,
       fields: [],
       formData: [],
       userID: '',
@@ -101,41 +112,34 @@ export default {
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${roomID}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
         this.signData = res.data[0]
+        this.signData.created_at = this.signData.created_at.slice(0, 10)
+
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
             case 'buyer_name':
               res.value = this.signData ? this.signData.buyer_name : ''
               break
-            case 'buyer_phone':
-              res.value = this.signData ? this.signData.buyer_phone : ''
-              break
             case 'room_number':
               res.value = this.signData ? this.signData.room_number : ''
               break
-            case 'univalence':
+            case 'subscription_time':
+              res.value = this.signData ? this.signData.created_at : ''
+              break
+            case 'transaction_price':
               res.value = this.signData ? this.signData.univalence : ''
               break
-            case 'total':
+            case 'trading_total':
               res.value = this.signData ? this.signData.total : ''
-              break
-            case 'covered_area':
-              res.value = this.signData ? this.signData.covered_area : ''
               break
             case 'inside_area':
               res.value = this.signData ? this.signData.inside_area : ''
               break
-            case 'bank':
-              res.value = this.signData ? this.signData.bank : ''
+            case 'covered_area':
+              res.value = this.signData ? this.signData.covered_area : ''
               break
-            // case 'inside_area':
-            //   res.value = this.signData ? this.signData.mortgage_money : ''
-            //   break
-            case 'loan_term':
-              res.value = this.signData ? this.signData.stages : ''
-              break
-            case 'loan_amount':
-              res.value = this.signData ? this.signData.stages_money : ''
+            case 'payment_method':
+              res.value = this.signData ? this.signData.payment : ''
               break
 
             default:
@@ -186,7 +190,7 @@ export default {
       formData.forEach((element) => {
         switch (element.type) {
           case 'Field::RadioButton': {
-            if (element.option_id !== '') {
+            if (element.option_id) {
               entries.push({
                 field_id: element.field_id,
                 option_id: element.option_id,
@@ -195,7 +199,7 @@ export default {
             break
           }
           case 'Field::DateTime': {
-            if (element.option_id !== '') {
+            if (element.value) {
               entries.push({
                 field_id: element.field_id,
                 value: element.value,
@@ -205,7 +209,7 @@ export default {
           }
           // 文本
           default: {
-            if (element.value !== '') {
+            if (element.value) {
               entries.push({
                 field_id: element.field_id,
                 value: element.value,
@@ -215,7 +219,6 @@ export default {
         }
       })
       api.postflowAPI(this.flowID, payload).then((res) => {
-        this.$toast('发起成功 ✨')
         const id = res.data.next_vertices[0].id
         let payload = {
           assignment: {
@@ -227,7 +230,11 @@ export default {
           },
           user_id: this.userID,
         }
-        api.postflowAPI(this.flowID, payload).then((res) => {})
+        api.postflowAPI(this.flowID, payload).then((res) => {
+          if (res.status === 200) {
+            this.$toast('发起成功 ✨')
+          }
+        })
       })
     },
   },
