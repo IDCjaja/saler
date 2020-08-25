@@ -113,9 +113,6 @@
           <h2>客户未预约</h2>
         </div>
       </section>
-      <!-- <section v-show="!showResult && !showResultOrder">
-        <img alt class="guest_main_img" src="@/assets/img/Judgement-Img.png" />
-      </section>-->
     </div>
     <router-link
       :to="{
@@ -298,7 +295,7 @@ export default {
           }
           this.newTable()
         })
-        // 预约查询
+        // 用户是否预约
         let sqlVisit = `select * from fdc_form_1_15 where phone ~ '${this.number}$' and to_char(estimated_time,'YYYY-MM-DD')='${this.Data}'`
         api.getSqlJsonAPI(sqlVisit).then((res) => {
           this.planed_visit_time = '未到访'
@@ -306,6 +303,7 @@ export default {
           if (res.data[0]) {
             this.showOrder = true
             let data = res.data[0]
+            this.phone = data.phone
             this.order_name = data.user_name
             this.customer_name = data.name
             this.customer_phone = data.phone
