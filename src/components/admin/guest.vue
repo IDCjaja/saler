@@ -129,7 +129,7 @@
         <span>状态</span>
       </p>
 
-      <p :key="item.id" class="content-header-content" v-for="item in visit">
+      <p :key="item.id" class="content-header-content" v-for="item in visitList">
         <span>{{ item.name }}</span>
         <span>{{ item.count }}</span>
         <span>
@@ -155,43 +155,7 @@ import total from '@/api/total'
 export default {
   data() {
     return {
-      visit: [
-        {
-          name: '任海涛',
-          count: 0,
-          checked: false,
-        },
-        {
-          name: '贺亚菲',
-          count: 0,
-          checked: false,
-        },
-        {
-          name: '李罡皓',
-          count: 0,
-          checked: false,
-        },
-        {
-          name: '雷洛',
-          count: 0,
-          checked: false,
-        },
-        {
-          name: '鲜原',
-          count: 0,
-          checked: false,
-        },
-        {
-          name: '徐爱玲',
-          count: 0,
-          checked: false,
-        },
-        {
-          name: '刘鑫',
-          count: 0,
-          checked: false,
-        },
-      ],
+      visitList: [],
       number: '',
       name: '',
       phone: '',
@@ -228,6 +192,14 @@ export default {
     },
   },
   mounted() {
+    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问';`
+    api.getSqlJsonAPI(sql).then((res) => {
+      res.data.forEach((el) => {
+        el.status === '空闲' ? (el.checked = false) : (el.checked = true)
+        el.count === null ? (el.count = 0) : ''
+      })
+      this.visitList = res.data
+    })
     this.Data = total.formatDateTime()
     api.getFormAPI(this.tableID).then((res) => {
       this.fields = res.data.fields
@@ -241,9 +213,9 @@ export default {
     })
   },
   methods: {
-    change(res) {
-      if (res.checked) {
-        res.count++
+    change(item) {
+      if (item.checked) {
+        item.count++
       }
     },
     // 切换状态
