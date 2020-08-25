@@ -79,8 +79,9 @@ export default {
   },
   mounted() {
     //   空闲状态的置业顾问
-    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问' and status = '空闲' ;`
+    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问' and status = '空闲' or status = '忙碌';`
     api.getSqlJsonAPI(sql).then((res) => {
+      console.log(res)
       res.data.forEach((el) => {
         this.columns.push(el.name)
       })
