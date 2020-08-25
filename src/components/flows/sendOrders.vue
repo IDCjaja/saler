@@ -29,7 +29,7 @@
           readonly
           clickable
           name="picker"
-          :value="value"
+          :value="salerValue"
           label="选择处理者："
           placeholder="点击选择处理人"
           @click="showPicker = true"
@@ -38,7 +38,7 @@
           <van-picker show-toolbar :columns="columns" @confirm="onConfirm" @cancel="showPicker = false" />
         </van-popup>
 
-        <div @click="spendFlow(formData)" class="bottom">
+        <div @click="sendFlow(formData)" class="bottom">
           确认
         </div>
       </van-popup>
@@ -58,12 +58,12 @@ import total from '@/api/total'
 export default {
   data() {
     return {
-      value: '',
+      title: '派单',
+      salerValue: '',
       columns: [],
       showPicker: false,
-      title: '派单',
       flowID: 25,
-      fields: [],
+      formID: 13,
       formData: [],
       userID: '',
       show: false,
@@ -71,6 +71,7 @@ export default {
       dataArr: [],
       reviewerID: '',
       nextVertexID: '',
+      newCustomer: false,
     }
   },
   components: {
@@ -97,21 +98,43 @@ export default {
       const phone = this.$route.query.phone
       let sql = `select * from fdc_form_1_13 WHERE phone ='${phone}';`
       api.getSqlJsonAPI(sql).then((res) => {
-        this.userData = res.data[0]
-        // 缓存值自动填入
-        this.formData.forEach((res) => {
-          switch (res.identity_key) {
-            case 'name':
-              res.value = this.userData ? this.userData.name : ''
-              break
-            case 'phone':
-              res.value = this.userData ? this.userData.phone : ''
-              break
+        if (res.data.length) {
+          this.userData = res.data[0]
+          // 缓存值自动填入
+          this.formData.forEach((res) => {
+            switch (res.identity_key) {
+              case 'name':
+                res.value = this.userData ? this.userData.name : ''
+                break
+              case 'phone':
+                res.value = this.userData ? this.userData.phone : ''
+                break
 
-            default:
-              break
-          }
-        })
+              default:
+                break
+            }
+          })
+        } else {
+          this.newCustomer = true
+          let sql = `select * from fdc_form_1_15 WHERE phone ='${phone}';`
+          api.getSqlJsonAPI(sql).then((res) => {
+            this.userData = res.data[0]
+            // 缓存值自动填入
+            this.formData.forEach((res) => {
+              switch (res.identity_key) {
+                case 'name':
+                  res.value = this.userData ? this.userData.name : ''
+                  break
+                case 'phone':
+                  res.value = this.userData ? this.userData.phone : ''
+                  break
+
+                default:
+                  break
+              }
+            })
+          })
+        }
       })
     })
   },
@@ -120,12 +143,13 @@ export default {
       this.dataArr.forEach((el) => {
         if (el.name === value) {
           this.reviewerID = el.id
+          this.salerPhone = el.phone
         }
       })
-      this.value = value
+      this.salerValue = value
       this.showPicker = false
     },
-    spendFlow(formData) {
+    sendFlow(formData) {
       let payload = {
         assignment: {
           response_attributes: {
@@ -162,6 +186,7 @@ export default {
           }
         }
       })
+      //   发起流程
       api.postflowAPI(this.flowID, payload).then((res) => {
         if (res.status === 200) {
           // 下一节点走起
@@ -177,6 +202,7 @@ export default {
             },
             user_id: this.userID,
           }
+          //   下一节点选择
           api.postflowAPI(this.flowID, payload).then((res) => {
             this.show = false
             if (res.status === 200) {
@@ -188,11 +214,30 @@ export default {
           })
         }
       })
+      // 新建客户
+      if (this.newCustomer) {
+        const newCustomerData = {
+          response: {
+            entries_attributes: [
+              // 固定表项填值
+              { field_id: 354, value: this.userData.name },
+              { field_id: 355, value: this.userData.phone },
+              { field_id: 352, value: this.salerValue },
+              { field_id: 353, value: this.salerPhone },
+            ],
+          },
+        }
+        newCustomerData.user_id = localStorage.getItem('user_id')
+
+        api.postFormAPI(this.formID, newCustomerData).then((res) => {
+          console.log('新建成功！！')
+        })
+      }
     },
 
     newTable(formData) {
       this.show = true
-      this.value = this.userData.saler
+      this.salerValue = this.userData.saler
     },
   },
 }
