@@ -113,14 +113,14 @@
           <h2>客户未预约</h2>
         </div>
       </section>
-      <!-- <section v-show="!showResult && !showResultOrder">
-        <img alt class="guest_main_img" src="@/assets/img/Judgement-Img.png" />
-      </section>-->
     </div>
-    <a
+    <router-link
+      :to="{
+        name: 'sendOrders',
+        query: { phone: this.phone },
+      }"
       class="guest_footer_a"
-      href="http://shandenabian.skylarkly.com/namespaces/1/yet_another_workflow/flows/5/journeys/new"
-      >派单</a
+      >派单</router-link
     >
     <footer class="guest_footer">
       <p class="content-header">
@@ -129,9 +129,9 @@
         <span>状态</span>
       </p>
 
-      <p :key="item.id" class="content-header-content" v-for="item in visit">
+      <p :key="item.id" class="content-header-content" v-for="item in visitList">
         <span>{{ item.name }}</span>
-        <span>{{ item.phone }}</span>
+        <span>{{ item.count }}</span>
         <span>
           <van-switch
             @change="change(item)"
@@ -155,45 +155,10 @@ import total from '@/api/total'
 export default {
   data() {
     return {
-      visit: [
-        {
-          name: '任海涛',
-          phone: 0,
-          checked: false,
-        },
-        {
-          name: '贺亚菲',
-          phone: 0,
-          checked: false,
-        },
-        {
-          name: '李罡皓',
-          phone: 0,
-          checked: false,
-        },
-        {
-          name: '雷洛',
-          phone: 0,
-          checked: false,
-        },
-        {
-          name: '鲜原',
-          phone: 0,
-          checked: false,
-        },
-        {
-          name: '徐爱玲',
-          phone: 0,
-          checked: false,
-        },
-        {
-          name: '刘鑫',
-          phone: 0,
-          checked: false,
-        },
-      ],
+      visitList: [],
       number: '',
       name: '',
+      phone: '',
       user_name: '',
       created_at: '',
       planed_visit_time: '',
@@ -222,35 +187,35 @@ export default {
   computed: {
     encryption() {
       let phone = this.customer_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.customer_phone = phone
       return this.customer_phone
     },
   },
   mounted() {
-    // 是否有权限
+    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问';`
+    api.getSqlJsonAPI(sql).then((res) => {
+      res.data.forEach((el) => {
+        el.status === '空闲' ? (el.checked = false) : (el.checked = true)
+        el.count === null ? (el.count = 0) : ''
+      })
+      this.visitList = res.data
+    })
     this.Data = total.formatDateTime()
-    this.phone = localStorage.getItem('user_phone')
-    if (!this.phone) {
-      sessionStorage.setItem('return', this.$route.name)
-      this.$router.push({ name: 'login' })
-    } else {
-      api.getFormAPI(this.tableID).then((res) => {
-        this.fields = res.data.fields
-        // 表单数据处理
-        this.formData = total.tableListData(this.fields, this.orderFieldList)
-      })
-      api.getFormAPI(this.tableVisitID).then((res) => {
-        this.fields = res.data.fields
-        // 表单数据处理
-        this.statusData = total.tableListData(this.fields, this.statusFieldList)
-      })
-    }
+    api.getFormAPI(this.tableID).then((res) => {
+      this.fields = res.data.fields
+      // 表单数据处理
+      this.formData = total.tableListData(this.fields, this.orderFieldList)
+    })
+    api.getFormAPI(this.tableVisitID).then((res) => {
+      this.fields = res.data.fields
+      // 表单数据处理
+      this.statusData = total.tableListData(this.fields, this.statusFieldList)
+    })
   },
   methods: {
-    change(res) {
-      if (res.checked) {
-        res.phone++
+    change(item) {
+      if (item.checked) {
+        item.count++
       }
     },
     // 切换状态
@@ -296,12 +261,13 @@ export default {
           } else {
             this.show = true
             this.user_name = res.data[0].saler
+            this.phone = res.data[0].phone
             this.name = res.data[0].name
             this.created_at = res.data[0].created_at.slice(0, 10)
           }
           this.newTable()
         })
-        // 预约查询
+        // 用户是否预约
         let sqlVisit = `select * from fdc_form_1_15 where phone ~ '${this.number}$' and to_char(estimated_time,'YYYY-MM-DD')='${this.Data}'`
         api.getSqlJsonAPI(sqlVisit).then((res) => {
           this.planed_visit_time = '未到访'
@@ -309,6 +275,7 @@ export default {
           if (res.data[0]) {
             this.showOrder = true
             let data = res.data[0]
+            this.phone = data.phone
             this.order_name = data.user_name
             this.customer_name = data.name
             this.customer_phone = data.phone
@@ -565,12 +532,13 @@ export default {
 .guest_footer_a {
   color: #fff;
   font-size: 16px;
-  padding: 2px;
+  padding: 5px;
   border-radius: 3px;
   width: 98%;
+  font-weight: 700;
   margin: 15px auto 0px;
   display: block;
-  background: #2bcc7d;
+  background: #00a862;
 }
 
 .guest_footer {
