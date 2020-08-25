@@ -56,4 +56,8 @@ export default {
   postflowAPI(flowID, data) {
     return http.post(`/api/v4/yaw/flows/${flowID}/journeys`, data, headerV4)
   },
+  // 请求组织成员
+  getOrganizationsAPI(organizationID) {
+    return http.get(`/api/v4/organizations/${organizationID}/members`, '', headerV4)
+  },
 }

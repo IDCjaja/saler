@@ -82,6 +82,11 @@ export default [
     component: () => import(/* webpackChunkName:'rename' */ '@/components/flows/rename'),
   },
   {
+    path: '/real_estate/saler/sendOrders',
+    name: 'sendOrders',
+    component: () => import(/* webpackChunkName:'sendOrders' */ '@/components/flows/sendOrders'),
+  },
+  {
     path: '/real_estate/saler/customer',
     name: 'customer',
     component: () => import(/* webpackChunkName:'customer' */ '@/components/customer'),
