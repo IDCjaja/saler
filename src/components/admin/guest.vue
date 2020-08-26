@@ -134,6 +134,7 @@
         <span>{{ item.count }}</span>
         <span>
           <van-switch
+            disabled
             @change="change(item)"
             active-color="#00a862"
             inactive-color="#fff"
