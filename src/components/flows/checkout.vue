@@ -69,6 +69,22 @@
               v-model="field.value"
             />
           </div>
+          <!-- 明细字段 -->
+          <div class="detail" v-else-if="field.type === 'Field::Detail'">
+            <p class="detail-title">{{ field.title }}</p>
+            <div :key="field.identity_key" v-for="field in field.children">
+              <!-- 文本 -->
+              <van-field
+                :id="field.identity_key"
+                :label="field.title"
+                autocomplete="off"
+                placeholder="请输入"
+                type="text"
+                v-model="field.value"
+              />
+            </div>
+            <span class="detail-add" @click="addDetail(field)">添加明细</span>
+          </div>
         </div>
       </aside>
 
@@ -98,14 +114,29 @@ export default {
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
       middleField: '',
+      addArr: '',
     }
   },
   components: {
     CustomerTabbar,
   },
   mounted() {
+    // let a = {
+    //   assignment: {
+    //     operation: 'route',
+    //     response_attributes: {
+    //       entries_attributes: [
+    //         { field_id: 715, group_id: 1598431720783, value: '测试' },
+    //         { field_id: 712, group_id: 1598431720783, value: '测试' },
+    //         { field_id: 715, group_id: 1598431982454, value: '测试次噢哦i去号ID好死' },
+    //         { field_id: 712, group_id: 1598431982454, value: '阿莱克斯几点了咖喱肯德基阿克琉斯的' },
+    //       ],
+    //     },
+    //   },
+    // }
     this.userID = localStorage.getItem('user_id')
     api.getflowAPI(this.flowID).then((res) => {
+      console.log(res)
       this.formData = total.flowListData(res.data.fields)
 
       const roomID = this.$route.query.roomID
@@ -149,6 +180,13 @@ export default {
     })
   },
   methods: {
+    addDetail(el) {
+      // eslint-disable-next-line no-unused-expressions
+      this.addArr ? '' : (this.addArr = el.children)
+
+      el.children = [...el.children, ...this.addArr]
+      console.log(el)
+    },
     showTime(field) {
       this.middleField = field.identity_key
       this.showPicker = true
@@ -282,5 +320,33 @@ export default {
   color: #fff;
   background-color: #00a862;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.detail {
+  margin: 20px;
+
+  .detail-title {
+    text-align: left;
+    padding: 4px 0px;
+    color: #222222;
+    font-size: 17px;
+  }
+
+  .detail-add {
+    border: 2px solid #00a862;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-top: 20px;
+    display: flex;
+    width: 100px;
+    justify-content: center;
+  }
+  .detail-add:hover {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .van-cell {
+    background-color: #f6f6f6;
+  }
 }
 </style>

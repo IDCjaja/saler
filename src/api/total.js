@@ -6,42 +6,82 @@ export default {
     fields.forEach((field) => {
       let objData = {}
 
-      switch (field.type) {
-        case 'Field::RadioButton': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.option_id = ''
-          objData.options = field.options
-          break
-        }
-        case 'Field::CheckBox': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.option_id = []
-          objData.value = ''
-          objData.other_option = field.other_option
-          objData.options = field.options
-          break
-        }
-        case 'Field::DateTime': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.value = ''
-          break
-        }
+      if (field.type === 'Field::Detail') {
+        objData.field_id = field.id
+        objData.identity_key = field.identity_key
+        objData.type = field.type
+        objData.title = field.title
+        objData.children = []
 
-        default: {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.value = ''
+        // 明细字段内部构建
+        field.children.forEach((field) => {
+          let objDataChildren = {}
+          switch (field.type) {
+            case 'Field::RadioButton': {
+              objDataChildren.field_id = field.id
+              objDataChildren.identity_key = field.identity_key
+              objDataChildren.type = field.type
+              objDataChildren.title = field.title
+              objDataChildren.option_id = ''
+              objDataChildren.options = field.options
+              break
+            }
+            case 'Field::DateTime': {
+              objDataChildren.field_id = field.id
+              objDataChildren.identity_key = field.identity_key
+              objDataChildren.type = field.type
+              objDataChildren.title = field.title
+              objDataChildren.value = ''
+              break
+            }
+            default: {
+              objDataChildren.field_id = field.id
+              objDataChildren.identity_key = field.identity_key
+              objDataChildren.type = field.type
+              objDataChildren.title = field.title
+              objDataChildren.value = ''
+            }
+          }
+          objData.children.push(objDataChildren)
+        })
+        console.log(objData)
+      } else {
+        switch (field.type) {
+          case 'Field::RadioButton': {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.option_id = ''
+            objData.options = field.options
+            break
+          }
+          case 'Field::CheckBox': {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.option_id = []
+            objData.value = ''
+            objData.other_option = field.other_option
+            objData.options = field.options
+            break
+          }
+          case 'Field::DateTime': {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.value = ''
+            break
+          }
+          default: {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.value = ''
+          }
         }
       }
 
