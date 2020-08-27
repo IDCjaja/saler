@@ -44,6 +44,24 @@ export default {
           objData.value = ''
         }
       }
+      switch (field.identity_key) {
+        case 'new_room_number': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = []
+          objData.columnsCe = this.cascade(field.cascaded_select.choices)
+          break
+        }
+        default: {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = ''
+        }
+      }
 
       tableList.push(objData)
     })

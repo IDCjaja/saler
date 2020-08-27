@@ -42,6 +42,28 @@
               />
             </van-popup>
           </p>
+
+          <!-- 级联 -->
+          <div class="input_text cascade" v-else-if="field.type === 'Field::CascadedSelect'">
+            <p v-if="field.identity_key == 'new_room_number'">
+              <van-field
+                :id="field.identity_key"
+                :label="field.title"
+                :value="cascadeWorkingValue"
+                @click="showPickerCascadeWorking = true"
+                clickable
+                readonly
+              />
+              <van-popup position="bottom" round v-model="showPickerCascadeWorking">
+                <van-picker
+                  :columns="field.columnsCe"
+                  @cancel="showPickerCascadeWorking = false"
+                  @confirm="onWorkingConfirm"
+                  show-toolbar
+                />
+              </van-popup>
+            </p>
+          </div>
           <!-- butoon -->
           <div v-else-if="field.type === 'Field::RadioButton'">
             <van-field :label="field.title">
@@ -98,6 +120,9 @@ export default {
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
       middleField: '',
+      cascadeValue: '',
+      showPickerCascadeWorking: false,
+      cascadeWorkingValue: '',
     }
   },
   components: {
@@ -164,6 +189,21 @@ export default {
     })
   },
   methods: {
+    // 级联
+    onWorkingConfirm(cascadeValue, index) {
+      this.formData.forEach((element) => {
+        if (element.identity_key === 'new_room_number') {
+          let cascade = element.columnsCe[index[0]].children[index[1]].children[index[2]]
+          element.choice_id = cascade.id
+          element.value = cascade.text
+        }
+      })
+
+      let cascadeWorkingValue = cascadeValue.join('-')
+
+      this.cascadeWorkingValue = cascadeWorkingValue
+      this.showPickerCascadeWorking = false
+    },
     showTime(field) {
       this.middleField = field.identity_key
       this.showPicker = true
@@ -216,6 +256,17 @@ export default {
             if (element.value) {
               entries.push({
                 field_id: element.field_id,
+                value: element.value,
+              })
+            }
+            break
+          }
+          // 级联
+          case 'Field::CascadedSelect': {
+            if (this.cascadeWorkingValue) {
+              entries.push({
+                field_id: element.field_id,
+                choice_id: element.choice_id,
                 value: element.value,
               })
             }
