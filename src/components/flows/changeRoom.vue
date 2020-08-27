@@ -213,10 +213,12 @@ export default {
             break
           }
           case 'Field::DateTime': {
-            entries.push({
-              field_id: element.field_id,
-              value: element.value,
-            })
+            if (element.value) {
+              entries.push({
+                field_id: element.field_id,
+                value: element.value,
+              })
+            }
             break
           }
           // 文本

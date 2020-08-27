@@ -189,7 +189,7 @@ export default {
       formData.forEach((element) => {
         switch (element.type) {
           case 'Field::RadioButton': {
-            if (element.option_id !== '') {
+            if (element.option_id) {
               entries.push({
                 field_id: element.field_id,
                 option_id: element.option_id,
@@ -198,7 +198,7 @@ export default {
             break
           }
           case 'Field::DateTime': {
-            if (element.option_id !== '') {
+            if (element.value) {
               entries.push({
                 field_id: element.field_id,
                 value: element.value,
@@ -208,7 +208,7 @@ export default {
           }
           // 文本
           default: {
-            if (element.value !== '') {
+            if (element.value) {
               entries.push({
                 field_id: element.field_id,
                 value: element.value,
