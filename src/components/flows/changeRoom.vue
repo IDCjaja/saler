@@ -47,6 +47,7 @@
           <div class="input_text cascade" v-else-if="field.type === 'Field::CascadedSelect'">
             <p v-if="field.identity_key == 'new_room_number'">
               <van-field
+                placeholder="点击选择房号"
                 :id="field.identity_key"
                 :label="field.title"
                 :value="cascadeWorkingValue"
