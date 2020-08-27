@@ -120,6 +120,7 @@ export default {
           this.newCustomer = true
           let sql = `select * from fdc_form_1_15 WHERE phone ='${phone}';`
           api.getSqlJsonAPI(sql).then((res) => {
+            res.data[0].encryption = res.data[0].phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
             this.userData = res.data[0]
             // 缓存值自动填入
             this.formData.forEach((res) => {
@@ -128,7 +129,7 @@ export default {
                   res.value = this.userData ? this.userData.name : ''
                   break
                 case 'phone':
-                  res.value = this.userData ? this.userData.phone : ''
+                  res.value = this.userData ? this.userData.encryption : ''
                   break
 
                 default:
