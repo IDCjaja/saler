@@ -81,7 +81,6 @@ export default {
     //   空闲状态的置业顾问
     let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问' and state = '空闲' or state = '忙碌';`
     api.getSqlJsonAPI(sql).then((res) => {
-      console.log(res)
       res.data.forEach((el) => {
         this.columns.push(el.name)
       })
@@ -100,6 +99,8 @@ export default {
       let sql = `select * from fdc_form_1_13 WHERE phone ='${phone}';`
       api.getSqlJsonAPI(sql).then((res) => {
         if (res.data.length) {
+          // 手机号加密
+          res.data[0].encryption = res.data[0].phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
           this.userData = res.data[0]
           // 缓存值自动填入
           this.formData.forEach((res) => {
@@ -108,7 +109,7 @@ export default {
                 res.value = this.userData ? this.userData.name : ''
                 break
               case 'phone':
-                res.value = this.userData ? this.userData.phone : ''
+                res.value = this.userData ? this.userData.encryption : ''
                 break
 
               default:
