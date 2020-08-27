@@ -62,7 +62,7 @@ export default {
       salerValue: '',
       columns: [],
       showPicker: false,
-      flowID: 25,
+      flowID: 56,
       formID: 13,
       formData: [],
       userID: '',
@@ -79,7 +79,7 @@ export default {
   },
   mounted() {
     //   空闲状态的置业顾问
-    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问' and status = '空闲' or status = '忙碌';`
+    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问' and state = '空闲' or state = '忙碌';`
     api.getSqlJsonAPI(sql).then((res) => {
       console.log(res)
       res.data.forEach((el) => {
@@ -160,7 +160,7 @@ export default {
         },
         user_id: this.userID,
         webhook: {
-          payload_url: '',
+          payload_url: 'http://shandenabian.skylarkly.com/magnate/saler/status/change',
           subscribed_events: ['JourneyStatusEvent'],
         },
       }
@@ -202,6 +202,10 @@ export default {
               next_reviewer_ids: [this.reviewerID],
             },
             user_id: this.userID,
+            webhook: {
+              payload_url: 'http://shandenabian.skylarkly.com/magnate/saler/status/change',
+              subscribed_events: ['JourneyStatusEvent'],
+            },
           }
           //   下一节点选择
           api.postflowAPI(this.flowID, payload).then((res) => {
