@@ -181,7 +181,7 @@ export default {
         },
         user_id: this.userID,
         webhook: {
-          payload_url: '',
+          payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/exit',
           subscribed_events: ['JourneyStatusEvent'],
         },
       }
@@ -228,6 +228,10 @@ export default {
             next_vertex_id: id,
           },
           user_id: this.userID,
+          webhook: {
+            payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/exit',
+            subscribed_events: ['JourneyStatusEvent'],
+          },
         }
         api.postflowAPI(this.flowID, payload).then((res) => {
           if (res.status === 200) {
