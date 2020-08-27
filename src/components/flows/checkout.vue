@@ -236,6 +236,9 @@ export default {
         api.postflowAPI(this.flowID, payload).then((res) => {
           if (res.status === 200) {
             this.$toast('发起成功 ✨')
+            this.$router.push({
+              name: 'house',
+            })
           }
         })
       })
