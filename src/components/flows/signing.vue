@@ -17,6 +17,17 @@
               />
             </p>
           </div>
+          <div class="input_text" v-else-if="field.type === 'Field::TextArea'">
+            <van-field
+              :id="field.identity_key"
+              :label="field.title"
+              autocomplete="off"
+              placeholder="请输入"
+              type="textarea"
+              autosize
+              v-model="field.value"
+            />
+          </div>
           <!-- 时间 -->
           <p v-else-if="field.type === 'Field::DateTime'">
             <van-field
@@ -134,6 +145,9 @@ export default {
               break
             case 'loan_amount':
               res.value = this.signData ? this.signData.stages_money : ''
+              break
+            case 'additional_preferential_system':
+              res.value = this.signData ? this.signData.discount : ''
               break
 
             default:
