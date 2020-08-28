@@ -181,7 +181,7 @@ export default {
         },
         user_id: this.userID,
         webhook: {
-          payload_url: '',
+          payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/exit',
           subscribed_events: ['JourneyStatusEvent'],
         },
       }
@@ -189,7 +189,7 @@ export default {
       formData.forEach((element) => {
         switch (element.type) {
           case 'Field::RadioButton': {
-            if (element.option_id !== '') {
+            if (element.option_id) {
               entries.push({
                 field_id: element.field_id,
                 option_id: element.option_id,
@@ -198,7 +198,7 @@ export default {
             break
           }
           case 'Field::DateTime': {
-            if (element.option_id !== '') {
+            if (element.value) {
               entries.push({
                 field_id: element.field_id,
                 value: element.value,
@@ -208,7 +208,7 @@ export default {
           }
           // 文本
           default: {
-            if (element.value !== '') {
+            if (element.value) {
               entries.push({
                 field_id: element.field_id,
                 value: element.value,
@@ -228,10 +228,17 @@ export default {
             next_vertex_id: id,
           },
           user_id: this.userID,
+          webhook: {
+            payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/exit',
+            subscribed_events: ['JourneyStatusEvent'],
+          },
         }
         api.postflowAPI(this.flowID, payload).then((res) => {
           if (res.status === 200) {
             this.$toast('发起成功 ✨')
+            this.$router.push({
+              name: 'house',
+            })
           }
         })
       })

@@ -176,7 +176,7 @@ export default {
         },
         user_id: this.userID,
         webhook: {
-          payload_url: '',
+          payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/sign',
           subscribed_events: ['JourneyStatusEvent'],
         },
       }
@@ -213,7 +213,6 @@ export default {
         }
       })
       api.postflowAPI(this.flowID, payload).then((res) => {
-        this.$toast('发起成功 ✨')
         const id = res.data.next_vertices[0].id
         let payload = {
           assignment: {
@@ -224,8 +223,19 @@ export default {
             next_vertex_id: id,
           },
           user_id: this.userID,
+          webhook: {
+            payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/sign',
+            subscribed_events: ['JourneyStatusEvent'],
+          },
         }
-        api.postflowAPI(this.flowID, payload).then((res) => {})
+        api.postflowAPI(this.flowID, payload).then((res) => {
+          if (res.status === 200) {
+            this.$toast('发起成功 ✨')
+            this.$router.push({
+              name: 'house',
+            })
+          }
+        })
       })
     },
   },

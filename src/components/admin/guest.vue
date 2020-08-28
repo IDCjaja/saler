@@ -196,7 +196,7 @@ export default {
     let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问';`
     api.getSqlJsonAPI(sql).then((res) => {
       res.data.forEach((el) => {
-        el.status === '空闲' ? (el.checked = false) : (el.checked = true)
+        el.state === '空闲' ? (el.checked = false) : (el.checked = true)
         el.count === null ? (el.count = 0) : ''
       })
       this.visitList = res.data
