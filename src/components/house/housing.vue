@@ -1,19 +1,14 @@
 <template>
   <div class="housing">
     <tabbar :title="title" />
-    <van-search v-model="building" label="楼栋号" @search="onSearch" placeholder="请输入楼栋号" />
+    <van-search v-model="building" label="楼栋号" @blur="onSearch" placeholder="请输入楼栋号" />
     <header class="house_header" v-show="show">
-      <div
-        class="house_buttom"
-        @click="search(item.room_building)"
-        v-for="item in list"
-        :key="item.id"
-      >
-        <p>{{item.room_building}} 栋</p>
+      <div class="house_buttom" @click="search(item.room_building)" v-for="item in list" :key="item.id">
+        <p>{{ item.room_building }} 栋</p>
         <p>5 个单元</p>
-        <p>{{item.count}} 个房间</p>
+        <p>{{ item.count }} 个房间</p>
         <p>已售：0 间</p>
-        <p>未售：{{item.count}} 间</p>
+        <p>未售：{{ item.count }} 间</p>
       </div>
     </header>
 
@@ -21,51 +16,31 @@
       <div class="main_item">
         <van-collapse v-model="activeNames" v-for="item in house" :key="item.id">
           <div v-if="item.room_status == '认购'">
-            <van-cell
-              center
-              :title="item.room_number"
-              :value="item.room_status"
-              :class="item.class"
-            />
+            <van-cell center :title="item.room_number" :value="item.room_status" :class="item.class" />
           </div>
           <div v-else-if="item.room_status == '签约'">
-            <van-cell
-              center
-              :title="item.room_number"
-              :value="item.room_status"
-              :class="item.class"
-            />
+            <van-cell center :title="item.room_number" :value="item.room_status" :class="item.class" />
           </div>
           <div v-else-if="item.room_status == '退房'">
-            <van-cell
-              center
-              :title="item.room_number"
-              :value="item.room_status"
-              :class="item.class"
-            />
+            <van-cell center :title="item.room_number" :value="item.room_status" :class="item.class" />
           </div>
           <div v-else>
-            <van-collapse-item
-              title="房号"
-              :value="item.room_number"
-              :name="item.id"
-              :class="item.class"
-            >
+            <van-collapse-item title="房号" :value="item.room_number" :name="item.id" :class="item.class">
               <p class="main_item_van">
                 <span>建筑面积：</span>
-                <span>{{item.covered_area}}</span>
+                <span>{{ item.covered_area }}</span>
               </p>
               <p class="main_item_van">
                 <span>套内面积：</span>
-                <span>{{item.inside_area}}</span>
+                <span>{{ item.inside_area }}</span>
               </p>
               <p class="main_item_van">
                 <span>挂牌单价：</span>
-                <span>{{item.univalence}}</span>
+                <span>{{ item.univalence }}</span>
               </p>
               <p class="main_item_van">
                 <span>挂牌总价：</span>
-                <span>{{item.total}}</span>
+                <span>{{ item.total }}</span>
               </p>
             </van-collapse-item>
           </div>
@@ -78,53 +53,56 @@
 </template>
 
 <script>
-import Tabbar from "@/components/pages/tabbar";
-import HomeNav from "@/components/pages/nav";
-import api from "@/api/api";
-import total from "@/api/total";
+import Tabbar from '@/components/pages/tabbar'
+import HomeNav from '@/components/pages/nav'
+import api from '@/api/api'
+import total from '@/api/total'
 
 export default {
   data() {
     return {
-      title: "房源展示",
-      formID: "11",
+      title: '房源展示',
+      formID: '11',
       list: [],
-      building: "",
+      building: '',
       house: [],
       show: true,
       houseSubscribe: [],
       houseSigning: [],
       houseChange: [],
       activeNames: [],
-    };
+    }
   },
   components: {
     Tabbar,
     HomeNav,
   },
   mounted() {
-    let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`;
+    let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`
     api.getSqlJsonAPI(sql).then((res) => {
-      this.list = res.data;
-    });
+      this.list = res.data
+    })
   },
   methods: {
     onSearch() {
-      this.show = false;
-      let sql = `select * from fdc_form_1_16 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`;
+      this.show = false
+      let sql = `select * from fdc_form_1_16 WHERE room_building ='${this.building}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
-        this.house = total.houseStatus(res.data);
-      });
+        if (res.data.length === 0) {
+          this.show = true
+        }
+        this.house = total.houseStatus(res.data)
+      })
     },
     search(building) {
-      this.show = false;
-      let sql = `select * from fdc_form_1_16 WHERE room_building ='${building}' ORDER BY room_number ASC;`;
+      this.show = false
+      let sql = `select * from fdc_form_1_16 WHERE room_building ='${building}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
-        this.house = total.houseStatus(res.data);
-      });
+        this.house = total.houseStatus(res.data)
+      })
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
