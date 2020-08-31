@@ -7,8 +7,8 @@
         <p>{{ item.room_building }} 栋</p>
         <p>5 个单元</p>
         <p>{{ item.count }} 个房间</p>
-        <p>已售：0 间</p>
-        <p>未售：{{ item.count }} 间</p>
+        <p>已售：{{ item.signing }} 间</p>
+        <p>未售：{{ item.count - item.signing }} 间</p>
       </div>
     </header>
 
@@ -78,8 +78,10 @@ export default {
     HomeNav,
   },
   mounted() {
-    let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`
+    // let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`
+    let sql = `select room_building,count (room_building) ,sum( case when room_status ='签约' then 1 else 0 end )  AS signing  from fdc_form_1_16 group by room_building order by room_building ASC`
     api.getSqlJsonAPI(sql).then((res) => {
+      console.log(res)
       this.list = res.data
     })
   },
