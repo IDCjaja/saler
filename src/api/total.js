@@ -194,6 +194,13 @@ export default {
     }
     return data
   },
+  // 签约时间格式化
+  signingData(data) {
+    for (let i = 0; i < data.length; i++) {
+      data[i].signing_time = data[i].signing_time.slice(0, 10)
+    }
+    return data
+  },
   // 表单数据处理
   tableListData(fields, orderFieldList) {
     let tableList = []
