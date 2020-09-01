@@ -55,6 +55,7 @@ import HomeHeader from './pages/header'
 import HomeNav from './pages/nav'
 import BuyTabbar from './pages/tabbar'
 import api from '@/api/api'
+import total from '@/api/total'
 export default {
   data() {
     return {
@@ -64,7 +65,6 @@ export default {
       namePhone: '',
       immediate_check: false,
       isLoading: true,
-      loadNum: 1,
       created_at: '时间',
       intention: '意向',
       search_time: [
@@ -81,6 +81,8 @@ export default {
         { text: 'D无意向', value: 'D无意向' },
       ],
       list: [],
+      items_per_page: 20,
+      page: 0,
       loading: false,
       finished: false,
     }
@@ -89,27 +91,39 @@ export default {
     // tab 切换
     created_at: function(newQuestion, oldQuestion) {
       this.finished = false
-      this.loadNum = 1
-      if (newQuestion === '时间') {
-        api.getSalerSearchAPI().then((res) => {
-          this.list = res.data
-        })
-      } else {
-        let params = { search_type: 'created_at', search_key: newQuestion }
-        api.getSalerSearchAPI(params).then((res) => {
-          this.list = res.data
-        })
+      // 根据时间筛选数据
+      let date = new Date()
+      switch (newQuestion) {
+        case 'within_week': {
+          date.setDate(date.getDate() - 7)
+          date = total.formatDate(date)
+          this.timeSearch(date, newQuestion)
+          break
+        }
+        case 'within_month': {
+          date.setMonth(date.getMonth() - 1)
+          date = total.formatDate(date)
+          this.timeSearch(date, newQuestion)
+          break
+        }
+        case 'away_month': {
+          date.setMonth(date.getMonth() - 1)
+          date = total.formatDate(date)
+          this.timeSearch(date, newQuestion)
+          break
+        }
+        default: {
+          this.listData()
+        }
       }
     },
     intention: function(newQuestion, oldQuestion) {
       this.finished = false
-      this.loadNum = 1
+      this.page = 0
       if (newQuestion === '意向') {
-        api.getSalerSearchAPI().then((res) => {
-          this.list = res.data
-        })
+        this.listData()
       } else {
-        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND intention  like '${this.intention}'  ORDER BY created_at DESC`
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND intention like '${this.intention}'  ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
         api.getSqlJsonAPI(sql).then((res) => {
           this.list = res.data
         })
@@ -125,21 +139,24 @@ export default {
     // 读取cookie
     this.id = localStorage.getItem('user_id')
     this.phone = localStorage.getItem('user_phone')
-    // 拉取搜索列表
-    let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}'  ORDER BY created_at DESC`
-    api.getSqlJsonAPI(sql).then((res) => {
-      this.isLoading = false
-      this.list = res.data
-      this.finished = true
-    })
+    // 拉取当前置业顾问客户列表
+    this.listData()
   },
   methods: {
+    listData() {
+      let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
+      api.getSqlJsonAPI(sql).then((res) => {
+        this.isLoading = false
+        this.list = res.data
+      })
+    },
     creatData(res) {
       let firstDataTime = res.slice(0, 10)
       let lastDataTime = res.slice(11, 16)
       return firstDataTime + '  ' + lastDataTime
     },
     search() {
+      // 搜索人名或者手机号，查询全部数据
       if (this.namePhone) {
         let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND (name  ~ '${this.namePhone}' or phone ~ '${this.namePhone}') ORDER BY created_at DESC`
         api.getSqlJsonAPI(sql).then((res) => {
@@ -147,46 +164,19 @@ export default {
           this.list = res.data
           this.finished = true
         })
-        // .catch(() => {
-        //   this.$toast("搜索失败");
-        // });
       } else {
-        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}'  ORDER BY created_at DESC`
-        api.getSqlJsonAPI(sql).then((res) => {
-          this.isLoading = false
-          this.list = res.data
-          this.finished = true
-        })
+        this.finished = false
+        this.listData()
       }
     },
 
     // 分页加载
     onLoad() {
+      this.page += this.items_per_page
       this.loading = true
-      if (this.created_at !== '时间') {
-        this.loadNum++
-        let params = {
-          search_type: 'created_at',
-          search_key: this.created_at,
-          page: this.loadNum,
-          per_page: '10',
-        }
-        api.getSalerSearchAPI(params).then((res) => {
-          this.loading = false
-          let oldList = this.list
-          let newList = res.data
-          this.list = [...oldList, ...newList]
-
-          // 加载状态结束
-          // 数据全部加载完成
-          if (!res.data.length) {
-            this.loading = false
-            this.finished = true
-          }
-        })
-      } else if (this.intention !== '意向') {
-        this.loadNum++
-        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND intention  like '${this.intention}'  ORDER BY created_at DESC`
+      // 根据意向筛选数据
+      if (this.intention !== '意向') {
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' AND intention like '${this.intention}'  ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
         api.getSqlJsonAPI(sql).then((res) => {
           this.finished = true
           this.loading = false
@@ -202,20 +192,36 @@ export default {
           }
         })
       } else {
-        // this.loadNum++;
-        // let params = { page: this.loadNum, per_page: "10" };
-        // api.getSqlJsonAPI(this.sql, params).then((res) => {
-        //   this.isLoading = false;
-        //   let oldList = this.list;
-        //   let newList = res.data;
-        //   this.list = [...oldList, ...newList];
-        //   // 加载状态结束
-        //   // 数据全部加载完成
-        //   if (!res.data.length) {
-        //     this.loading = false;
-        //     this.finished = true;
-        //   }
-        // });
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
+        api.getSqlJsonAPI(sql).then((res) => {
+          let oldList = this.list
+          let newList = res.data
+          this.list = [...oldList, ...newList]
+          this.loading = false
+          // 加载状态结束
+          // 数据全部加载完成
+          if (!res.data.length) {
+            this.loading = false
+            this.finished = true
+          }
+        })
+      }
+    },
+    timeSearch(date, type) {
+      if (type !== 'away_month') {
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' and to_char(created_at,'YYYY-MM-DD')>='${date}' ORDER BY  created_at DESC`
+        api.getSqlJsonAPI(sql).then((res) => {
+          this.isLoading = false
+          this.finished = true
+          this.list = res.data
+        })
+      } else {
+        let sql = `select * from fdc_form_1_13 WHERE saler_phone ='${this.phone}' and to_char(created_at,'YYYY-MM-DD')<='${date}' ORDER BY created_at DESC`
+        api.getSqlJsonAPI(sql).then((res) => {
+          this.isLoading = false
+          this.finished = true
+          this.list = res.data
+        })
       }
     },
   },
