@@ -2,10 +2,7 @@
   <div>
     <buy-tabbar :title="title" />
     <van-search @blur="search" placeholder="输入姓名/手机号" v-model="namePhone" />
-    <van-dropdown-menu active-color="#00a862">
-      <van-dropdown-item :options="search_time" v-model="created_at" />
-      <van-dropdown-item :options="search_intention" v-model="intention" />
-    </van-dropdown-menu>
+
     <van-loading class="loading" size="27px" type="spinner" v-show="isLoading">加载中...</van-loading>
     <van-list
       :finished="finished"
@@ -36,7 +33,7 @@
               </div>
             </div>
           </router-link>
-          <a :href="'tel:' + item.phone" class="information-right">
+          <a :href="'tel:' + item.buyer_phone" class="information-right">
             <i class="icon-Info-Icon-Phone"></i>
           </a>
         </div>
@@ -62,58 +59,14 @@ export default {
       namePhone: '',
       immediate_check: false,
       isLoading: true,
-      loadNum: 1,
-      created_at: '时间',
-      intention: '意向',
-      search_time: [
-        { text: '时间', value: '时间' },
-        { text: '一周内', value: 'within_week' },
-        { text: '一个月内', value: 'within_month' },
-        { text: '一个月以上', value: 'away_month' },
-      ],
-      search_intention: [
-        { text: '意向', value: '意向' },
-        { text: 'A很有意向', value: 'A很有意向' },
-        { text: 'B较有意向', value: 'B较有意向' },
-        { text: 'C可跟踪', value: 'C可跟踪' },
-        { text: 'D无意向', value: 'D无意向' },
-      ],
       list: [],
+      items_per_page: 20,
+      page: 0,
       loading: false,
       finished: false,
     }
   },
-  watch: {
-    // tab 切换
-    // created_at: function(newQuestion, oldQuestion) {
-    //   this.finished = false
-    //   this.loadNum = 1
-    //   if (newQuestion === '时间') {
-    //     api.getSalerSearchAPI().then((res) => {
-    //       this.list = res.data
-    //     })
-    //   } else {
-    //     let params = { search_type: 'created_at', search_key: newQuestion }
-    //     api.getSalerSearchAPI(params).then((res) => {
-    //       this.list = res.data
-    //     })
-    //   }
-    // },
-    // intention: function(newQuestion, oldQuestion) {
-    //   this.finished = false
-    //   this.loadNum = 1
-    //   if (newQuestion === '意向') {
-    //     api.getSalerSearchAPI().then((res) => {
-    //       this.list = res.data
-    //     })
-    //   } else {
-    //     let sql = `select * from fdc_form_1_17 WHERE saler_phone ='${this.phone}' AND intention  like '${this.intention}'  ORDER BY created_at DESC`
-    //     api.getSqlJsonAPI(sql).then((res) => {
-    //       this.list = res.data
-    //     })
-    //   }
-    // },
-  },
+
   components: {
     HomeHeader,
     HomeNav,
@@ -125,9 +78,8 @@ export default {
     this.name = localStorage.getItem('user_name')
     this.phone = localStorage.getItem('user_phone')
     // 拉取搜索列表
-    let sql = `select * from fdc_form_1_17 WHERE saler ='${this.name}'  ORDER BY created_at DESC`
+    let sql = `select * from fdc_form_1_17 WHERE saler ='${this.name}'  ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
     api.getSqlJsonAPI(sql).then((res) => {
-      console.log(res)
       this.isLoading = false
       this.list = res.data
       this.finished = true
@@ -142,7 +94,7 @@ export default {
       }
     },
     search() {
-      let sql = `select * from fdc_form_1_17 WHERE saler_phone ='${this.phone}' AND (name  ~ '${this.namePhone}' or phone ~ '${this.namePhone}') ORDER BY created_at DESC`
+      let sql = `select * from fdc_form_1_17 WHERE saler_phone ='${this.phone}' AND (buyer_name  ~ '${this.namePhone}' or buyer_phone ~ '${this.namePhone}') ORDER BY created_at DESC`
       api.getSqlJsonAPI(sql).then((res) => {
         this.isLoading = false
         this.list = res.data
@@ -152,59 +104,21 @@ export default {
 
     // 分页加载
     onLoad() {
-      // this.loading = true
-      // if (this.created_at !== '时间') {
-      //   this.loadNum++
-      //   let params = {
-      //     search_type: 'created_at',
-      //     search_key: this.created_at,
-      //     page: this.loadNum,
-      //     per_page: '10',
-      //   }
-      //   api.getSalerSearchAPI(params).then((res) => {
-      //     this.loading = false
-      //     let oldList = this.list
-      //     let newList = res.data
-      //     this.list = [...oldList, ...newList]
-      //     // 加载状态结束
-      //     // 数据全部加载完成
-      //     if (!res.data.length) {
-      //       this.loading = false
-      //       this.finished = true
-      //     }
-      //   })
-      // } else if (this.intention !== '意向') {
-      //   this.loadNum++
-      //   let sql = `select * from fdc_form_1_17 WHERE saler_phone ='${this.phone}' AND intention  like '${this.intention}'  ORDER BY created_at DESC`
-      //   api.getSqlJsonAPI(sql).then((res) => {
-      //     this.finished = true
-      //     this.loading = false
-      //     let oldList = this.list
-      //     let newList = res.data
-      //     this.list = [...oldList, ...newList]
-      //     // 加载状态结束
-      //     // 数据全部加载完成
-      //     if (!res.data.length) {
-      //       this.loading = false
-      //       this.finished = true
-      //     }
-      //   })
-      // } else {
-      // this.loadNum++;
-      // let params = { page: this.loadNum, per_page: "10" };
-      // api.getSqlJsonAPI(this.sql, params).then((res) => {
-      //   this.isLoading = false;
-      //   let oldList = this.list;
-      //   let newList = res.data;
-      //   this.list = [...oldList, ...newList];
-      //   // 加载状态结束
-      //   // 数据全部加载完成
-      //   if (!res.data.length) {
-      //     this.loading = false;
-      //     this.finished = true;
-      //   }
-      // });
-      // }
+      this.page += this.items_per_page
+      this.loading = true
+      let sql = `select * from fdc_form_1_17 WHERE saler_phone ='${this.phone}' ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
+      api.getSqlJsonAPI(sql).then((res) => {
+        let oldList = this.list
+        let newList = res.data
+        this.list = [...oldList, ...newList]
+        this.loading = false
+        // 加载状态结束
+        // 数据全部加载完成
+        if (!res.data.length) {
+          this.loading = false
+          this.finished = true
+        }
+      })
     },
   },
 }
