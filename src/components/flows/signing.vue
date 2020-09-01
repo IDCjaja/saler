@@ -115,6 +115,9 @@ export default {
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
+            case 'saler':
+              res.value = this.signData ? this.signData.saler : ''
+              break
             case 'buyer_name':
               res.value = this.signData ? this.signData.buyer_name : ''
               break
