@@ -134,7 +134,7 @@ export default {
     // 详细信息
     let sql = `select * from fdc_form_1_17 WHERE response_id ='${this.response_id}'`
     api.getSqlJsonAPI(sql).then((res) => {
-      total.signingData(res.data)
+      total.timeFormatting(res.data, 'signing_time')
       this.list = res.data[0]
       this.isLoading = false
     })
