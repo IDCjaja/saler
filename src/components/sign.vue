@@ -93,7 +93,7 @@ export default {
       }
     },
     search() {
-      let sql = `select * from fdc_flow_1_27 WHERE saler_phone ='${this.phone}' AND (buyer_name  ~ '${this.namePhone}' or buyer_phone ~ '${this.namePhone}') ORDER BY created_at DESC`
+      let sql = `select * from fdc_flow_1_27 WHERE saler ='${this.name}' AND (buyer_name  ~ '${this.namePhone}' or buyer_phone ~ '${this.namePhone}') ORDER BY created_at DESC`
       api.getSqlJsonAPI(sql).then((res) => {
         this.isLoading = false
         this.list = res.data
@@ -105,7 +105,7 @@ export default {
     onLoad() {
       this.page += this.items_per_page
       this.loading = true
-      let sql = `select * from fdc_flow_1_27 WHERE saler_phone ='${this.phone}' ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
+      let sql = `select * from fdc_flow_1_27 WHERE saler ='${this.name}' ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
       api.getSqlJsonAPI(sql).then((res) => {
         let oldList = this.list
         let newList = res.data
