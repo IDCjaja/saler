@@ -197,7 +197,9 @@ export default {
   // 时间格式化（年-月-日）
   timeFormatting(data, attribute) {
     for (let i = 0; i < data.length; i++) {
-      data[i][attribute] = data[i][attribute].slice(0, 10)
+      if (data[i][attribute]) {
+        data[i][attribute] = data[i][attribute].slice(0, 10)
+      }
     }
     return data
   },
