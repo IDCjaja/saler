@@ -207,11 +207,13 @@
         </footer>
       </div>
     </van-popup>
+    <signing-popup :signingObject="signingObject" :roomData="roomData" :signingData="signingData"></signing-popup>
   </div>
 </template>
 
 <script>
 import Tabbar from '@/components/pages/tabbar'
+import signingPopup from '@/components/pages/signing_popup.vue'
 import api from '@/api/api'
 import total from '@/api/total'
 
@@ -224,6 +226,10 @@ export default {
       list: [],
       house: [],
       show: false,
+      signingData: [],
+      signingObject: {
+        show: false,
+      },
       showPicker: false,
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
@@ -235,7 +241,6 @@ export default {
       buyData: '',
       userShow: false,
       userDataShow: false,
-
       userFieldList: ['saler', 'saler_phone', 'name', 'phone'],
       formID: 17,
       userFormID: 13,
@@ -248,6 +253,7 @@ export default {
   },
   components: {
     Tabbar,
+    signingPopup,
   },
   mounted() {
     // 渲染房源销控表
@@ -330,6 +336,7 @@ export default {
     // 选择房源
     signing(el) {
       this.roomData = el
+
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${el.room_number}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
         this.buyData = res.data[0]
@@ -369,7 +376,28 @@ export default {
         })
       })
       this.dataID = el.response_id
-      this.show = true
+      if (this.roomData.room_status === '签约') {
+        // 组件需要渲染的数据title和value
+        this.signingObject.show = true
+        api.getflowAPI(27).then((res) => {
+          this.signingData = total.flowListData(res.data.fields)
+
+          // 点击获取房源的签约信息
+          let signSQL = `select * from fdc_flow_1_27 WHERE room_number ='${this.roomData.room_number}' ORDER BY created_at DESC;`
+          api.getSqlJsonAPI(signSQL).then((res) => {
+            this.signingValue = res.data[0]
+
+            this.signingData.forEach((el) => {
+              switch (el.identity_key) {
+                default:
+                  el.value = this.signingValue[el.identity_key]
+              }
+            })
+          })
+        })
+      } else {
+        this.show = true
+      }
     },
     // 时间选择器赋值
     onConfirmDate(currentDate) {
