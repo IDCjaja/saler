@@ -81,7 +81,6 @@ export default {
     // let sql = `select room_building, count (room_building)  from fdc_form_1_16 group by room_building order by room_building ASC`
     let sql = `select room_building,count (room_building) ,sum( case when room_status ='签约' then 1 else 0 end )  AS signing  from fdc_form_1_16 group by room_building order by room_building ASC`
     api.getSqlJsonAPI(sql).then((res) => {
-      console.log(res)
       this.list = res.data
     })
   },

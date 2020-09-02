@@ -40,6 +40,11 @@ export default [
     component: () => import(/* webpackChunkName:'subscribe_message' */ '@/components/visit/subscribe_message'),
   },
   {
+    path: '/real_estate/saler/sign_message',
+    name: 'sign_message',
+    component: () => import(/* webpackChunkName:'sign_message' */ '@/components/visit/sign_message'),
+  },
+  {
     path: '/real_estate/saler/sign',
     name: 'sign',
     component: () => import(/* webpackChunkName:'sign' */ '@/components/sign'),

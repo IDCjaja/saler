@@ -3,8 +3,7 @@
     <van-tabbar fixed route>
       <van-tabbar-item class="icon-Index-Icon-Before-Subscription" to="/real_estate/saler/buy">认购前</van-tabbar-item>
       <van-tabbar-item class="icon-Index-Icon-Subscription" to="/real_estate/saler/subscribe">已认购</van-tabbar-item>
-      <!-- <van-tabbar-item class="icon-Index-Icon-Subscribed" to="/real_estate/saler/sign">已签约</van-tabbar-item> -->
-      <van-tabbar-item @click.native="prompt" class="icon-Index-Icon-Subscribed" to="#">已签约</van-tabbar-item>
+      <van-tabbar-item class="icon-Index-Icon-Subscribed" to="/real_estate/saler/sign">已签约</van-tabbar-item>
       <van-tabbar-item class="icon-Index-Icon-Owner" to="/real_estate/saler/housing">房源销控</van-tabbar-item>
     </van-tabbar>
   </div>
@@ -13,14 +12,7 @@
 <script>
 export default {
   data() {
-    return {
-      replace: true,
-    }
-  },
-  methods: {
-    prompt() {
-      this.$toast('开发中 ✨')
-    },
+    return {}
   },
 }
 </script>

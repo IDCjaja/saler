@@ -149,7 +149,7 @@ export default {
             case 'loan_amount':
               res.value = this.signData ? this.signData.stages_money : ''
               break
-            case 'additional_preferential_system':
+            case 'discount':
               res.value = this.signData ? this.signData.discount : ''
               break
 
