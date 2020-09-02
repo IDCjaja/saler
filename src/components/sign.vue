@@ -81,7 +81,11 @@ export default {
     let sql = `select * from fdc_flow_1_27 WHERE saler ='${this.name}'  ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
     api.getSqlJsonAPI(sql).then((res) => {
       this.isLoading = false
-      this.list = res.data
+      res.data.forEach((el) => {
+        if (el.status === 'finished') {
+          this.list.push(el)
+        }
+      })
     })
   },
   methods: {
@@ -96,8 +100,11 @@ export default {
       let sql = `select * from fdc_flow_1_27 WHERE saler ='${this.name}' AND (buyer_name  ~ '${this.namePhone}' or buyer_phone ~ '${this.namePhone}') ORDER BY created_at DESC`
       api.getSqlJsonAPI(sql).then((res) => {
         this.isLoading = false
-        this.list = res.data
-        this.finished = true
+        res.data.forEach((el) => {
+          if (el.status === 'finished') {
+            this.list.push(el)
+          }
+        })
       })
     },
 
@@ -108,7 +115,12 @@ export default {
       let sql = `select * from fdc_flow_1_27 WHERE saler ='${this.name}' ORDER BY created_at DESC LIMIT '${this.items_per_page}' OFFSET '${this.page}'`
       api.getSqlJsonAPI(sql).then((res) => {
         let oldList = this.list
-        let newList = res.data
+        let newList
+        res.data.forEach((el) => {
+          if (el.status === 'finished') {
+            newList.push(el)
+          }
+        })
         this.list = [...oldList, ...newList]
         this.loading = false
         // 加载状态结束
