@@ -156,6 +156,10 @@ export default {
           index: 'owner_document_type',
         },
         {
+          title: '优惠体系',
+          index: 'discount',
+        },
+        {
           title: '额外优惠体系',
           index: 'additional_preferential_system',
         },
