@@ -1,6 +1,6 @@
 // 公用方法
 export default {
-  // 表单数据处理
+  // 流程数据处理
   flowListData(fields) {
     let tableList = []
     fields.forEach((field) => {
@@ -68,6 +68,81 @@ export default {
 
     return tableList
   },
+  ListData(fields) {
+    let tableList = []
+    fields.forEach((field) => {
+      let objData = {}
+
+      switch (field.type) {
+        case 'Field::RadioButton': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.option_id = ''
+          objData.options = field.options
+          break
+        }
+        case 'Field::CheckBox': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.option_id = []
+          objData.value = ''
+          objData.other_option = field.other_option
+          objData.options = field.options
+          break
+        }
+        case 'Field::DateTime': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = ''
+          break
+        }
+
+        default: {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = ''
+        }
+      }
+      switch (field.identity_key) {
+        case 'new_room_number': {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = []
+          objData.columnsCe = this.cascade(field.cascaded_select.choices)
+          break
+        }
+        default: {
+          objData.field_id = field.id
+          objData.identity_key = field.identity_key
+          objData.type = field.type
+          objData.title = field.title
+          objData.value = ''
+        }
+      }
+
+      tableList.push(objData)
+    })
+
+    return tableList
+  },
+
+  // 时间选择器时间格式处理
+  formatDate: function(date) {
+    return date.getFullYear() + '-' + this.setDate(date.getMonth() + 1) + '-' + this.setDate(date.getDate())
+  },
+  setDate(date) {
+    return date < 10 ? '0' + date : date
+  },
 
   // 获取今天时间
   formatDateTime() {
@@ -119,6 +194,13 @@ export default {
     }
     return data
   },
+  // 签约时间格式化
+  signingData(data) {
+    for (let i = 0; i < data.length; i++) {
+      data[i].signing_time = data[i].signing_time.slice(0, 10)
+    }
+    return data
+  },
   // 表单数据处理
   tableListData(fields, orderFieldList) {
     let tableList = []
@@ -166,15 +248,6 @@ export default {
           }
         }
         switch (field.identity_key) {
-          // case "living_area": {
-          //   objData.field_id = field.id;
-          //   objData.identity_key = field.identity_key;
-          //   objData.type = field.type;
-          //   objData.title = field.title;
-          //   objData.value = [];
-          //   objData.columns = this.cascade(field.cascaded_select.choices);
-          //   break;
-          // }
           case 'working_area': {
             objData.field_id = field.id
             objData.identity_key = field.identity_key

@@ -11,18 +11,16 @@ import HomeHeader from './pages/header'
 import HomeNav from './pages/nav'
 
 export default {
-  data () {
+  data() {
     return {
-      active: 0
+      active: 0,
     }
   },
   components: {
     HomeHeader,
-    HomeNav
-  }
-
+    HomeNav,
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

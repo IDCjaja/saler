@@ -4,11 +4,6 @@ export default [
     name: 'detail',
     component: () => import(/* webpackChunkName:'detail' */ '@/components/detail/detail'),
   },
-  // {
-  //   path: "/real_estate/saler/home",
-  //   name: "home",
-  //   component: () => import(/* webpackChunkName:'home' */ "@/components/home")
-  // },
   {
     path: '/real_estate/saler/login',
     name: 'login',
@@ -38,6 +33,11 @@ export default [
     path: '/real_estate/saler/subscribe',
     name: 'subscribe',
     component: () => import(/* webpackChunkName:'subscribe' */ '@/components/subscribe'),
+  },
+  {
+    path: '/real_estate/saler/subscribe_message',
+    name: 'subscribe_message',
+    component: () => import(/* webpackChunkName:'subscribe_message' */ '@/components/visit/subscribe_message'),
   },
   {
     path: '/real_estate/saler/sign',
