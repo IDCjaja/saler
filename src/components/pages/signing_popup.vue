@@ -47,9 +47,6 @@
 </template>
 
 <script>
-// import api from '@/api/api'
-// import total from '@/api/total'
-
 export default {
   props: ['signingObject', 'roomData', 'signingData'],
   data() {

@@ -227,6 +227,7 @@ export default {
       house: [],
       show: false,
       signingData: [],
+      signingValue: {},
       signingObject: {
         show: false,
       },
@@ -385,7 +386,9 @@ export default {
           // 点击获取房源的签约信息
           let signSQL = `select * from fdc_flow_1_27 WHERE room_number ='${this.roomData.room_number}' ORDER BY created_at DESC;`
           api.getSqlJsonAPI(signSQL).then((res) => {
-            this.signingValue = res.data[0]
+            let data = total.timeFormatting(res.data, 'birthday')
+            data = total.timeFormatting(data, 'actual_signing_date')
+            this.signingValue = data[0]
 
             this.signingData.forEach((el) => {
               switch (el.identity_key) {
