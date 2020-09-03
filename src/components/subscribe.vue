@@ -82,7 +82,6 @@ export default {
     api.getSqlJsonAPI(sql).then((res) => {
       this.isLoading = false
       this.list = res.data
-      this.finished = true
     })
   },
   methods: {

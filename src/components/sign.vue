@@ -85,6 +85,7 @@ export default {
         if (el.status === 'finished') {
           this.list.push(el)
         }
+        this.finished = true
       })
     })
   },
@@ -99,11 +100,13 @@ export default {
     search() {
       let sql = `select * from fdc_flow_1_27 WHERE saler ='${this.name}' AND (buyer_name  ~ '${this.namePhone}' or buyer_phone ~ '${this.namePhone}') ORDER BY created_at DESC`
       api.getSqlJsonAPI(sql).then((res) => {
+        this.list = []
         this.isLoading = false
         res.data.forEach((el) => {
           if (el.status === 'finished') {
             this.list.push(el)
           }
+          this.finished = true
         })
       })
     },
