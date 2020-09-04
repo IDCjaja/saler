@@ -99,7 +99,7 @@
         </div>
       </header>
 
-      <h2 class="popup_main">认购单</h2>
+      <h2 class="popup_main">认购单填写</h2>
       <div class="popup_table">
         <div class="popup_table_item" :key="field.identity_key" v-for="field in formData">
           <!-- text -->
@@ -169,45 +169,11 @@
         </div>
 
         <footer>
-          <div class="table_status" v-if="this.buyData">
-            <router-link
-              :to="{
-                name: 'signing',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>签约</span>
-            </router-link>
-            <router-link
-              :to="{
-                name: 'checkout',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>退房</span>
-            </router-link>
-            <router-link
-              :to="{
-                name: 'changeRoom',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>换房</span>
-            </router-link>
-            <router-link
-              :to="{
-                name: 'rename',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>更名</span>
-            </router-link>
-          </div>
-          <div class="table_footer" @click="newTable(formData)" v-else>确认认购</div>
+          <div class="table_footer" @click="newTable(formData)">确认认购</div>
         </footer>
       </div>
     </van-popup>
-    <signing-popup :signingObject="signingObject" :roomData="roomData" :signingData="signingData"></signing-popup>
+    <signing-popup :childrenObject="childrenObject" :roomData="roomData" :childrenData="childrenData"></signing-popup>
   </div>
 </template>
 
@@ -222,13 +188,14 @@ export default {
     return {
       title: '房源展示',
       newTime: '',
-      building: '',
+      building: 7,
       list: [],
       house: [],
       show: false,
-      signingData: [],
-      signingValue: {},
-      signingObject: {
+      childrenData: [],
+      childrenValue: {},
+      childrenObject: {
+        title: '',
         show: false,
       },
       showPicker: false,
@@ -375,32 +342,51 @@ export default {
               break
           }
         })
-      })
-      this.dataID = el.response_id
-      if (this.roomData.room_status === '签约') {
-        // 组件需要渲染的数据title和value
-        this.signingObject.show = true
-        api.getflowAPI(27).then((res) => {
-          this.signingData = total.flowListData(res.data.fields)
+        this.dataID = el.response_id
+        if (this.roomData.room_status === '签约') {
+          // 组件需要渲染的数据title和value
+          this.childrenObject.show = true
+          this.childrenObject.title = '签约单'
+          api.getflowAPI(27).then((res) => {
+            this.childrenData = total.flowListData(res.data.fields)
 
-          // 点击获取房源的签约信息
-          let signSQL = `select * from fdc_flow_1_27 WHERE room_number ='${this.roomData.room_number}' ORDER BY created_at DESC;`
-          api.getSqlJsonAPI(signSQL).then((res) => {
-            let data = total.timeFormatting(res.data, 'birthday')
-            data = total.timeFormatting(data, 'actual_signing_date')
-            this.signingValue = data[0]
+            // 点击获取房源的签约信息
+            let signSQL = `select * from fdc_flow_1_27 WHERE room_number ='${this.roomData.room_number}' ORDER BY created_at DESC;`
+            api.getSqlJsonAPI(signSQL).then((res) => {
+              let data = total.timeFormatting(res.data, 'birthday')
+              data = total.timeFormatting(data, 'actual_signing_date')
+              this.childrenValue = data[0]
 
-            this.signingData.forEach((el) => {
-              switch (el.identity_key) {
-                default:
-                  el.value = this.signingValue[el.identity_key]
-              }
+              this.childrenData.forEach((el) => {
+                switch (el.identity_key) {
+                  default:
+                    el.value = this.childrenValue[el.identity_key]
+                }
+              })
             })
           })
-        })
-      } else {
-        this.show = true
-      }
+        } else if (this.roomData.room_status === '认购' && this.buyData) {
+          // 组件需要渲染的数据title和value
+          this.childrenObject.show = true
+          this.childrenObject.title = '认购单详情'
+          api.getFormAPI(this.formID).then((res) => {
+            this.childrenData = total.flowListData(res.data.fields)
+
+            // 点击获取房源的签约信息h
+            if (this.buyData) {
+              this.childrenValue = this.buyData
+              this.childrenData.forEach((el) => {
+                switch (el.identity_key) {
+                  default:
+                    el.value = this.childrenValue[el.identity_key]
+                }
+              })
+            }
+          })
+        } else {
+          this.show = true
+        }
+      })
     },
     // 时间选择器赋值
     onConfirmDate(currentDate) {

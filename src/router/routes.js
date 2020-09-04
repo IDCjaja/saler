@@ -92,6 +92,11 @@ export default [
     component: () => import(/* webpackChunkName:'sendOrders' */ '@/components/flows/sendOrders'),
   },
   {
+    path: '/real_estate/saler/paper_printing',
+    name: 'paper_printing',
+    component: () => import(/* webpackChunkName:'paper_printing' */ '@/components/flows/paper_printing'),
+  },
+  {
     path: '/real_estate/saler/customer',
     name: 'customer',
     component: () => import(/* webpackChunkName:'customer' */ '@/components/customer'),
