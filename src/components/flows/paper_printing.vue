@@ -143,7 +143,7 @@
 
           <!-- 级联 -->
           <div class="input_text cascade" v-else-if="field.type === 'Field::CascadedSelect'">
-            <p v-if="field.identity_key == 'room_number'">
+            <p v-if="field.identity_key == 'new_room_number'">
               <van-field
                 placeholder="点击选择房号"
                 :id="field.identity_key"
@@ -305,7 +305,7 @@ export default {
     // 级联
     onWorkingConfirm(cascadeValue, index) {
       this.formData.forEach((element) => {
-        if (element.identity_key === 'room_number') {
+        if (element.identity_key === 'new_room_number') {
           let cascade = element.columnsCe[index[0]].children[index[1]].children[index[2]]
           element.choice_id = cascade.id
           element.value = cascade.text
