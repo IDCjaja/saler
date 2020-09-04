@@ -1,9 +1,9 @@
 <template>
   <div>
-    <van-popup v-model="signingObject.show" closeable round :style="{ height: '80%', width: '60%' }">
-      <h2 class="popup_main">签约单</h2>
+    <van-popup v-model="childrenObject.show" closeable round :style="{ height: '80%', width: '60%' }">
+      <h2 class="popup_main">{{ childrenObject.title }}</h2>
       <div class="popup_table">
-        <div class="popup_table_item" :key="field.title" v-for="field in signingData">
+        <div class="popup_table_item" :key="field.title" v-for="field in childrenData">
           <van-field
             :label="field.title"
             autocomplete="off"
@@ -15,6 +15,15 @@
         </div>
         <footer>
           <div class="table_status">
+            <router-link
+              v-if="childrenObject.title !== '签约单'"
+              :to="{
+                name: 'signing',
+                query: { roomID: this.roomData.room_number },
+              }"
+            >
+              <span>签约</span>
+            </router-link>
             <router-link
               :to="{
                 name: 'checkout',
@@ -48,7 +57,7 @@
 
 <script>
 export default {
-  props: ['signingObject', 'roomData', 'signingData'],
+  props: ['childrenObject', 'roomData', 'childrenData'],
   data() {
     return {}
   },
