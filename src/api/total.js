@@ -45,6 +45,7 @@ export default {
         }
       }
       switch (field.identity_key) {
+        // 换房 or 票据打印级联
         case 'new_room_number': {
           objData.field_id = field.id
           objData.identity_key = field.identity_key
@@ -54,16 +55,7 @@ export default {
           objData.columnsCe = this.cascade(field.cascaded_select.choices)
           break
         }
-        // 票据打印级联
-        case 'room_number': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.value = []
-          objData.columnsCe = this.cascade(field.cascaded_select.choices)
-          break
-        }
+
         default: {
           objData.field_id = field.id
           objData.identity_key = field.identity_key
