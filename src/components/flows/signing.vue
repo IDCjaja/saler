@@ -115,45 +115,26 @@ export default {
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
-            case 'saler':
-              res.value = this.signData ? this.signData.saler : ''
-              break
-            case 'buyer_name':
-              res.value = this.signData ? this.signData.buyer_name : ''
-              break
-            case 'buyer_phone':
-              res.value = this.signData ? this.signData.buyer_phone : ''
-              break
-            case 'room_number':
-              res.value = this.signData ? this.signData.room_number : ''
-              break
-            case 'univalence':
-              res.value = this.signData ? this.signData.univalence : ''
-              break
-            case 'total':
-              res.value = this.signData ? this.signData.total : ''
-              break
-            case 'covered_area':
-              res.value = this.signData ? this.signData.covered_area : ''
-              break
-            case 'inside_area':
-              res.value = this.signData ? this.signData.inside_area : ''
-              break
-            case 'bank':
-              res.value = this.signData ? this.signData.bank : ''
-              break
+            case 'payment':
+              if (this.signData) {
+                switch (this.signData.payment) {
+                  case '一次性':
+                    res.option_id = '912'
+                    break
+                  case '分期':
+                    res.option_id = '913'
+                    break
+                  case '贷款':
+                    res.option_id = '914'
+                    break
 
-            case 'loan_term':
-              res.value = this.signData ? this.signData.stages : ''
+                  default:
+                    break
+                }
+              }
               break
-            case 'loan_amount':
-              res.value = this.signData ? this.signData.stages_money : ''
-              break
-            case 'discount':
-              res.value = this.signData ? this.signData.discount : ''
-              break
-
             default:
+              res.value = this.signData ? this.signData[res.identity_key] : ''
               break
           }
         })
