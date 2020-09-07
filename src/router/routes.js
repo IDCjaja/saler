@@ -4,11 +4,6 @@ export default [
     name: 'detail',
     component: () => import(/* webpackChunkName:'detail' */ '@/components/detail/detail'),
   },
-  // {
-  //   path: "/real_estate/saler/home",
-  //   name: "home",
-  //   component: () => import(/* webpackChunkName:'home' */ "@/components/home")
-  // },
   {
     path: '/real_estate/saler/login',
     name: 'login',
@@ -38,6 +33,16 @@ export default [
     path: '/real_estate/saler/subscribe',
     name: 'subscribe',
     component: () => import(/* webpackChunkName:'subscribe' */ '@/components/subscribe'),
+  },
+  {
+    path: '/real_estate/saler/subscribe_message',
+    name: 'subscribe_message',
+    component: () => import(/* webpackChunkName:'subscribe_message' */ '@/components/visit/subscribe_message'),
+  },
+  {
+    path: '/real_estate/saler/sign_message',
+    name: 'sign_message',
+    component: () => import(/* webpackChunkName:'sign_message' */ '@/components/visit/sign_message'),
   },
   {
     path: '/real_estate/saler/sign',
@@ -85,6 +90,11 @@ export default [
     path: '/real_estate/saler/sendOrders',
     name: 'sendOrders',
     component: () => import(/* webpackChunkName:'sendOrders' */ '@/components/flows/sendOrders'),
+  },
+  {
+    path: '/real_estate/saler/paper_printing',
+    name: 'paper_printing',
+    component: () => import(/* webpackChunkName:'paper_printing' */ '@/components/flows/paper_printing'),
   },
   {
     path: '/real_estate/saler/customer',

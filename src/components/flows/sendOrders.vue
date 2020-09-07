@@ -62,7 +62,7 @@ export default {
       salerValue: '',
       columns: [],
       showPicker: false,
-      flowID: 25,
+      flowID: 56,
       formID: 13,
       formData: [],
       userID: '',
@@ -79,9 +79,8 @@ export default {
   },
   mounted() {
     //   空闲状态的置业顾问
-    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问' and status = '空闲' or status = '忙碌';`
+    let sql = `select * from fdc_form_1_14 WHERE authority ~ '置业顾问' and state = '空闲' or state = '忙碌';`
     api.getSqlJsonAPI(sql).then((res) => {
-      console.log(res)
       res.data.forEach((el) => {
         this.columns.push(el.name)
       })
@@ -100,6 +99,8 @@ export default {
       let sql = `select * from fdc_form_1_13 WHERE phone ='${phone}';`
       api.getSqlJsonAPI(sql).then((res) => {
         if (res.data.length) {
+          // 手机号加密
+          res.data[0].encryption = res.data[0].phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
           this.userData = res.data[0]
           // 缓存值自动填入
           this.formData.forEach((res) => {
@@ -108,7 +109,7 @@ export default {
                 res.value = this.userData ? this.userData.name : ''
                 break
               case 'phone':
-                res.value = this.userData ? this.userData.phone : ''
+                res.value = this.userData ? this.userData.encryption : ''
                 break
 
               default:
@@ -119,6 +120,7 @@ export default {
           this.newCustomer = true
           let sql = `select * from fdc_form_1_15 WHERE phone ='${phone}';`
           api.getSqlJsonAPI(sql).then((res) => {
+            res.data[0].encryption = res.data[0].phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
             this.userData = res.data[0]
             // 缓存值自动填入
             this.formData.forEach((res) => {
@@ -127,7 +129,7 @@ export default {
                   res.value = this.userData ? this.userData.name : ''
                   break
                 case 'phone':
-                  res.value = this.userData ? this.userData.phone : ''
+                  res.value = this.userData ? this.userData.encryption : ''
                   break
 
                 default:
@@ -160,7 +162,7 @@ export default {
         },
         user_id: this.userID,
         webhook: {
-          payload_url: '',
+          payload_url: 'http://shandenabian.skylarkly.com/magnate/saler/status/change',
           subscribed_events: ['JourneyStatusEvent'],
         },
       }
@@ -202,6 +204,10 @@ export default {
               next_reviewer_ids: [this.reviewerID],
             },
             user_id: this.userID,
+            webhook: {
+              payload_url: 'http://shandenabian.skylarkly.com/magnate/saler/status/change',
+              subscribed_events: ['JourneyStatusEvent'],
+            },
           }
           //   下一节点选择
           api.postflowAPI(this.flowID, payload).then((res) => {

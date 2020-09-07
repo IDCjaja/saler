@@ -10,20 +10,15 @@
               <img class="information-left-img" src="@/assets/img/Avator-Man.png" />
             </div>
             <div class="information-left-matter">
-              <h2>{{ list.name }}</h2>
+              <h2>{{ list.buyer_name }}</h2>
               <p>
-                <span v-if="list.intention">{{ list.intention }}</span>
+                <span v-if="list.room_number">{{ list.room_number }}</span>
                 <span v-else>未填写</span>
               </p>
             </div>
           </div>
-          <router-link
-            :to="{ name: 'message', query: { customer_phone: list.phone, response_id: response_id } }"
-            class="information-right information-right-modify"
-          >
-            <i class="icon-Info-Icon-Edit"></i>
-          </router-link>
-          <a :href="'tel:' + list.phone" class="information-right">
+
+          <a :href="'tel:' + list.buyer_phone" class="information-right">
             <i class="icon-Info-Icon-Phone"></i>
           </a>
         </div>
@@ -45,6 +40,7 @@
 <script>
 import BuyMessageTabbar from '../pages/tabbar'
 import api from '@/api/api'
+import total from '@/api/total'
 export default {
   data() {
     return {
@@ -55,44 +51,72 @@ export default {
       isLoading: true,
       preview_data: [
         {
-          title: '客户描摹',
-          index: 'depict',
+          title: '建筑面积',
+          index: 'covered_area',
         },
         {
-          title: '知晓途径',
-          index: 'pathway',
+          title: '套内面积',
+          index: 'inside_area',
         },
         {
-          title: '置业目的',
-          index: 'motivation',
+          title: '挂牌单价',
+          index: 'univalence',
         },
         {
-          title: '价格区间',
-          index: 'price',
+          title: '挂牌总价',
+          index: 'total',
+        },
+        {
+          title: '买受人身份证号码',
+          index: 'buyer_card',
+        },
+        {
+          title: '共同拥有人',
+          index: 'owner',
+        },
+        {
+          title: '预计签约时间',
+          index: 'signing_time',
+        },
+        {
+          title: '通讯地址',
+          index: 'address',
+        },
+        {
+          title: '优惠体系',
+          index: 'discount',
+        },
+        {
+          title: '定金',
+          index: 'deposit',
+        },
+        {
+          title: '成交单价',
+          index: 'trading_price',
+        },
+        {
+          title: '成交总价',
+          index: 'trading_total',
         },
         {
           title: '付款方式',
           index: 'payment',
         },
         {
-          title: '有无购房资格',
-          index: 'entitlement',
+          title: '分期时间',
+          index: 'stages',
         },
         {
-          title: '购房资格备注',
-          index: 'reason',
+          title: '每期金额',
+          index: 'stages_money',
         },
         {
-          title: '生活区域',
-          index: 'living_area',
+          title: '按揭银行',
+          index: 'bank',
         },
         {
-          title: '工作区域',
-          index: 'working_area',
-        },
-        {
-          title: '客户主要抗性',
-          index: 'resistance',
+          title: '按揭金额',
+          index: 'mortgage_money',
         },
       ],
       response_id: '',
@@ -108,8 +132,9 @@ export default {
     this.customer_phone = this.$route.query.customer_phone
 
     // 详细信息
-    let sql = `select * from fdc_form_1_13 WHERE response_id ='${this.response_id}'`
+    let sql = `select * from fdc_form_1_17 WHERE response_id ='${this.response_id}'`
     api.getSqlJsonAPI(sql).then((res) => {
+      total.timeFormatting(res.data, 'signing_time')
       this.list = res.data[0]
       this.isLoading = false
     })
@@ -145,7 +170,7 @@ export default {
   border-bottom: 1px solid #f0f2f4;
 
   .buy_message_content_body_left {
-    width: 96px;
+    width: 127px;
     text-align: center;
     color: #929292;
     font-size: 14px;

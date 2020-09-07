@@ -17,6 +17,17 @@
               />
             </p>
           </div>
+          <div class="input_text" v-else-if="field.type === 'Field::TextArea'">
+            <van-field
+              :id="field.identity_key"
+              :label="field.title"
+              autocomplete="off"
+              placeholder="请输入"
+              type="textarea"
+              autosize
+              v-model="field.value"
+            />
+          </div>
           <!-- 时间 -->
           <p v-else-if="field.type === 'Field::DateTime'">
             <van-field
@@ -104,39 +115,26 @@ export default {
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
-            case 'buyer_name':
-              res.value = this.signData ? this.signData.buyer_name : ''
-              break
-            case 'buyer_phone':
-              res.value = this.signData ? this.signData.buyer_phone : ''
-              break
-            case 'room_number':
-              res.value = this.signData ? this.signData.room_number : ''
-              break
-            case 'univalence':
-              res.value = this.signData ? this.signData.univalence : ''
-              break
-            case 'total':
-              res.value = this.signData ? this.signData.total : ''
-              break
-            case 'covered_area':
-              res.value = this.signData ? this.signData.covered_area : ''
-              break
-            case 'inside_area':
-              res.value = this.signData ? this.signData.inside_area : ''
-              break
-            case 'bank':
-              res.value = this.signData ? this.signData.bank : ''
-              break
+            case 'payment':
+              if (this.signData) {
+                switch (this.signData.payment) {
+                  case '一次性':
+                    res.option_id = '912'
+                    break
+                  case '分期':
+                    res.option_id = '913'
+                    break
+                  case '贷款':
+                    res.option_id = '914'
+                    break
 
-            case 'loan_term':
-              res.value = this.signData ? this.signData.stages : ''
+                  default:
+                    break
+                }
+              }
               break
-            case 'loan_amount':
-              res.value = this.signData ? this.signData.stages_money : ''
-              break
-
             default:
+              res.value = this.signData ? this.signData[res.identity_key] : ''
               break
           }
         })
@@ -176,7 +174,7 @@ export default {
         },
         user_id: this.userID,
         webhook: {
-          payload_url: '',
+          payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/sign',
           subscribed_events: ['JourneyStatusEvent'],
         },
       }
@@ -213,7 +211,6 @@ export default {
         }
       })
       api.postflowAPI(this.flowID, payload).then((res) => {
-        this.$toast('发起成功 ✨')
         const id = res.data.next_vertices[0].id
         let payload = {
           assignment: {
@@ -224,8 +221,19 @@ export default {
             next_vertex_id: id,
           },
           user_id: this.userID,
+          webhook: {
+            payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/sign',
+            subscribed_events: ['JourneyStatusEvent'],
+          },
         }
-        api.postflowAPI(this.flowID, payload).then((res) => {})
+        api.postflowAPI(this.flowID, payload).then((res) => {
+          if (res.status === 200) {
+            this.$toast('发起成功 ✨')
+            this.$router.push({
+              name: 'house',
+            })
+          }
+        })
       })
     },
   },

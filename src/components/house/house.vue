@@ -99,7 +99,7 @@
         </div>
       </header>
 
-      <h2 class="popup_main">认购单</h2>
+      <h2 class="popup_main">认购单填写</h2>
       <div class="popup_table">
         <div class="popup_table_item" :key="field.identity_key" v-for="field in formData">
           <!-- text -->
@@ -169,49 +169,17 @@
         </div>
 
         <footer>
-          <div class="table_status" v-if="this.buyData">
-            <router-link
-              :to="{
-                name: 'signing',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>签约</span>
-            </router-link>
-            <router-link
-              :to="{
-                name: 'checkout',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>退房</span>
-            </router-link>
-            <router-link
-              :to="{
-                name: 'changeRoom',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>换房</span>
-            </router-link>
-            <router-link
-              :to="{
-                name: 'rename',
-                query: { roomID: this.buyData.room_number },
-              }"
-            >
-              <span>更名</span>
-            </router-link>
-          </div>
-          <div class="table_footer" @click="newTable(formData)" v-else>确认认购</div>
+          <div class="table_footer" @click="newTable(formData)">确认认购</div>
         </footer>
       </div>
     </van-popup>
+    <signing-popup :childrenObject="childrenObject" :roomData="roomData" :childrenData="childrenData"></signing-popup>
   </div>
 </template>
 
 <script>
 import Tabbar from '@/components/pages/tabbar'
+import signingPopup from '@/components/pages/signing_popup.vue'
 import api from '@/api/api'
 import total from '@/api/total'
 
@@ -220,10 +188,16 @@ export default {
     return {
       title: '房源展示',
       newTime: '',
-      building: '7',
+      building: 7,
       list: [],
       house: [],
       show: false,
+      childrenData: [],
+      childrenValue: {},
+      childrenObject: {
+        title: '',
+        show: false,
+      },
       showPicker: false,
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
@@ -235,28 +209,6 @@ export default {
       buyData: '',
       userShow: false,
       userDataShow: false,
-      orderFieldList: [
-        'signing_time',
-        'room_number',
-        'inside_area',
-        'covered_area',
-        'univalence',
-        'total',
-        'buyer_name',
-        'buyer_phone',
-        'buyer_card',
-        'saler',
-        'address',
-        'payment',
-        'owner',
-        'discount',
-        'trading_price',
-        'trading_total',
-        'stages',
-        'stages_money',
-        'bank',
-        'mortgage_money',
-      ],
       userFieldList: ['saler', 'saler_phone', 'name', 'phone'],
       formID: 17,
       userFormID: 13,
@@ -269,13 +221,14 @@ export default {
   },
   components: {
     Tabbar,
+    signingPopup,
   },
   mounted() {
     // 渲染房源销控表
     api.getFormAPI(this.formID).then((res) => {
       this.fields = res.data.fields
-      // 表单数据处理
-      this.formData = total.tableListData(this.fields, this.orderFieldList)
+      // 渲染表单全部表项
+      this.formData = total.ListData(res.data.fields)
     })
     api.getFormAPI(this.userFormID).then((res) => {
       this.userFields = res.data.fields
@@ -351,107 +304,97 @@ export default {
     // 选择房源
     signing(el) {
       this.roomData = el
+
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${el.room_number}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
         this.buyData = res.data[0]
+        if (this.buyData) {
+          this.buyData.signing_time = this.buyData.signing_time.slice(0, 10)
+        }
+
         // 签约状态自动填入
         this.formData.forEach((res) => {
           switch (res.identity_key) {
-            case 'buyer_name':
-              res.value = this.buyData ? this.buyData.buyer_name : ''
+            // 房源信息写入
+            case 'room_number':
+              res.value = this.roomData.room_number
               break
-            case 'buyer_phone':
-              res.value = this.buyData ? this.buyData.buyer_phone : ''
+            case 'covered_area':
+              res.value = this.roomData.covered_area
               break
-            case 'saler':
-              res.value = this.buyData ? this.buyData.saler : ''
+            case 'inside_area':
+              res.value = this.roomData.inside_area
               break
-            case 'buyer_card':
-              res.value = this.buyData ? this.buyData.buyer_card : ''
+            case 'room_price':
+              res.value = this.roomData.room_price
               break
-            case 'address':
-              res.value = this.buyData ? this.buyData.address : ''
+            case 'univalence':
+              res.value = this.roomData.univalence
               break
-            case 'owner':
-              res.value = this.buyData ? this.buyData.owner : ''
-              break
-            case 'discount':
-              res.value = this.buyData ? this.buyData.discount : ''
-              break
-            case 'trading_price':
-              res.value = this.buyData ? this.buyData.trading_price : ''
-              break
-            case 'trading_total':
-              res.value = this.buyData ? this.buyData.trading_total : ''
-              break
-            case 'stages':
-              res.value = this.buyData ? this.buyData.stages : ''
-              break
-            case 'stages_money':
-              res.value = this.buyData ? this.buyData.stages_money : ''
-              break
-            case 'bank':
-              res.value = this.buyData ? this.buyData.bank : ''
-              break
-            case 'mortgage_money':
-              res.value = this.buyData ? this.buyData.mortgage_money : ''
+            case 'total':
+              res.value = this.roomData.total
               break
             case 'signing_time':
               this.newTime = this.buyData ? this.buyData.signing_time : ''
               break
             default:
+              res.value = this.buyData ? this.buyData[res.identity_key] : ''
               break
           }
         })
-      })
-      this.dataID = el.response_id
-      this.show = true
-      // 房源状态自动写入
-      this.formData.forEach((res) => {
-        switch (res.identity_key) {
-          case 'room_number':
-            res.value = this.roomData.room_number
-            break
-          case 'covered_area':
-            res.value = this.roomData.covered_area
-            break
-          case 'inside_area':
-            res.value = this.roomData.inside_area
-            break
-          case 'room_price':
-            res.value = this.roomData.room_price
-            break
-          case 'univalence':
-            res.value = this.roomData.univalence
-            break
-          case 'room_status':
-            if (this.roomData.room_status) {
-              res.value = this.roomData.room_status
-            } else {
-              res.value = '空闲'
+        this.dataID = el.response_id
+        if (this.roomData.room_status === '签约') {
+          // 组件需要渲染的数据title和value
+          this.childrenObject.show = true
+          this.childrenObject.title = '签约单'
+          api.getflowAPI(27).then((res) => {
+            this.childrenData = total.flowListData(res.data.fields)
+
+            // 点击获取房源的签约信息
+            let signSQL = `select * from fdc_flow_1_27 WHERE room_number ='${this.roomData.room_number}' ORDER BY created_at DESC;`
+            api.getSqlJsonAPI(signSQL).then((res) => {
+              let data = total.timeFormatting(res.data, 'birthday')
+              data = total.timeFormatting(data, 'actual_signing_date')
+              this.childrenValue = data[0]
+
+              this.childrenData.forEach((el) => {
+                switch (el.identity_key) {
+                  default:
+                    el.value = this.childrenValue[el.identity_key]
+                }
+              })
+            })
+          })
+        } else if (this.roomData.room_status === '认购' && this.buyData) {
+          // 组件需要渲染的数据title和value
+          this.childrenObject.show = true
+          this.childrenObject.title = '认购单详情'
+          api.getFormAPI(this.formID).then((res) => {
+            this.childrenData = total.flowListData(res.data.fields)
+
+            // 点击获取房源的签约信息h
+            if (this.buyData) {
+              this.childrenValue = this.buyData
+              this.childrenData.forEach((el) => {
+                switch (el.identity_key) {
+                  default:
+                    el.value = this.childrenValue[el.identity_key]
+                }
+              })
             }
-            break
-          case 'total':
-            res.value = this.roomData.total
-            break
-          default:
-            break
+          })
+        } else {
+          this.show = true
         }
       })
     },
     // 时间选择器赋值
     onConfirmDate(currentDate) {
-      this.dataTime = this.formatDate(currentDate)
+      this.dataTime = total.formatDate(currentDate)
       this.newTime = this.dataTime
       this.showPicker = false
     },
-    // 时间格式处理
-    formatDate: function(date) {
-      return date.getFullYear() + '-' + this.setDate(date.getMonth() + 1) + '-' + this.setDate(date.getDate())
-    },
-    setDate(date) {
-      return date < 10 ? '0' + date : date
-    },
+
     // 构建传输值的json格式
     newUsers(data) {
       let payload = { response: { entries_attributes: [] } }
@@ -759,5 +702,16 @@ export default {
   width: 67%;
   text-align: center;
   height: 30px;
+}
+
+/deep/ .van-overlay {
+  height: 167%;
+}
+
+.van-popup--bottom {
+  bottom: none;
+}
+/deep/ .van-popup--bottom.van-popup--round {
+  border-radius: 20px;
 }
 </style>
