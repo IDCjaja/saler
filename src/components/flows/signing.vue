@@ -69,6 +69,25 @@
               </template>
             </van-field>
           </div>
+          <!-- 明细字段 -->
+          <div class="detail" v-else-if="field.type === 'Field::Detail'">
+            <p class="detail-title">{{ field.title }}</p>
+            <div class="detail-item" :key="fields.id" v-for="(fields, index) in field.parent">
+              <span>第{{ index + 1 }}期</span>
+              <div :key="field.id" v-for="field in fields">
+                <!-- 文本 -->
+                <van-field
+                  :label="field.title"
+                  autocomplete="off"
+                  placeholder="请输入"
+                  type="text"
+                  v-model="field.value"
+                />
+              </div>
+            </div>
+
+            <span class="detail-add" @click="addDetail(field)">添加{{ field.button_name }}</span>
+          </div>
         </div>
       </aside>
 
@@ -142,13 +161,20 @@ export default {
     })
   },
   methods: {
+    addDetail(el) {
+      let child = JSON.parse(JSON.stringify(el.children))
+      child.forEach((element) => {
+        element.group_id = new Date().getTime()
+      })
+      el.parent.push(child)
+    },
     showTime(field) {
       this.middleField = field.identity_key
       this.showPicker = true
     },
     // 时间选择器赋值
     onConfirmDate(currentDate) {
-      this.dataTime = this.formatDate(currentDate)
+      this.dataTime = total.formatDate(currentDate)
       this.formData.forEach((el) => {
         if (this.middleField === el.identity_key) {
           el.value = this.dataTime
@@ -156,60 +182,11 @@ export default {
       })
       this.showPicker = false
     },
-    // 时间格式处理
-    formatDate: function(date) {
-      return date.getFullYear() + '-' + this.setDate(date.getMonth() + 1) + '-' + this.setDate(date.getDate())
-    },
-    setDate(date) {
-      return date < 10 ? '0' + date : date
-    },
+
     // 构建传输值的json格式
     newTable(formData) {
-      let payload = {
-        assignment: {
-          response_attributes: {
-            entries_attributes: [],
-          },
-          operation: 'route',
-        },
-        user_id: this.userID,
-        webhook: {
-          payload_url: 'http://shandenabian.skylarkly.com/magnate/hourse/status/sign',
-          subscribed_events: ['JourneyStatusEvent'],
-        },
-      }
-      let entries = payload.assignment.response_attributes.entries_attributes
-      formData.forEach((element) => {
-        switch (element.type) {
-          case 'Field::RadioButton': {
-            if (element.option_id) {
-              entries.push({
-                field_id: element.field_id,
-                option_id: element.option_id,
-              })
-            }
-            break
-          }
-          case 'Field::DateTime': {
-            if (element.value) {
-              entries.push({
-                field_id: element.field_id,
-                value: element.value,
-              })
-            }
-            break
-          }
-          // 文本
-          default: {
-            if (element.value) {
-              entries.push({
-                field_id: element.field_id,
-                value: element.value,
-              })
-            }
-          }
-        }
-      })
+      const url = 'http://shandenabian.skylarkly.com/magnate/hourse/status/sign'
+      let payload = total.payloadBuild(formData, this.userID, url)
       api.postflowAPI(this.flowID, payload).then((res) => {
         const id = res.data.next_vertices[0].id
         let payload = {
@@ -282,5 +259,49 @@ export default {
   color: #fff;
   background-color: #00a862;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+// 明细
+.detail {
+  margin: 20px;
+
+  .detail-title {
+    text-align: left;
+    padding: 4px 0px;
+    color: #222222;
+    font-size: 17px;
+  }
+
+  .detail-item {
+    background-color: #f6f6f6;
+    margin-bottom: 4px;
+    border-radius: 2px;
+
+    span {
+      padding: 5px;
+      font-size: 16px;
+      display: block;
+    }
+  }
+
+  .detail-add {
+    border: 2px solid #00a862;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-top: 20px;
+    display: flex;
+    width: 100px;
+    justify-content: center;
+  }
+  .detail-add:hover {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  /deep/ .van-field__control {
+    border-bottom: 1px solid #e4e4e4;
+  }
+
+  .van-cell {
+    background-color: #f6f6f6;
+  }
 }
 </style>

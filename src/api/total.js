@@ -5,15 +5,14 @@ export default {
     let tableList = []
     fields.forEach((field) => {
       let objData = {}
-
       if (field.type === 'Field::Detail') {
         objData.field_id = field.id
         objData.identity_key = field.identity_key
         objData.type = field.type
         objData.title = field.title
+        objData.button_name = field.settings.button_name || '明细'
         objData.children = []
         objData.parent = []
-
         // 明细字段内部构建
         field.children.forEach((field) => {
           let objDataChildren = {}
@@ -46,9 +45,10 @@ export default {
           objData.children.push(objDataChildren)
         })
         let child = JSON.parse(JSON.stringify(objData.children))
+        child.forEach((element) => {
+          element.group_id = new Date().getTime()
+        })
         objData.parent.push(child)
-
-        console.log(objData)
       } else {
         switch (field.type) {
           case 'Field::RadioButton': {
@@ -99,7 +99,6 @@ export default {
           objData.columnsCe = this.cascade(field.cascaded_select.choices)
           break
         }
-
         default: {
           objData.field_id = field.id
           objData.identity_key = field.identity_key
@@ -108,7 +107,6 @@ export default {
           objData.value = ''
         }
       }
-
       tableList.push(objData)
     })
 
@@ -175,10 +173,8 @@ export default {
           objData.value = ''
         }
       }
-
       tableList.push(objData)
     })
-
     return tableList
   },
 
@@ -230,7 +226,6 @@ export default {
     })
     return array
   },
-
   // 时间格式化
   createData(data) {
     for (let i = 0; i < data.length; i++) {
@@ -255,7 +250,6 @@ export default {
     orderFieldList.forEach((element) => {
       let field = fields.find((field) => field.identity_key === element)
       let objData = {}
-
       if (field) {
         switch (field.type) {
           case 'Field::RadioButton': {
@@ -286,7 +280,6 @@ export default {
             objData.value = ''
             break
           }
-
           default: {
             objData.field_id = field.id
             objData.identity_key = field.identity_key
@@ -316,10 +309,8 @@ export default {
         tableList.push(objData)
       }
     })
-
     return tableList
   },
-
   // 排行榜排序
   rank(list) {
     for (let i = 0; i < list.length; i++) {
@@ -423,18 +414,15 @@ export default {
       },
       maxNumber: 999999999999.99,
     }
-
     // 过滤不合法参数
     if (Number(number) > confs.maxNumber) {
       console.error(`The maxNumber is ${confs.maxNumber}. ${number} is bigger than it!`)
       return false
     }
-
     const conf = confs[type]
     const numbers = String(Number(number).toFixed(2)).split('.')
     const integer = numbers[0].split('')
     const decimal = Number(numbers[1]) === 0 ? [] : numbers[1].split('')
-
     // 四位分级
     const levels = integer.reverse().reduce((pre, item, idx) => {
       let level = pre[0] && pre[0].length < 4 ? pre[0] : []
@@ -446,7 +434,6 @@ export default {
       } else {
         pre[0] = level
       }
-
       return pre
     }, [])
 
@@ -464,21 +451,74 @@ export default {
       } else if (_item[_item.length - 1] === '零') {
         _item = _item.slice(0, _item.length - 1)
       }
-
       return pre + _item + _level
     }, '')
-
     // 小数部分
     let _decimal = decimal
       .map((item, idx) => {
         const unit = confs.decimal.unit
         const _unit = item !== '0' ? unit[unit.length - idx - 1] : ''
-
         return `${conf.num[item]}${_unit}`
       })
       .join('')
-
     // 如果是整数，则补个整字
     return `${_integer}元` + (_decimal || '整')
+  },
+  // 构建流程传输的JSON格式(简易版)
+  payloadBuild(formData, userID, url) {
+    let payload = {
+      assignment: {
+        response_attributes: {
+          entries_attributes: [],
+        },
+        operation: 'route',
+      },
+      user_id: userID,
+      webhook: {
+        payload_url: url,
+        subscribed_events: ['JourneyStatusEvent'],
+      },
+    }
+    let entries = payload.assignment.response_attributes.entries_attributes
+    formData.forEach((element) => {
+      switch (element.type) {
+        case 'Field::RadioButton': {
+          if (element.option_id) {
+            entries.push({
+              field_id: element.field_id,
+              option_id: element.option_id,
+            })
+          }
+          break
+        }
+        // 明细字段
+        case 'Field::Detail': {
+          const detailID = element.field_id
+          element.parent.forEach((res) => {
+            res.forEach((el) => {
+              if (el.value) {
+                entries.push({
+                  field_id: el.field_id,
+                  group_id: el.group_id,
+                  value: el.value,
+                  detail_id: detailID,
+                })
+              }
+            })
+          })
+          break
+        }
+        // 文本+时间类型
+        default: {
+          if (element.value) {
+            entries.push({
+              field_id: element.field_id,
+              value: element.value,
+            })
+          }
+        }
+      }
+    })
+    return payload
   },
 }
