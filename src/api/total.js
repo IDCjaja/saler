@@ -12,6 +12,7 @@ export default {
         objData.type = field.type
         objData.title = field.title
         objData.children = []
+        objData.parent = []
 
         // 明细字段内部构建
         field.children.forEach((field) => {
@@ -44,6 +45,9 @@ export default {
           }
           objData.children.push(objDataChildren)
         })
+        let child = JSON.parse(JSON.stringify(objData.children))
+        objData.parent.push(child)
+
         console.log(objData)
       } else {
         switch (field.type) {
