@@ -21,6 +21,7 @@
     </header>
 
     <Table
+      tooltip
       ref="table"
       border
       stripe
@@ -43,6 +44,7 @@
 
     <!-- 弹框 -->
     <van-popup v-model="show" round closeable close-icon="close" :style="{ height: '80%', width: '90%' }">
+      <header class="popup-header">客户详情</header>
       <div class="popup">
         <div v-for="item in showArr" :key="item.id">
           <p v-if="item.identity_key === 'depict'">
@@ -254,6 +256,7 @@ export default {
   .ivu-table td,
   .ivu-table th {
     text-align: center;
+    border-bottom: none;
   }
   .ivu-table th {
     color: #fff;
@@ -285,6 +288,7 @@ export default {
   .popup {
     margin: 30px auto;
     width: 77%;
+    position: relative;
   }
 
   .van-field__label {
@@ -318,6 +322,18 @@ export default {
   .ivu-page-next:hover a,
   .ivu-page-prev:hover a {
     color: #6788e7;
+  }
+
+  /deep/ .van-cell {
+    border-bottom: 1px solid #ebedf0;
+  }
+
+  .popup-header {
+    line-height: 52px;
+    font-size: 16px;
+    font-weight: 600;
+    height: 52px;
+    border-bottom: 1px solid #ebedf0;
   }
 }
 </style>
