@@ -8,28 +8,29 @@
         }}</option>
       </select>
       <van-search class="search" shape="round" v-model="search.value" placeholder="请输入搜索关键词" @blur="onSearch" />
+      <!-- <div class="export" @click="exportData" type="info">导出数据</div> -->
     </header>
 
     <Table
       ref="table"
       border
       stripe
-      height="900"
+      height="680"
       @on-row-click="rowClick"
       :columns="columns"
       :data="data"
       :loading="loading"
     ></Table>
+    <!-- 分页器 -->
     <Page
       :total="page.total"
       :page-size="page.pageSize"
       @on-change="currentChange"
-      @on-page-size-change="pageSizeChange"
-      show-sizer
+      prev-text="上一页"
+      next-text="下一页"
       show-total
       class-name="page"
     />
-    <div class="export" @click="exportData" type="info">导出数据</div>
 
     <!-- 弹框 -->
     <van-popup v-model="show" round closeable close-icon="close" :style="{ height: '80%', width: '90%' }">
@@ -204,7 +205,7 @@ export default {
       ],
       data: [],
       page: {
-        pageSize: 18,
+        pageSize: 13,
         total: 0,
         current: 0,
       },
@@ -382,10 +383,6 @@ export default {
       this.page.current = this.page.pageSize * (current - 1)
       this.onSearch()
     },
-    pageSizeChange(pageSize) {
-      this.page.pageSize = pageSize
-      this.onSearch()
-    },
     onSearch() {
       this.loading = true
       let sql = `select * from fdc_form_1_13  where ${this.search.type} ~ '${this.search.value}' ORDER BY created_at  DESC limit ${this.page.pageSize} OFFSET ${this.page.current}`
@@ -458,31 +455,39 @@ export default {
       width: 200px;
     }
   }
+  .ivu-table-header thead tr th,
+  .ivu-table-fixed-header thead tr th {
+    padding: 4px;
+  }
 
   .ivu-table td,
   .ivu-table th {
     text-align: center;
   }
   .ivu-table th {
-    color: #000;
+    color: #fff;
+    background: #6788e7;
     font-weight: 600;
   }
   .ivu-table-cell {
-    height: 48px;
-    line-height: 48px;
+    height: 46px;
+    line-height: 46px;
   }
 
   .ivu-table-row {
-    height: 48px;
-  }
-
-  .ivu-table td,
-  .ivu-table th {
-    height: 48px;
+    height: 46px;
   }
 
   .page {
-    margin-top: 20px;
+    margin-top: 50px;
+  }
+
+  .ivu-page-total {
+    font-size: 14px;
+    position: absolute;
+    bottom: -45px;
+    right: 50%;
+    transform: translateX(50%);
   }
 
   .popup {
@@ -501,7 +506,7 @@ export default {
     color: #fff;
     font-size: 15px;
     font-weight: 600;
-    margin: 10px auto;
+    margin: 10px;
     border-radius: 7px;
   }
 }
