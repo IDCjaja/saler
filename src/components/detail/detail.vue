@@ -16,31 +16,31 @@
           @blur="onSearch"
         />
       </div>
-      <!-- <div class="export" @click="exportData" type="info">导出数据</div> -->
-      <img class="export" src="@/assets/img/table_btn_download.png" />
+      <img class="export" @click="exportData" src="@/assets/img/table_btn_download.png" />
     </header>
-
-    <Table
-      tooltip
-      ref="table"
-      border
-      stripe
-      height="680"
-      @on-row-click="rowClick"
-      :columns="columns"
-      :data="data"
-      :loading="loading"
-    ></Table>
-    <!-- 分页器 -->
-    <Page
-      :total="page.total"
-      :page-size="page.pageSize"
-      @on-change="currentChange"
-      prev-text="上一页"
-      next-text="下一页"
-      show-total
-      class-name="page"
-    />
+    <div class="table">
+      <Table
+        tooltip
+        ref="table"
+        border
+        stripe
+        height="680"
+        @on-row-click="rowClick"
+        :columns="columns"
+        :data="data"
+        :loading="loading"
+      ></Table>
+      <!-- 分页器 -->
+      <Page
+        :total="page.total"
+        :page-size="page.pageSize"
+        @on-change="currentChange"
+        prev-text="上一页"
+        next-text="下一页"
+        show-total
+        class-name="page"
+      />
+    </div>
 
     <!-- 弹框 -->
     <van-popup v-model="show" round closeable close-icon="close" :style="{ height: '80%', width: '90%' }">
@@ -199,6 +199,7 @@ export default {
           filename: '客户明细',
           quoted: true,
         })
+        this.onSearch()
       })
     },
   },
@@ -272,17 +273,24 @@ export default {
     height: 46px;
   }
 
-  .page {
-    margin-top: 50px;
+  .table {
     position: relative;
-  }
 
-  .ivu-page-total {
-    font-size: 14px;
-    position: absolute;
-    bottom: 45px;
-    right: 50%;
-    transform: translateX(50%);
+    .page {
+      position: absolute;
+      bottom: -150px;
+      width: 100%;
+      right: 50%;
+      transform: translateX(50%);
+    }
+
+    .ivu-page-total {
+      font-size: 14px;
+      position: absolute;
+      bottom: 80px;
+      right: 50%;
+      transform: translateX(50%);
+    }
   }
 
   .popup {
