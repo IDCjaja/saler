@@ -298,7 +298,6 @@ export default {
 
       this.paytype = `${this.pay.cash}${this.pay.card}${this.pay.wechat}${this.pay.alipay}${this.pay.trans}`
       let lowercase = this.cash + this.card + this.wechat + this.alipay + this.trans
-      console.log(lowercase)
       this.lowercase = total.format(lowercase)
       this.capital = total.number2text(lowercase)
     },
@@ -472,6 +471,7 @@ export default {
         api.postflowAPI(this.flowID, payload).then((res) => {
           if (res.status === 200) {
             this.$toast('发起成功 ✨')
+            this.$router.go(0)
           }
         })
       })
