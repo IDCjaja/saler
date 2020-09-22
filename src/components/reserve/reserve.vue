@@ -42,6 +42,7 @@
                 autocomplete="off"
                 placeholder="请输入"
                 type="text"
+                required
                 v-model="field.value"
               />
             </p>
@@ -51,7 +52,7 @@
             <div v-if="field.identity_key === 'entitlement'" />
             <div v-else-if="field.identity_key === 'lottery'" />
             <div v-else>
-              <van-field :label="field.title">
+              <van-field required :label="field.title">
                 <template #input>
                   <select :id="field.identity_key" class="table_aside_select" v-model="field.option_id">
                     <option
@@ -72,6 +73,7 @@
             <!-- 时间 -->
             <p v-if="field.type === 'Field::DateTime'">
               <van-field
+                required
                 :id="field.identity_key"
                 :label="field.title"
                 :value="newTime"
@@ -251,8 +253,7 @@ export default {
         if (res.status === 201) {
           this.$toast('预约成功 ✨')
           this.$router.push({
-            name: 'buy',
-            query: { response_id: res.data.id },
+            name: 'reserved',
           })
         } else {
           this.$toast('预约失败 >_<')
@@ -266,15 +267,6 @@ export default {
         this.$toast('手机号位数错误🙅')
         field.value = ''
       }
-      // api.getPhoneRepeatAPI(field.value).then((res) => {
-      //   if (res.data.phone) {
-      //     field.value = "";
-      //     this.created_at = res.data.created_at.slice(0, 10);
-      //     this.name = res.data.name;
-      //     this.user_name = res.data.user_name;
-      //     this.show = true;
-      //   }
-      // });
     },
   },
 }
