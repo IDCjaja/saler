@@ -572,6 +572,7 @@ export default {
         columns.push(column)
       })
     }
+  },
   // 表头
   createdTableHeaders(fields) {
     let columns = []
