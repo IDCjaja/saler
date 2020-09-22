@@ -1,8 +1,15 @@
 export default [
+  // 客户明细
   {
     path: '/real_estate/saler/detail',
     name: 'detail',
     component: () => import(/* webpackChunkName:'detail' */ '@/components/detail/detail'),
+  },
+  // 成交台账
+  {
+    path: '/real_estate/saler/tradingRecord',
+    name: 'tradingRecord',
+    component: () => import(/* webpackChunkName:'tradingRecord' */ '@/components/trading/tradingRecord'),
   },
   {
     path: '/real_estate/saler/login',

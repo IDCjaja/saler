@@ -521,4 +521,30 @@ export default {
     })
     return payload
   },
+  // 表头
+  createdTableHeaders(fields) {
+    let columns = []
+    fields.forEach((field) => {
+      let column = {}
+      switch (field.identity_key) {
+        case 'room_number':
+          column.title = field.title
+          column.key = field.identity_key
+          column.width = 100
+          column.resizable = true
+          column.fixed = 'left'
+          break
+
+        default:
+          column.title = field.title
+          column.key = field.identity_key
+          column.width = 200
+          column.resizable = true
+          break
+      }
+      columns.push(column)
+    })
+
+    return columns
+  },
 }
