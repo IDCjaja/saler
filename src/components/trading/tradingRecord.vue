@@ -22,7 +22,7 @@
       ref="table"
       border
       stripe
-      height="770"
+      height="620"
       @on-row-click="rowClick"
       :columns="columns"
       :data="data"
@@ -41,10 +41,17 @@
     <van-popup v-model="showDetails" round closeable close-icon="close" :style="{ height: '80%', width: '90%' }">
       <div class="popup">
         <div v-for="item in showArr" :key="item.id">
-          <van-field readonly :label="item.title" :value="showObj[item.identity_key]" />
+          <p v-if="item.identity_key === 'staging_status'">
+            <van-field readonly type="textarea" :label="item.title" :value="showObj[item.identity_key]" />
+          </p>
+          <p v-else>
+            <van-field readonly :label="item.title" :value="showObj[item.identity_key]" />
+          </p>
         </div>
-        <router-link to="tradingRecordDetail">去修改</router-link>
       </div>
+      <router-link class="router-link" :to="{ name: 'tradingRecordDetail', query: { response_id: this.response_id } }"
+        >去修改</router-link
+      >
     </van-popup>
   </div>
 </template>
@@ -62,27 +69,26 @@ export default {
       page: {
         pageSize: 18,
         total: 0,
-        current: 0
+        current: 0,
       },
       loading: true,
       search: {
         value: '',
-        type: 'room_number'
+        type: 'room_number',
       },
       showPhone: true,
-      tableID: '22'
+      tableID: '22',
+      response_id: 0,
     }
   },
   mounted() {
     api.getFormResponsesAPI(this.tableID).then((res) => {
-      console.log(res)
+      // console.log(res)
     })
     api.getFormAPI(this.tableID).then((res) => {
       // 创建表头
       this.columns = total.createdTableHeaders(res.data.fields)
     })
-    const permission = localStorage.getItem('user_permission')
-    console.log(permission.includes('销售总监'))
     this.getPageData()
     let sqlCount = `SELECT COUNT(*) FROM fdc_form_1_22;`
     api.getSqlJsonAPI(sqlCount).then((res) => {
@@ -135,6 +141,7 @@ export default {
       })
     },
     rowClick(row, column, data, event) {
+      this.response_id = row.response_id
       this.showDetails = true
       this.showObj = row
     },
@@ -151,11 +158,11 @@ export default {
         this.$refs.table.data = res.data
         this.$refs.table.exportCsv({
           filename: '成交台账',
-          quoted: true
+          quoted: true,
         })
       })
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss">
@@ -243,7 +250,7 @@ export default {
   }
   .popup {
     margin: 30px auto;
-    width: 77%;
+    width: 82%;
     position: relative;
     .van-cell {
       border-bottom: 1px solid #ebedf0;
@@ -283,6 +290,15 @@ export default {
     font-weight: 600;
     height: 52px;
     border-bottom: 1px solid #ebedf0;
+  }
+
+  .router-link {
+    line-height: 50px;
+    width: 100%;
+    font-size: 16px;
+    display: inline-block;
+    background-color: #6788e7;
+    color: #fff;
   }
 }
 </style>

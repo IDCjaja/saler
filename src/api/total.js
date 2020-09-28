@@ -402,17 +402,17 @@ export default {
       lower: {
         num: ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'],
         unit: ['', '十', '百', '千', '万'],
-        level: ['', '万', '亿'],
+        level: ['', '万', '亿']
       },
       upper: {
         num: ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'],
         unit: ['', '拾', '佰', '仟'],
-        level: ['', '万', '亿'],
+        level: ['', '万', '亿']
       },
       decimal: {
-        unit: ['分', '角'],
+        unit: ['分', '角']
       },
-      maxNumber: 999999999999.99,
+      maxNumber: 999999999999.99
     }
     // 过滤不合法参数
     if (Number(number) > confs.maxNumber) {
@@ -469,15 +469,15 @@ export default {
     let payload = {
       assignment: {
         response_attributes: {
-          entries_attributes: [],
+          entries_attributes: []
         },
-        operation: 'route',
+        operation: 'route'
       },
       user_id: userID,
       webhook: {
         payload_url: url,
-        subscribed_events: ['JourneyStatusEvent'],
-      },
+        subscribed_events: ['JourneyStatusEvent']
+      }
     }
     let entries = payload.assignment.response_attributes.entries_attributes
     formData.forEach((element) => {
@@ -486,7 +486,7 @@ export default {
           if (element.option_id) {
             entries.push({
               field_id: element.field_id,
-              option_id: element.option_id,
+              option_id: element.option_id
             })
           }
           break
@@ -501,7 +501,7 @@ export default {
                   field_id: el.field_id,
                   group_id: el.group_id,
                   value: el.value,
-                  detail_id: detailID,
+                  detail_id: detailID
                 })
               }
             })
@@ -513,7 +513,7 @@ export default {
           if (element.value) {
             entries.push({
               field_id: element.field_id,
-              value: element.value,
+              value: element.value
             })
           }
         }
@@ -536,7 +536,6 @@ export default {
             break
           case 'saler_phone':
             break
-
           default:
             column.title = field.title
             column.key = field.identity_key
@@ -544,7 +543,9 @@ export default {
             column.resizable = true
             break
         }
-        columns.push(column)
+        if (column.key) {
+          columns.push(column)
+        }
       })
     } else {
       fields.forEach((field) => {
@@ -569,9 +570,12 @@ export default {
             column.resizable = true
             break
         }
-        columns.push(column)
+        if (column.key) {
+          columns.push(column)
+        }
       })
     }
+    return columns
   },
   // 表头
   createdTableHeaders(fields) {
@@ -596,7 +600,6 @@ export default {
       }
       columns.push(column)
     })
-
     return columns
-  },
+  }
 }

@@ -87,17 +87,14 @@
             <div v-else>
               <van-field :label="field.title">
                 <template #input>
-                  <select
-                    :id="field.identity_key"
-                    class="table_aside_select"
-                    v-model="field.option_id"
-                  >
+                  <select :id="field.identity_key" class="table_aside_select" v-model="field.option_id">
                     <option
                       :key="option.id"
                       :value="option.id"
                       class="table_aside_option"
                       v-for="option in field.options"
-                    >{{ option.value }}</option>
+                      >{{ option.value }}</option
+                    >
                   </select>
                 </template>
               </van-field>
@@ -109,17 +106,12 @@
               <template #input>
                 <van-checkbox-group v-model="field.option_id">
                   <div :key="option.id" v-for="option in field.options">
-                    <van-checkbox :name="option.id" checked-color="#00A862">{{option.value}}</van-checkbox>
+                    <van-checkbox :name="option.id" checked-color="#00A862">{{ option.value }}</van-checkbox>
                   </div>
                   <div v-if="field.other_option">
                     <p class="other">
                       <span>其他：</span>
-                      <van-field
-                        autocomplete="off"
-                        placeholder="请输入"
-                        autosize
-                        v-model="field.value"
-                      />
+                      <van-field autocomplete="off" placeholder="请输入" autosize v-model="field.value" />
                     </p>
                   </div>
                 </van-checkbox-group>
@@ -133,17 +125,11 @@
             <div v-if="field.identity_key === 'entitlement'">
               <van-field :label="field.title">
                 <template #input>
-                  <van-radio-group
-                    :id="field.identity_key"
-                    direction="horizontal"
-                    v-model="field.option_id"
-                  >
+                  <van-radio-group :id="field.identity_key" direction="horizontal" v-model="field.option_id">
                     <div :key="option.id" v-for="option in field.options">
-                      <van-radio
-                        :name="option.id"
-                        @click="buy(option)"
-                        checked-color="#00A862"
-                      >{{ option.value }}</van-radio>
+                      <van-radio :name="option.id" @click="buy(option)" checked-color="#00A862">{{
+                        option.value
+                      }}</van-radio>
                     </div>
                   </van-radio-group>
                 </template>
@@ -162,27 +148,17 @@
             <div v-if="field.identity_key === 'lottery'">
               <van-field :label="field.title">
                 <template #input>
-                  <van-radio-group
-                    :id="field.identity_key"
-                    direction="horizontal"
-                    v-model="field.option_id"
-                  >
+                  <van-radio-group :id="field.identity_key" direction="horizontal" v-model="field.option_id">
                     <div :key="option.id" v-for="option in field.options">
-                      <van-radio
-                        :name="option.id"
-                        @click="lottery(option)"
-                        checked-color="#00A862"
-                      >{{ option.value }}</van-radio>
+                      <van-radio :name="option.id" @click="lottery(option)" checked-color="#00A862">{{
+                        option.value
+                      }}</van-radio>
                     </div>
                   </van-radio-group>
                 </template>
               </van-field>
             </div>
-            <div
-              class="input_text"
-              v-if="field.identity_key === 'lottery_results'"
-              v-show="lottery_results"
-            >
+            <div class="input_text" v-if="field.identity_key === 'lottery_results'" v-show="lottery_results">
               <van-field
                 :id="field.identity_key"
                 autocomplete="off"
@@ -245,236 +221,223 @@
 </template>
 
 <script>
-import CustomerTabbar from "./pages/tabbar";
-import api from "@/api/api";
-import total from "@/api/total";
+import CustomerTabbar from './pages/tabbar'
+import api from '@/api/api'
+import total from '@/api/total'
 export default {
   data() {
     return {
       checkboxGroup: [],
-      value: "",
-      title: "新建客户",
+      value: '',
+      title: '新建客户',
       fields: [],
-      cascadeValue: "",
-      cascadeWorkingValue: "",
+      cascadeValue: '',
+      cascadeWorkingValue: '',
       showPickerCascade: false,
       showPickerCascadeWorking: false,
       showPicker: false,
       columns: [],
       orderFieldList: [
-        "name",
-        "phone",
-        "gender",
-        "depict",
-        "age",
-        "source",
-        "intention",
-        "pathway",
-        "motivation",
-        "send_card",
-        "price",
-        "payment",
-        "living_area",
-        "entitlement",
-        "reason",
-        "lottery",
-        "lottery_results",
-        "house_type",
-        "resistance",
-        "working_area",
-        "estimated_time",
+        'name',
+        'phone',
+        'gender',
+        'depict',
+        'age',
+        'source',
+        'intention',
+        'pathway',
+        'motivation',
+        'send_card',
+        'price',
+        'payment',
+        'living_area',
+        'entitlement',
+        'reason',
+        'lottery',
+        'lottery_results',
+        'house_type',
+        'resistance',
+        'working_area',
+        'estimated_time'
       ],
       formData: [],
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
-      newTime: "",
-      id: "",
-      phone: "",
+      newTime: '',
+      id: '',
+      phone: '',
       show: false,
-      created_at: "",
-      name: "",
-      user_name: "",
+      created_at: '',
+      name: '',
+      user_name: '',
       isLoading: true,
       reason: false,
       lottery_results: false,
-      formID: 13,
-    };
+      formID: 13
+    }
   },
   components: {
-    CustomerTabbar,
+    CustomerTabbar
   },
   mounted() {
     // 渲染表
     api.getFormAPI(this.formID).then((res) => {
-      this.isLoading = false;
-      this.fields = res.data.fields;
+      this.isLoading = false
+      this.fields = res.data.fields
       // 表单数据处理
-      this.formData = total.tableListData(this.fields, this.orderFieldList);
-    });
+      this.formData = total.tableListData(this.fields, this.orderFieldList)
+    })
   },
 
   methods: {
     // 级联
     onWorkingConfirm(cascadeValue, index) {
       this.formData.forEach((element) => {
-        if (element.identity_key === "working_area") {
-          let cascade =
-            element.columnsCe[index[0]].children[index[1]].children[index[2]];
-          element.choice_id = cascade.id;
-          element.value = cascade.text;
+        if (element.identity_key === 'working_area') {
+          let cascade = element.columnsCe[index[0]].children[index[1]].children[index[2]]
+          element.choice_id = cascade.id
+          element.value = cascade.text
         }
-      });
+      })
 
-      let cascadeWorkingValue = cascadeValue.join(" - ");
+      let cascadeWorkingValue = cascadeValue.join(' - ')
 
-      this.cascadeWorkingValue = cascadeWorkingValue;
-      this.showPickerCascadeWorking = false;
+      this.cascadeWorkingValue = cascadeWorkingValue
+      this.showPickerCascadeWorking = false
     },
     // 是否有购房资格触发
     buy(option) {
-      option.value === "无" ? (this.reason = true) : (this.reason = false);
+      option.value === '无' ? (this.reason = true) : (this.reason = false)
     },
     // 是否有购房资格触发
     lottery(option) {
-      option.value
-        ? (this.lottery_results = true)
-        : (this.lottery_results = false);
+      option.value ? (this.lottery_results = true) : (this.lottery_results = false)
     },
     // 时间选择器赋值
     onConfirmDate(currentDate) {
-      this.dataTime = this.formatDate(currentDate);
-      this.newTime = this.dataTime;
-      this.showPicker = false;
+      this.dataTime = this.formatDate(currentDate)
+      this.newTime = this.dataTime
+      this.showPicker = false
     },
     // 时间格式处理
-    formatDate: function (date) {
-      return (
-        date.getFullYear() +
-        "-" +
-        this.setDate(date.getMonth() + 1) +
-        "-" +
-        this.setDate(date.getDate())
-      );
+    formatDate: function(date) {
+      return date.getFullYear() + '-' + this.setDate(date.getMonth() + 1) + '-' + this.setDate(date.getDate())
     },
     setDate(date) {
-      return date < 10 ? "0" + date : date;
+      return date < 10 ? '0' + date : date
     },
     // 构建传输值的json格式
     newTable(formData) {
-      let payload = { response: { entries_attributes: [] } };
+      let payload = { response: { entries_attributes: [] } }
       formData.forEach((element) => {
         switch (element.type) {
-          case "Field::RadioButton": {
-            if (element.option_id !== "") {
+          case 'Field::RadioButton': {
+            if (element.option_id !== '') {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
-                option_id: element.option_id,
-              });
+                option_id: element.option_id
+              })
             }
-            break;
+            break
           }
-          case "Field::CheckBox": {
-            if (element.option_id !== "") {
+          case 'Field::CheckBox': {
+            if (element.option_id !== '') {
               for (let i = 0; i < element.option_id.length; i++) {
                 payload.response.entries_attributes.push({
                   field_id: element.field_id,
-                  option_id: element.option_id[i],
-                });
+                  option_id: element.option_id[i]
+                })
               }
             }
             if (element.value) {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
                 option_id: 0,
-                value: element.value,
-              });
+                value: element.value
+              })
             }
-            break;
+            break
           }
-          case "Field::DateTime": {
-            if (element.option_id !== "") {
+          case 'Field::DateTime': {
+            if (element.option_id !== '') {
               if (this.newTime) {
                 payload.response.entries_attributes.push({
                   field_id: element.field_id,
-                  value: this.newTime,
-                });
+                  value: this.newTime
+                })
               }
             }
-            break;
+            break
           }
-          case "Field::CascadedSelect": {
-            if (element.option_id !== " ") {
+          case 'Field::CascadedSelect': {
+            if (element.option_id !== ' ') {
               if (this.cascadeWorkingValue) {
                 payload.response.entries_attributes.push({
                   field_id: element.field_id,
                   choice_id: element.choice_id,
-                  value: element.value,
-                });
+                  value: element.value
+                })
               }
             }
-            break;
+            break
           }
           default: {
-            if (element.value !== "") {
+            if (element.value !== '') {
               payload.response.entries_attributes.push({
                 field_id: element.field_id,
-                value: element.value,
-              });
+                value: element.value
+              })
             }
           }
         }
-      });
+      })
       // 自动填充值
-      payload.user_id = localStorage.getItem("user_id");
-      let salerField = this.fields.find(
-        (element) => element.identity_key === "saler"
-      );
+      payload.user_id = localStorage.getItem('user_id')
+      let salerField = this.fields.find((element) => element.identity_key === 'saler')
       payload.response.entries_attributes.push({
-        value: localStorage.getItem("user_name"),
-        field_id: salerField.id,
-      });
-      let salerPhoneField = this.fields.find(
-        (element) => element.identity_key === "saler_phone"
-      );
+        value: localStorage.getItem('user_name'),
+        field_id: salerField.id
+      })
+      let salerPhoneField = this.fields.find((element) => element.identity_key === 'saler_phone')
       payload.response.entries_attributes.push({
-        value: localStorage.getItem("user_phone"),
-        field_id: salerPhoneField.id,
-      });
+        value: localStorage.getItem('user_phone'),
+        field_id: salerPhoneField.id
+      })
       api.postFormAPI(this.formID, payload).then((res) => {
         if (res.status === 201) {
-          this.$toast("新建成功 ✨");
+          this.$toast('新建成功 ✨')
           this.$router.push({
-            name: "buy",
-            query: { response_id: res.data.id },
-          });
+            name: 'buy',
+            query: { response_id: res.data.id }
+          })
         } else {
-          this.$toast("新建失败 >_<");
+          this.$toast('新建失败 >_<')
         }
-      });
+      })
     },
 
     // 判定手机号
     telBlur(field) {
       if (field.value.length !== 11) {
-        this.$toast("手机号位数错误🙅");
-        field.value = "";
+        this.$toast('手机号位数错误🙅')
+        field.value = ''
       }
 
-      let sql = `select * from fdc_form_1_13 WHERE phone ='${field.value}'`;
+      let sql = `select * from fdc_form_1_13 WHERE phone ='${field.value}'`
       api.getSqlJsonAPI(sql).then((res) => {
-        let data = res.data[0];
+        let data = res.data[0]
         if (data) {
-          field.value = "";
-          this.created_at = data.created_at.slice(0, 10);
-          this.name = data.name;
-          this.user_name = data.user_name;
-          this.show = true;
+          field.value = ''
+          this.created_at = data.created_at.slice(0, 10)
+          this.name = data.name
+          this.user_name = data.user_name
+          this.show = true
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
