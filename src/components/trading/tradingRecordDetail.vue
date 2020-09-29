@@ -71,6 +71,23 @@
                 </template>
               </van-field>
             </div>
+            <!-- 明细字段 -->
+            <!-- <div class="detail" v-else-if="field.type === 'Field::Detail'">
+              <p class="detail-title">{{ field.title }}</p>
+              <div class="detail-item" :key="fields.id" v-for="(fields, index) in field.parent">
+                <span>第{{ index + 1 }}期</span>
+                <div :key="field.id" v-for="field in fields">
+                  <van-field
+                    :label="field.title"
+                    autocomplete="off"
+                    placeholder="请输入"
+                    type="text"
+                    v-model="field.value"
+                  />
+                </div>
+              </div>
+              <span class="detail-add" @click="addDetail(field)">添加{{ field.button_name }}</span>
+            </div> -->
           </div>
         </aside>
         <footer class="footer" @click="modifyData()">
@@ -98,41 +115,53 @@ export default {
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
       middleField: '',
-      entries: []
+      entries: [],
     }
   },
   components: {
-    CustomerTabbar
+    CustomerTabbar,
   },
   mounted() {
     let responseId = this.$route.query.response_id
     api.getFormAPI(this.fromID).then((res) => {
       this.formData = total.ListData(res.data.fields)
-    })
-    // 渲染已填写值
-    api.getResFormAPI(responseId).then((res) => {
-      this.isLoading = false
-      this.entries = res.data.entries
-      // 双重遍历赋值！
-      this.formData.forEach((ele) => {
-        this.entries.forEach((res) => {
-          if (ele.field_id === res.field_id) {
-            switch (ele.type) {
-              case 'Field::RadioButton':
-                ele.option_id = res.option_id
-                ele.id = res.id
-                break
-              default:
-                ele.id = res.id
-                ele.value = res.value
-                break
+      // 渲染已填写值
+      api.getResFormAPI(responseId).then((res) => {
+        this.isLoading = false
+        this.entries = res.data.entries
+        // 双重遍历赋值！
+        this.formData.forEach((ele) => {
+          this.entries.forEach((res) => {
+            if (ele.field_id === res.field_id) {
+              switch (ele.type) {
+                case 'Field::RadioButton':
+                  ele.option_id = res.option_id
+                  ele.id = res.id
+                  break
+                default:
+                  ele.id = res.id
+                  ele.value = res.value
+                  break
+              }
+            } else if (ele.field_id === res.detail_id) {
+              // console.log(res.group_id)
+              // console.log(ele.parent)
+              // console.log(1111)
             }
-          }
+          })
         })
       })
     })
   },
   methods: {
+    // 添加明细字段
+    addDetail(el) {
+      let child = JSON.parse(JSON.stringify(el.children))
+      child.forEach((element) => {
+        element.group_id = new Date().getTime()
+      })
+      el.parent.push(child)
+    },
     // 时间选择器赋值
     showTime(field) {
       this.middleField = field.identity_key
@@ -150,64 +179,19 @@ export default {
     modifyData() {
       let responseId = this.$route.query.response_id
       const userID = localStorage.getItem('user_id')
-      const payload = this.payloadBuildTable(this.formData, userID)
-      console.log(payload)
+      const payload = total.payloadBuildTable(this.formData, userID)
       api.putFormsAmendAPI(this.fromID, responseId, payload).then((res) => {
         if (res.status === 200) {
           this.$toast('更新成功 ✨')
+          this.$router.push({
+            name: 'tradingRecord',
+          })
         } else {
           this.$toast('网络波动，刷新再试一次～')
         }
       })
     },
-    payloadBuildTable(formData, userID) {
-      console.log(formData)
-      let payload = { response: { entries_attributes: [] }, user_id: userID }
-      let entries = payload.response.entries_attributes
-      formData.forEach((element) => {
-        console.log(element)
-        switch (element.type) {
-          case 'Field::RadioButton': {
-            if (element.option_id) {
-              if (element.id) {
-                entries.push({
-                  id: element.id,
-                  value: element.value,
-                  option_id: element.option_id
-                })
-              } else {
-                entries.push({
-                  field_id: element.field_id,
-                  value: element.value,
-                  option_id: element.option_id
-                })
-              }
-            }
-            break
-          }
-
-          // 文本+时间类型
-          default: {
-            if (element.value) {
-              if (element.id) {
-                entries.push({
-                  id: element.id,
-                  field_id: element.field_id,
-                  value: element.value
-                })
-              } else {
-                entries.push({
-                  field_id: element.field_id,
-                  value: element.value
-                })
-              }
-            }
-          }
-        }
-      })
-      return payload
-    }
-  }
+  },
 }
 </script>
 
@@ -253,5 +237,44 @@ export default {
   color: #fff;
   background-color: #00a862;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+// 明细
+.detail {
+  margin: 20px;
+  .detail-title {
+    text-align: left;
+    padding: 4px 0px;
+    color: #222222;
+    font-size: 17px;
+  }
+  .detail-item {
+    background-color: #f6f6f6;
+    margin-bottom: 4px;
+    border-radius: 2px;
+    span {
+      padding: 5px;
+      font-size: 16px;
+      display: block;
+    }
+  }
+  .detail-add {
+    border: 2px solid #00a862;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-top: 20px;
+    display: flex;
+    width: 100px;
+    justify-content: center;
+  }
+  .detail-add:hover {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  }
+  /deep/ .van-field__control {
+    border-bottom: 1px solid #e4e4e4;
+  }
+  .van-cell {
+    background-color: #f6f6f6;
+  }
 }
 </style>

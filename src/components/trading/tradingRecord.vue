@@ -41,8 +41,10 @@
     <van-popup v-model="showDetails" round closeable close-icon="close" :style="{ height: '80%', width: '90%' }">
       <div class="popup">
         <div v-for="item in showArr" :key="item.id">
-          <p v-if="item.identity_key === 'staging_status'">
+          <p v-if="item.type === 'Field::TextArea'">
             <van-field readonly type="textarea" :label="item.title" :value="showObj[item.identity_key]" />
+          </p>
+          <p v-if="item.type === 'Field::Detail'">
           </p>
           <p v-else>
             <van-field readonly :label="item.title" :value="showObj[item.identity_key]" />
