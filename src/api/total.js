@@ -4,41 +4,63 @@ export default {
   flowListData(fields) {
     let tableList = []
     fields.forEach((field) => {
-      let objData = {}
+      let objData = {
+        identity_key: '',
+        type: '',
+        title: '',
+        field_id: '',
+      }
       if (field.type === 'Field::Detail') {
-        objData.field_id = field.id
-        objData.identity_key = field.identity_key
-        objData.type = field.type
-        objData.title = field.title
+        Object.keys(objData).forEach((res) => {
+          if (res === 'field_id') {
+            objData[res] = field.id
+          } else {
+            objData[res] = field[res]
+          }
+        })
         objData.button_name = field.settings.button_name || '明细'
         objData.children = []
         objData.parent = []
         // 明细字段内部构建
         field.children.forEach((field) => {
-          let objDataChildren = {}
+          let objDataChildren = {
+            identity_key: '',
+            type: '',
+            title: '',
+            field_id: '',
+          }
           switch (field.type) {
             case 'Field::RadioButton': {
-              objDataChildren.field_id = field.id
-              objDataChildren.identity_key = field.identity_key
-              objDataChildren.type = field.type
-              objDataChildren.title = field.title
+              Object.keys(objDataChildren).forEach((res) => {
+                if (res === 'field_id') {
+                  objDataChildren[res] = field.id
+                } else {
+                  objDataChildren[res] = field[res]
+                }
+              })
               objDataChildren.option_id = ''
               objDataChildren.options = field.options
               break
             }
             case 'Field::DateTime': {
-              objDataChildren.field_id = field.id
-              objDataChildren.identity_key = field.identity_key
-              objDataChildren.type = field.type
-              objDataChildren.title = field.title
+              Object.keys(objDataChildren).forEach((res) => {
+                if (res === 'field_id') {
+                  objDataChildren[res] = field.id
+                } else {
+                  objDataChildren[res] = field[res]
+                }
+              })
               objDataChildren.value = ''
               break
             }
             default: {
-              objDataChildren.field_id = field.id
-              objDataChildren.identity_key = field.identity_key
-              objDataChildren.type = field.type
-              objDataChildren.title = field.title
+              Object.keys(objDataChildren).forEach((res) => {
+                if (res === 'field_id') {
+                  objDataChildren[res] = field.id
+                } else {
+                  objDataChildren[res] = field[res]
+                }
+              })
               objDataChildren.value = ''
             }
           }
@@ -115,62 +137,111 @@ export default {
   ListData(fields) {
     let tableList = []
     fields.forEach((field) => {
-      let objData = {}
-
-      switch (field.type) {
-        case 'Field::RadioButton': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.option_id = ''
-          objData.options = field.options
-          break
-        }
-        case 'Field::CheckBox': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.option_id = []
-          objData.value = ''
-          objData.other_option = field.other_option
-          objData.options = field.options
-          break
-        }
-        case 'Field::DateTime': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.value = ''
-          break
-        }
-
-        default: {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.value = ''
-        }
+      let objData = {
+        field_id: '',
+        identity_key: '',
+        type: '',
+        title: '',
       }
-      switch (field.identity_key) {
-        case 'new_room_number': {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.value = []
-          objData.columnsCe = this.cascade(field.cascaded_select.choices)
-          break
+      if (field.type === 'Field::Detail') {
+        objData.field_id = field.id
+        objData.identity_key = field.identity_key
+        objData.type = field.type
+        objData.title = field.title
+        objData.button_name = field.settings.button_name || '明细'
+        objData.children = []
+        objData.parent = []
+        // 明细字段内部构建
+        field.children.forEach((field) => {
+          let objDataChildren = {}
+          switch (field.type) {
+            case 'Field::RadioButton': {
+              objDataChildren.field_id = field.id
+              objDataChildren.identity_key = field.identity_key
+              objDataChildren.type = field.type
+              objDataChildren.title = field.title
+              objDataChildren.option_id = ''
+              objDataChildren.options = field.options
+              break
+            }
+            case 'Field::DateTime': {
+              objDataChildren.field_id = field.id
+              objDataChildren.identity_key = field.identity_key
+              objDataChildren.type = field.type
+              objDataChildren.title = field.title
+              objDataChildren.value = ''
+              break
+            }
+            default: {
+              objDataChildren.field_id = field.id
+              objDataChildren.identity_key = field.identity_key
+              objDataChildren.type = field.type
+              objDataChildren.title = field.title
+              objDataChildren.value = ''
+            }
+          }
+          objData.children.push(objDataChildren)
+        })
+        let child = JSON.parse(JSON.stringify(objData.children))
+        // child.forEach((element) => {
+        //   element.group_id = new Date().getTime()
+        // })
+        objData.parent.push(child)
+      } else {
+        switch (field.type) {
+          case 'Field::RadioButton': {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.option_id = ''
+            objData.options = field.options
+            break
+          }
+          case 'Field::CheckBox': {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.option_id = []
+            objData.value = ''
+            objData.other_option = field.other_option
+            objData.options = field.options
+            break
+          }
+          case 'Field::DateTime': {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.value = ''
+            break
+          }
+          default: {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.value = ''
+          }
         }
-        default: {
-          objData.field_id = field.id
-          objData.identity_key = field.identity_key
-          objData.type = field.type
-          objData.title = field.title
-          objData.value = ''
+        switch (field.identity_key) {
+          case 'new_room_number': {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.value = []
+            objData.columnsCe = this.cascade(field.cascaded_select.choices)
+            break
+          }
+          default: {
+            objData.field_id = field.id
+            objData.identity_key = field.identity_key
+            objData.type = field.type
+            objData.title = field.title
+            objData.value = ''
+          }
         }
       }
       tableList.push(objData)
@@ -198,7 +269,6 @@ export default {
     // h = h < 10 ? "0" + h : h;
     // let m = date.getMinutes();
     // m = m < 10 ? "0" + m : m;
-
     return y + '-' + MM + '-' + d
   },
   // 房屋状态
@@ -402,17 +472,17 @@ export default {
       lower: {
         num: ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'],
         unit: ['', '十', '百', '千', '万'],
-        level: ['', '万', '亿']
+        level: ['', '万', '亿'],
       },
       upper: {
         num: ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'],
         unit: ['', '拾', '佰', '仟'],
-        level: ['', '万', '亿']
+        level: ['', '万', '亿'],
       },
       decimal: {
-        unit: ['分', '角']
+        unit: ['分', '角'],
       },
-      maxNumber: 999999999999.99
+      maxNumber: 999999999999.99,
     }
     // 过滤不合法参数
     if (Number(number) > confs.maxNumber) {
@@ -469,15 +539,15 @@ export default {
     let payload = {
       assignment: {
         response_attributes: {
-          entries_attributes: []
+          entries_attributes: [],
         },
-        operation: 'route'
+        operation: 'route',
       },
       user_id: userID,
       webhook: {
         payload_url: url,
-        subscribed_events: ['JourneyStatusEvent']
-      }
+        subscribed_events: ['JourneyStatusEvent'],
+      },
     }
     let entries = payload.assignment.response_attributes.entries_attributes
     formData.forEach((element) => {
@@ -486,7 +556,7 @@ export default {
           if (element.option_id) {
             entries.push({
               field_id: element.field_id,
-              option_id: element.option_id
+              option_id: element.option_id,
             })
           }
           break
@@ -501,7 +571,7 @@ export default {
                   field_id: el.field_id,
                   group_id: el.group_id,
                   value: el.value,
-                  detail_id: detailID
+                  detail_id: detailID,
                 })
               }
             })
@@ -513,7 +583,7 @@ export default {
           if (element.value) {
             entries.push({
               field_id: element.field_id,
-              value: element.value
+              value: element.value,
             })
           }
         }
@@ -525,11 +595,19 @@ export default {
     let columns = []
     if (admin === 'admin') {
       fields.forEach((field) => {
-        let column = {}
+        let column = {
+          key: '',
+          title: '',
+        }
         switch (field.identity_key) {
           case 'saler':
-            column.title = field.title
-            column.key = field.identity_key
+            Object.keys(column).forEach((res) => {
+              if (res === 'key') {
+                column[res] = field.identity_key
+              } else {
+                column[res] = field[res]
+              }
+            })
             column.width = 100
             column.resizable = true
             column.fixed = 'left'
@@ -537,8 +615,13 @@ export default {
           case 'saler_phone':
             break
           default:
-            column.title = field.title
-            column.key = field.identity_key
+            Object.keys(column).forEach((res) => {
+              if (res === 'key') {
+                column[res] = field.identity_key
+              } else {
+                column[res] = field[res]
+              }
+            })
             column.width = 150
             column.resizable = true
             break
@@ -552,8 +635,13 @@ export default {
         let column = {}
         switch (field.identity_key) {
           case 'saler':
-            column.title = field.title
-            column.key = field.identity_key
+            Object.keys(column).forEach((res) => {
+              if (res === 'key') {
+                column[res] = field.identity_key
+              } else {
+                column[res] = field[res]
+              }
+            })
             column.width = 100
             column.resizable = true
             column.fixed = 'left'
@@ -562,10 +650,14 @@ export default {
             break
           case 'phone':
             break
-
           default:
-            column.title = field.title
-            column.key = field.identity_key
+            Object.keys(column).forEach((res) => {
+              if (res === 'key') {
+                column[res] = field.identity_key
+              } else {
+                column[res] = field[res]
+              }
+            })
             column.width = 150
             column.resizable = true
             break
@@ -581,25 +673,88 @@ export default {
   createdTableHeaders(fields) {
     let columns = []
     fields.forEach((field) => {
-      let column = {}
+      let column = {
+        key: '',
+        title: '',
+      }
       switch (field.identity_key) {
         case 'room_number':
-          column.title = field.title
-          column.key = field.identity_key
+          Object.keys(column).forEach((res) => {
+            if (res === 'key') {
+              column[res] = field.identity_key
+            } else {
+              column[res] = field[res]
+            }
+          })
           column.width = 100
           column.resizable = true
           column.fixed = 'left'
           break
+        case 'detail':
+          column.width = 0
+          break
 
         default:
-          column.title = field.title
-          column.key = field.identity_key
+          Object.keys(column).forEach((res) => {
+            if (res === 'key') {
+              column[res] = field.identity_key
+            } else {
+              column[res] = field[res]
+            }
+          })
           column.width = 200
           column.resizable = true
           break
       }
-      columns.push(column)
+      if (column.width) {
+        columns.push(column)
+      }
     })
     return columns
-  }
+  },
+  // 修改表单数据（优化）
+  payloadBuildTable(formData, userID) {
+    let payload = { response: { entries_attributes: [] }, user_id: userID }
+    let entries = payload.response.entries_attributes
+    formData.forEach((element) => {
+      switch (element.type) {
+        case 'Field::RadioButton': {
+          if (element.option_id) {
+            if (element.id) {
+              entries.push({
+                id: element.id,
+                value: element.value,
+                option_id: element.option_id,
+              })
+            } else {
+              entries.push({
+                field_id: element.field_id,
+                value: element.value,
+                option_id: element.option_id,
+              })
+            }
+          }
+          break
+        }
+        // 文本+时间类型
+        default: {
+          if (element.value) {
+            if (element.id) {
+              entries.push({
+                id: element.id,
+                field_id: element.field_id,
+                value: element.value,
+              })
+            } else {
+              entries.push({
+                field_id: element.field_id,
+                value: element.value,
+              })
+            }
+          }
+        }
+      }
+    })
+    return payload
+  },
 }
