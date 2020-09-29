@@ -20,7 +20,6 @@
     </header>
     <div class="table">
       <Table
-        tooltip
         ref="table"
         border
         stripe
@@ -91,16 +90,16 @@ export default {
       page: {
         pageSize: 13,
         total: 0,
-        current: 0,
+        current: 0
       },
       loading: true,
       search: {
         value: '',
-        type: 'saler',
+        type: 'saler'
       },
       tableID: 13,
       visitID: 18,
-      showPhone: true,
+      showPhone: true
     }
   },
   mounted() {
@@ -129,7 +128,7 @@ export default {
         this.showVisitArr = res.data.fields.slice(4)
         this.showVisitArr.unshift({
           identity_key: 'created_at',
-          title: '回访时间',
+          title: '回访时间'
         })
       })
     })
@@ -197,12 +196,12 @@ export default {
         this.$refs.table.data = res.data
         this.$refs.table.exportCsv({
           filename: '客户明细',
-          quoted: true,
+          quoted: true
         })
         this.onSearch()
       })
-    },
-  },
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -268,14 +267,11 @@ export default {
     height: 46px;
     line-height: 46px;
   }
-
   .ivu-table-row {
     height: 46px;
   }
-
   .table {
     position: relative;
-
     .page {
       position: absolute;
       bottom: -150px;
@@ -283,7 +279,6 @@ export default {
       right: 50%;
       transform: translateX(50%);
     }
-
     .ivu-page-total {
       font-size: 14px;
       position: absolute;
@@ -292,25 +287,23 @@ export default {
       transform: translateX(50%);
     }
   }
-
   .popup {
     margin: 30px auto;
     width: 77%;
     position: relative;
+    .van-cell {
+      border-bottom: 1px solid #ebedf0;
+    }
   }
-
   .van-field__label {
     width: 7rem;
   }
-
   .ivu-page-item:hover {
     border: 1px solid #dcdee2;
-
     a {
       color: black;
     }
   }
-
   .ivu-page-custom-text {
     width: 88px;
     height: 40px;
@@ -326,16 +319,10 @@ export default {
   .ivu-page-item-active:hover a {
     color: #fff;
   }
-
   .ivu-page-next:hover a,
   .ivu-page-prev:hover a {
     color: #6788e7;
   }
-
-  /deep/ .van-cell {
-    border-bottom: 1px solid #ebedf0;
-  }
-
   .popup-header {
     line-height: 52px;
     font-size: 16px;

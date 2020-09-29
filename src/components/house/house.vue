@@ -308,7 +308,7 @@ export default {
       let sql = `select * from fdc_form_1_17 WHERE room_number ='${el.room_number}' ORDER BY room_number ASC;`
       api.getSqlJsonAPI(sql).then((res) => {
         this.buyData = res.data[0]
-        if (this.buyData) {
+        if (this.buyData.signing_time) {
           this.buyData.signing_time = this.buyData.signing_time.slice(0, 10)
         }
 

@@ -86,11 +86,7 @@
             <div v-else>
               <van-field :label="field['title']">
                 <template #input>
-                  <van-radio-group
-                    :id="field['identity_key']"
-                    direction="horizontal"
-                    v-model="field['option_id']"
-                  >
+                  <van-radio-group :id="field['identity_key']" direction="horizontal" v-model="field['option_id']">
                     <div :key="option.id" v-for="option in field.options">
                       <van-radio :name="option.id" checked-color="#00A862">{{ option.value }}</van-radio>
                     </div>
@@ -132,17 +128,11 @@
             <div v-if="field.identity_key === 'entitlement'">
               <van-field :label="field.title">
                 <template #input>
-                  <van-radio-group
-                    :id="field.identity_key"
-                    direction="horizontal"
-                    v-model="field.option_id"
-                  >
+                  <van-radio-group :id="field.identity_key" direction="horizontal" v-model="field.option_id">
                     <div :key="option.id" v-for="option in field.options">
-                      <van-radio
-                        :name="option.id"
-                        @click="buy(option)"
-                        checked-color="#00A862"
-                      >{{ option.value }}</van-radio>
+                      <van-radio :name="option.id" @click="buy(option)" checked-color="#00A862">{{
+                        option.value
+                      }}</van-radio>
                     </div>
                   </van-radio-group>
                 </template>
@@ -161,27 +151,17 @@
             <div v-if="field.identity_key === 'lottery'">
               <van-field :label="field.title">
                 <template #input>
-                  <van-radio-group
-                    :id="field.identity_key"
-                    direction="horizontal"
-                    v-model="field.option_id"
-                  >
+                  <van-radio-group :id="field.identity_key" direction="horizontal" v-model="field.option_id">
                     <div :key="option.id" v-for="option in field.options">
-                      <van-radio
-                        :name="option.id"
-                        @click="lottery(option)"
-                        checked-color="#00A862"
-                      >{{ option.value }}</van-radio>
+                      <van-radio :name="option.id" @click="lottery(option)" checked-color="#00A862">{{
+                        option.value
+                      }}</van-radio>
                     </div>
                   </van-radio-group>
                 </template>
               </van-field>
             </div>
-            <div
-              class="input_text"
-              v-if="field.identity_key === 'lottery_results'"
-              v-show="lottery_results"
-            >
+            <div class="input_text" v-if="field.identity_key === 'lottery_results'" v-show="lottery_results">
               <van-field
                 :id="field.identity_key"
                 autocomplete="off"
@@ -205,94 +185,92 @@
 </template>
 
 <script>
-import CustomerTabbar from "../pages/tabbar";
-import api from "@/api/api";
+import CustomerTabbar from '../pages/tabbar'
+import api from '@/api/api'
 // import total from "@/api/total";
 
 export default {
   data() {
     return {
-      title: "客户基础信息",
+      title: '客户基础信息',
       isLoading: true,
       fields: [],
       orderFieldList: [
-        "name",
-        "phone",
-        "gender",
-        "depict",
-        "age",
-        "source",
-        "intention",
-        "send_card",
-        "pathway",
-        "motivation",
-        "price",
-        "payment",
-        "living_area",
-        "entitlement",
-        "reason",
-        "lottery",
-        "lottery_results",
-        "house_type",
-        "resistance",
-        "working_area",
-        "estimated_time",
+        'name',
+        'phone',
+        'gender',
+        'depict',
+        'age',
+        'source',
+        'intention',
+        'send_card',
+        'pathway',
+        'motivation',
+        'price',
+        'payment',
+        'living_area',
+        'entitlement',
+        'reason',
+        'lottery',
+        'lottery_results',
+        'house_type',
+        'resistance',
+        'working_area',
+        'estimated_time'
       ],
       formData: [],
       showPicker: false,
       minDate: new Date(1900, 0, 1),
       maxDate: new Date(2220, 10, 1),
       currentDate: new Date(),
-      response_id: "",
-      customer_phone: "",
-      phone: "",
-      id: "",
-      newTime: "",
+      response_id: '',
+      customer_phone: '',
+      phone: '',
+      id: '',
+      newTime: '',
       reason: true,
       lottery_results: true,
       fromID: 13,
-      list: "",
-      dataID: "",
-      entries: [],
-    };
+      list: '',
+      dataID: '',
+      entries: []
+    }
   },
   components: {
-    CustomerTabbar,
+    CustomerTabbar
   },
   mounted() {
-    let responseId = this.$route.query.response_id;
-    this.customer_phone = this.$route.query.customer_phone;
+    let responseId = this.$route.query.response_id
+    this.customer_phone = this.$route.query.customer_phone
     // 读取localStorage
-    this.id = localStorage.getItem("user_id");
-    this.phone = localStorage.getItem("user_phone");
-    let sql = `select * from fdc_form_1_13 WHERE response_id ='${responseId}'`;
+    this.id = localStorage.getItem('user_id')
+    this.phone = localStorage.getItem('user_phone')
+    let sql = `select * from fdc_form_1_13 WHERE response_id ='${responseId}'`
     api.getSqlJsonAPI(sql).then((res) => {
-      this.list = res.data[0];
-      this.dataID = this.list.response_id;
-    });
+      this.list = res.data[0]
+      this.dataID = this.list.response_id
+    })
     // 渲染表项
     api
       .getFormAPI(this.fromID)
       .then((res) => {
-        this.fields = res.data.fields;
+        this.fields = res.data.fields
         this.orderFieldList.forEach((element) => {
-          let field = this.fields.find(
-            (field) => field.identity_key === element
-          );
+          let field = this.fields.find((field) => field.identity_key === element)
           if (field) {
             switch (field.type) {
-              case "Field::RadioButton": {
+              case 'Field::RadioButton': {
                 this.formData.push({
                   field_id: field.id,
                   identity_key: field.identity_key,
                   type: field.type,
                   title: field.title,
-                  option_id: "",
-                  options: field.options,
-                });
-                break;
+                  option_id: '',
+                  options: field.options
+                })
+                break
               }
-              case "Field::CheckBox": {
+              case 'Field::CheckBox': {
                 this.formData.push({
                   field_id: field.id,
                   identity_key: field.identity_key,
@@ -300,19 +278,19 @@ export default {
                   title: field.title,
                   option_id: field.option_id,
                   options: field.options,
-                  other_option: field.other_option,
-                });
-                break;
+                  other_option: field.other_option
+                })
+                break
               }
-              case "Field::DateTime": {
+              case 'Field::DateTime': {
                 this.formData.push({
                   field_id: field.id,
                   identity_key: field.identity_key,
                   type: field.type,
                   title: field.title,
-                  value: "",
-                });
-                break;
+                  value: ''
+                })
+                break
               }
 
               default: {
@@ -321,35 +299,28 @@ export default {
                   identity_key: field.identity_key,
                   type: field.type,
                   title: field.title,
-                  value: "",
-                });
+                  value: ''
+                })
               }
             }
           }
-        });
+        })
       })
       .then(() => {
         // 渲染已填写值
         api.getResFormAPI(this.dataID).then((res) => {
-          this.isLoading = false;
-          this.entries = res.data.entries;
+          this.isLoading = false
+          this.entries = res.data.entries
           Object.keys(res.data.mapped_values).forEach((element) => {
-            if (res.data.mapped_values[element]["text_value"]) {
-              let field = this.formData.find(
-                (field) => field.identity_key === element
-              );
+            if (res.data.mapped_values[element]['text_value']) {
+              let field = this.formData.find((field) => field.identity_key === element)
               if (field) {
                 switch (field.type) {
-                  case "Field::RadioButton": {
-                    let optionValue =
-                      res.data.mapped_values[element]["text_value"][0];
-                    let options = this.fields.find(
-                      (field) => field.identity_key === element
-                    ).options;
-                    field.option_id = options.find(
-                      (option) => option.value === optionValue
-                    ).id;
-                    break;
+                  case 'Field::RadioButton': {
+                    let optionValue = res.data.mapped_values[element]['text_value'][0]
+                    let options = this.fields.find((field) => field.identity_key === element).options
+                    field.option_id = options.find((option) => option.value === optionValue).id
+                    break
                   }
                   // case "Field::CheckBox": {
                   //   field.option_id = [];
@@ -360,77 +331,65 @@ export default {
                   //   );
                   //   break;
                   // }
-                  case "Field::DateTime": {
-                    field.value =
-                      res.data.mapped_values[element]["text_value"][0];
-                    this.newTime = field.value;
-                    break;
+                  case 'Field::DateTime': {
+                    field.value = res.data.mapped_values[element]['text_value'][0]
+                    this.newTime = field.value
+                    break
                   }
                   default: {
-                    field.value =
-                      res.data.mapped_values[element]["text_value"][0];
+                    field.value = res.data.mapped_values[element]['text_value'][0]
                   }
                 }
               }
             }
-          });
-        });
-      });
+          })
+        })
+      })
   },
   methods: {
     // 是否显示购房资格备注
     buy(option) {
-      option.value === "无" ? (this.reason = true) : (this.reason = false);
+      option.value === '无' ? (this.reason = true) : (this.reason = false)
     },
     // 是否显示摇号结果
     lottery(option) {
-      option.value
-        ? (this.lottery_results = true)
-        : (this.lottery_results = false);
+      option.value ? (this.lottery_results = true) : (this.lottery_results = false)
     },
     // 时间选择器 赋值
     onConfirm(currentDate) {
-      this.dataTime = this.formatDate(currentDate);
-      this.newTime = this.dataTime;
-      this.showPicker = false;
+      this.dataTime = this.formatDate(currentDate)
+      this.newTime = this.dataTime
+      this.showPicker = false
     },
-    formatDate: function (d) {
-      return (
-        d.getFullYear() +
-        "-" +
-        this.p(d.getMonth() + 1) +
-        "-" +
-        this.p(d.getDate())
-      );
+    formatDate: function(d) {
+      return d.getFullYear() + '-' + this.p(d.getMonth() + 1) + '-' + this.p(d.getDate())
     },
     p(s) {
-      return s < 10 ? "0" + s : s;
+      return s < 10 ? '0' + s : s
     },
 
     // 发送表单数据
     newTable() {
-      let payload = { response: { entries_attributes: [] } };
+      let payload = { response: { entries_attributes: [] } }
       this.formData.forEach((field) => {
-        let entry = this.entries.find(
-          (entry) => entry.field_id === field.field_id
-        );
+        let entry = this.entries.find((entry) => entry.field_id === field.field_id)
         switch (field.type) {
-          case "Field::RadioButton": {
+          case 'Field::RadioButton': {
             if (field.option_id) {
               if (entry && entry.option_id !== field.option_id) {
                 payload.response.entries_attributes.push({
                   id: entry.id,
-                  option_id: field.option_id,
-                });
+                  option_id: field.option_id
+                })
               } else if (entry) {
               } else {
                 payload.response.entries_attributes.push({
                   field_id: field.field_id,
-                  option_id: field.option_id,
-                });
+                  option_id: field.option_id
+                })
               }
             }
-            break;
+            break
           }
           // case "Field::CheckBox": {
           //   if (field.option_id) {
@@ -453,53 +412,53 @@ export default {
           //   }
           //   break;
           // }
-          case "Field::DateTime": {
+          case 'Field::DateTime': {
             if (this.newTime) {
               if (entry && entry.value !== this.newTime) {
                 payload.response.entries_attributes.push({
                   id: entry.id,
-                  value: this.newTime,
-                });
+                  value: this.newTime
+                })
               } else if (entry) {
               } else {
                 payload.response.entries_attributes.push({
                   field_id: field.field_id,
-                  value: this.newTime,
-                });
+                  value: this.newTime
+                })
               }
             }
-            break;
+            break
           }
           default: {
             if (field.value) {
               if (entry && entry.value !== field.value) {
                 payload.response.entries_attributes.push({
                   id: entry.id,
-                  value: field.value,
-                });
+                  value: field.value
+                })
               } else if (entry) {
               } else {
                 payload.response.entries_attributes.push({
                   field_id: field.field_id,
-                  value: field.value,
-                });
+                  value: field.value
+                })
               }
             }
           }
         }
-      });
+      })
 
-      payload.user_id = localStorage.getItem("user_id");
+      payload.user_id = localStorage.getItem('user_id')
       api.putFormsAmendAPI(this.fromID, this.dataID, payload).then((res) => {
         if (res.status === 200) {
-          this.$toast("更新成功 ✨");
+          this.$toast('更新成功 ✨')
         } else {
-          this.$toast("网络波动，刷新再试一次～");
+          this.$toast('网络波动，刷新再试一次～')
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
